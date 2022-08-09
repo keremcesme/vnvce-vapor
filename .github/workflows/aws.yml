@@ -1,0 +1,47 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      uses: docker/build-push-action@v2
+      env:
+        IMAGE_TAG: latest
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: "058406849523.dkr.ecr.eu-central-1.amazonaws.com/socialayf-vapor:latest"
+        build-args: |
+          "DB_HOST=${{secrets.FREE_TIER_DB_HOST}}"
+          "DB_PORT=${{secrets.FREE_TIER_DB_PORT}}"
+          "DB_USERNAME=${{secrets.FREE_TIER_DB_USERNAME}}"
+          "DB_PASSWORD=${{secrets.FREE_TIER_DB_PASSWORD}}"
+          "DB_NAME=${{secrets.FREE_TIER_DB_NAME}}"
