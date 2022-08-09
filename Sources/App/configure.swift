@@ -17,7 +17,7 @@ public func configure(_ app: Application) throws {
         ),
         as: .psql
     )
-    //hello
+    //helloa
     
     try app.autoMigrate().wait()
     
