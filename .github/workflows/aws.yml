@@ -38,7 +38,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: "058406849523.dkr.ecr.eu-central-1.amazonaws.com/socialayf-vapor:latest"
+        tags: "058406849523.dkr.ecr.eu-central-1.amazonaws.com/vnvce-vapor:latest"
         build-args: |
           "DB_HOST=${{secrets.FREE_TIER_DB_HOST}}"
           "DB_PORT=${{secrets.FREE_TIER_DB_PORT}}"
