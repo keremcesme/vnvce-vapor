@@ -18,6 +18,7 @@ public func configure(_ app: Application) throws {
         as: .psql
     )
     
+    
     try app.autoMigrate().wait()
     
     try routes(app)
