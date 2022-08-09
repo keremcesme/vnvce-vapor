@@ -19,6 +19,7 @@ public func configure(_ app: Application) throws {
     )
     //helloa
     
+    
     try app.autoMigrate().wait()
     
     try routes(app)
