@@ -12,7 +12,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.4.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.2.6"),
         .package(url: "https://github.com/vapor/apns.git", from: "2.2.0"),
-        .package(url: "https://github.com/vapor/jwt.git", from: "4.1.0")
+        .package(url: "https://github.com/vapor/jwt.git", from: "4.1.0"),
+        .package(name: "AWSSDKSwift", url: "https://github.com/soto-project/soto.git", from: "4.8.0")
     ],
     targets: [
         .target(
@@ -23,7 +24,7 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "APNS", package: "apns"),
                 .product(name: "JWT", package: "jwt"),
-                
+                .product(name: "SNS", package: "AWSSDKSwift")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
