@@ -1,4 +1,11 @@
 import Vapor
+import APNS
+import APNSwift
+
+enum APIVersions: String {
+     case v1 = "v1"
+     case v2 = "v2"
+}
 
 func routes(_ app: Application) throws {
     
@@ -32,5 +39,49 @@ func routes(_ app: Application) throws {
         
         
         return "sended"
+    }
+    
+    app.get("push") { req async throws -> String in
+        
+        let alert = APNSwiftAlert(title: "Title", subtitle: "Subtitle", body: "Body")
+        let payload = APNSwiftPayload(
+            alert: alert,
+            badge: 1,
+            sound: .normal("default"),
+            hasContentAvailable: false,
+            hasMutableContent: true,
+            category: "post",
+            threadID: "post_id",
+            relevanceScore: 1
+        )
+        let apn = PostAPNTest(aps: payload, from: "asdfasf")
+        let data = try JSONEncoder().encode(apn)
+        let buffer = ByteBuffer(data: data)
+        
+        try await req.apns.send(
+            rawBytes: buffer,
+            pushType: .alert,
+            to: "4dfd11dfb3fc85e85b8afae45ef1d975380dbbee9824a40458c521803dcf613d",
+            expiration: nil,
+            priority: nil,
+            collapseIdentifier: nil,
+            topic: nil,
+            logger: nil
+        )
+        
+        return "sended"
+    }
+    
+    let authController = AuthController()
+    try app.register(collection: authController)
+}
+
+struct PostAPNTest: APNSwiftNotification {
+    let aps: APNSwiftPayload
+    let from: String
+
+    init(aps: APNSwiftPayload, from: String) {
+        self.aps = aps
+        self.from = from
     }
 }
