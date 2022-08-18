@@ -13,6 +13,8 @@ func runMigrations(_ app: Application) {
         CreatePhoneNumber(),
         CreateUsername(),
         CreateSMSVerificationAttempt(),
-        CreateReservedUsername()
+        CreateReservedUsername(),
+        CreateRefreshToken(),
+        CreateAccessToken()
     ])
 }

@@ -9,8 +9,13 @@ import Vapor
 
 extension AuthController {
     
+    struct CreateAccountSuccessV1: Content {
+        let user: User.Private
+        let tokens: Tokens
+    }
+    
     enum CreateAccountStatusV1: Content {
-        case success(UserModel)
+        case success(CreateAccountSuccessV1)
         case failure(SMSVerificationResult)
     }
     

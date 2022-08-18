@@ -36,7 +36,7 @@ extension AuthController {
                 }
                 
                 // Step 4 - Verify OTP and create account.
-                create.post("new_account", use: CreateAccountHandlerV1)
+                create.post("new_account", use: createAccountHandlerV1)
                 
             }
             

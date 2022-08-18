@@ -17,7 +17,7 @@ struct UserModel: Content {
     let biography: String?
 }
 
-final class User: Model, Content {
+final class User: Model, Content, Authenticatable {
     static let schema = "users"
     
     @ID(key: .id)
@@ -48,30 +48,76 @@ final class User: Model, Content {
         self.biography = biography
     }
     
+    struct Private: Content {
+        let id: UUID
+        let username: String
+        let phoneNumber: String
+        let displayName: String?
+        let biography: String?
+    }
+    
+    struct Public: Content {
+        let id: UUID
+        let username: String
+        let displayName: String?
+        let biography: String?
+    }
+    
 }
 
+// MARK: Private User
 extension User {
     
-    func convertToPulbic(_ req: Request) async throws -> UserModel {
+    func convertToPrivate(_ req: Request) async throws -> User.Private {
         try await self.$username.load(on: req.db)
         try await self.$phoneNumber.load(on: req.db)
         
-        return UserModel(id: try self.requireID(),
-                         username: self.username!.username,
-                         phoneNumber: self.phoneNumber!.phoneNumber,
-                         displayName: self.displayName,
-                         biography: self.biography)
+        return User.Private(
+            id: try self.requireID(),
+            username: self.username!.username,
+            phoneNumber: self.phoneNumber!.phoneNumber,
+            displayName: self.displayName,
+            biography: self.biography
+        )
     }
     
-    func convertToPulbic(_ db: Database) async throws -> UserModel {
+    func convertToPrivate(_ db: Database) async throws -> User.Private {
         try await self.$username.load(on: db)
         try await self.$phoneNumber.load(on: db)
         
-        return UserModel(id: try self.requireID(),
-                         username: self.username!.username,
-                         phoneNumber: self.phoneNumber!.phoneNumber,
-                         displayName: self.displayName,
-                         biography: self.biography)
+        return User.Private(
+            id: try self.requireID(),
+            username: self.username!.username,
+            phoneNumber: self.phoneNumber!.phoneNumber,
+            displayName: self.displayName,
+            biography: self.biography
+        )
+    }
+}
+
+// MARK: pUBLIC User
+extension User {
+    func convertToPublic(_ req: Request) async throws -> User.Public {
+        try await self.$username.load(on: req.db)
+        try await self.$phoneNumber.load(on: req.db)
+        
+        return User.Public(
+            id: try self.requireID(),
+            username: self.username!.username,
+            displayName: self.displayName,
+            biography: self.biography
+        )
     }
     
+    func convertToPublic(_ db: Database) async throws -> User.Public {
+        try await self.$username.load(on: db)
+        try await self.$phoneNumber.load(on: db)
+        
+        return User.Public(
+            id: try self.requireID(),
+            username: self.username!.username,
+            displayName: self.displayName,
+            biography: self.biography
+        )
+    }
 }

@@ -6,11 +6,18 @@
 //
 
 import Vapor
+import Foundation
 
 extension AuthController {
     
+    struct SendSMSOtpSuccessV1: Content {
+        let attemptID: UUID
+        let startTime: TimeInterval
+        let expiryTime: TimeInterval
+    }
+    
     enum SendSMSOTPStatus: Content {
-        case sended(UUID)
+        case sended(SendSMSOtpSuccessV1)
         case failure(PhoneNumberAvailability)
     }
     

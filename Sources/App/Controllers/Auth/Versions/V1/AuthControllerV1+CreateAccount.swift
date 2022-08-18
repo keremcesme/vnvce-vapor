@@ -83,6 +83,7 @@ extension AuthController {
         _ = try await req.application.smsSender!
             .sendSMS(to: phoneNumber, message: type.message(code: otpCode), on: req.eventLoop)
         
+        let startTime = Date().timeIntervalSince1970
         let expiryTime = Date().addingTimeInterval(60)
         
         let attempt = SMSVerificationAttempt(code: otpCode,
@@ -94,49 +95,52 @@ extension AuthController {
         
         let attemptID = try attempt.requireID()
         
-        return Response(result: SendSMSOTPResponseV1(status: .sended(attemptID)),
-                        message: "An OTP sms has been sent to the \"\(phoneNumber)\" phone number.",
-                        code: .ok)
+        return Response(
+            result: SendSMSOTPResponseV1(
+                status: .sended(
+                    SendSMSOtpSuccessV1(
+                        attemptID: attemptID,
+                        startTime: startTime,
+                        expiryTime: expiryTime.timeIntervalSince1970
+                    )
+                )
+            ),
+            message: "An OTP sms has been sent to the \"\(phoneNumber)\" phone number.",
+            code: .ok)
     }
     
     // Step 4 - Verify OTP and create account.
-    func CreateAccountHandlerV1(_ req: Request) async throws -> Response<CreateAccountResponseV1> {
+    func createAccountHandlerV1(_ req: Request) async throws -> Response<CreateAccountResponseV1> {
         let payload = try req.content.decode(CreateAccountPayloadV1.self)
         
         let otpResult = try await verifySMSV1(otp: payload.otp, req)
         
         switch otpResult {
             case .verified:
-                let user: UserModel = try await req.db.transaction({ transaction in
-                    let user = User()
-                    try await user.create(on: transaction)
-                    
-                    let userID = try user.requireID()
-                    
-                    let phoneNumber = PhoneNumber(phoneNumber: payload.otp.phoneNumber, user: userID)
-                    let username = Username(username: payload.username, user: userID)
-                    
-                    try await phoneNumber.create(on: transaction)
-                    try await username.create(on: transaction)
-                    
-                    try await ReservedUsername.query(on: transaction)
-                        .filter(\.$username == payload.username)
-                        .delete(force: true)
-                    
-                    return try await user.convertToPulbic(transaction)
-                })
-                
-                return Response(result: CreateAccountResponseV1(status: .success(user)),
-                                message: "Account successfully created.",
-                                code: .ok)
+                let success = try await createUserV1(username: payload.username, otp: payload.otp, req)
+                return Response(
+                    result: CreateAccountResponseV1(
+                        status: .success(success)
+                    ),
+                    message: "Account successfully created.",
+                    code: .ok
+                )
             case .expired:
-                return Response(result: CreateAccountResponseV1(status: .failure(otpResult)),
-                                message: "The OTP Code has expired.",
-                                code: .ok)
+                return Response(
+                    result: CreateAccountResponseV1(
+                        status: .failure(otpResult)
+                    ),
+                    message: "The OTP code has expired.",
+                    code: .ok
+                )
             case .failure:
-                return Response(result: CreateAccountResponseV1(status: .failure(otpResult)),
-                                message: "Parameters are wrong. Phone number could not be verified.",
-                                code: .notFound)
+                return Response(
+                    result: CreateAccountResponseV1(
+                        status: .failure(otpResult)
+                    ),
+                    message: "Parameters are wrong. Phone number could not be verified.",
+                    code: .notFound)
         }
     }
+    
 }
