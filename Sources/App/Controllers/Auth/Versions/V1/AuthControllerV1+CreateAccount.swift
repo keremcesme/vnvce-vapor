@@ -14,24 +14,38 @@ extension AuthController {
     
     // Step 1 - Check phone number availability.
     func checkPhoneNumberHandlerV1(_ req: Request) async throws -> Response<CheckPhoneNumberResponseV1> {
-        guard let phoneNumber = req.parameters.get("phone_number") else {
+        guard
+            let phoneNumber = req.parameters.get("phone_number"),
+            let clientIDString = req.parameters.get("client_id"),
+            let clientID = UUID(uuidString: clientIDString)
+        else {
             return Response(message: "Phone number parameter is missing.", code: .notFound)
         }
         
-        let availability = try await checkPhoneNumberAvailabilityV1(phoneNumber: phoneNumber, req)
+        let availability = try await checkPhoneNumberAvailabilityV1(
+            phoneNumber: phoneNumber,
+            clientID: clientID,
+            req)
         
-        return Response(result: CheckPhoneNumberResponseV1(status: availability),
-                        message: availability.message(phoneNumber),
+        return Response(result: CheckPhoneNumberResponseV1(status: availability.0),
+                        message: availability.0.message(phoneNumber),
                         code: .ok)
     }
     
     // Auto - Check username availabiltiy.
     func autoCheckUsernameHandlerV1(_ req: Request) async throws -> Response<AutoCheckUsernameResponseV1> {
-        guard let username = req.parameters.get("username") else {
-           return Response(message: "Username parameter is missing.", code: .notFound)
+        guard
+            let username = req.parameters.get("username"),
+            let clientIDString = req.parameters.get("client_id"),
+            let clientID = UUID(uuidString: clientIDString)
+        else {
+            return Response(message: "`username` or `client_id` parameter is missing.", code: .notFound)
         }
         
-        let availability = try await checkUsernameAvailabilityV1(username: username, req)
+        let availability = try await checkUsernameAvailabilityV1(
+            username: username,
+            clientID: clientID,
+            req)
         
         return Response(
             result: AutoCheckUsernameResponseV1(status: availability),
@@ -40,43 +54,66 @@ extension AuthController {
         )
     }
     
-    // Step 2 - Check username availabiltiy and reserve username.
-    func reserveUsernameHandlerV1(_ req: Request) async throws -> Response<ReserveUsernameResponseV1> {
-        let payload = try req.content.decode(ResverUsernamePayloadV1.self)
-        
-        let availability = try await checkUsernameAvailabilityV1(username: payload.username, req)
-        
-        guard availability == .available else {
-            return Response(result: ReserveUsernameResponseV1(status: .failure(availability)),
-                            message: availability.message(payload.username),
-                            code: .ok)
-        }
-        
-        let reservedUsername = ReservedUsername(username: payload.username,
-                                                clientID: payload.clientID,
-                                                expiresAt: Date().addingTimeInterval(120))
-        
-        try await reservedUsername.create(on: req.db)
-        
-        return Response(result: ReserveUsernameResponseV1(status: .success),
-                        message: "The \"\(payload.username)\" has been reserved.",
-                        code: .ok)
-    }
-    
-    // Step 3 - Send OTP code to phone number.
-    func sendSMSOTPHandlerV1(_ req: Request) async throws -> Response<SendSMSOTPResponseV1> {
-        let payload = try req.content.decode(SendSMSOTPPayloadV1.self)
+    // Step 2 - Reserve Username and Send OTP code to phone number.
+    func reserveUsernameAndSendSMSOTPHandlerV1(_ req: Request) async throws -> Response<ReserveUsernameAndSendSMSOTPResponseV1> {
+        let payload = try req.content.decode(ReserveUsernameAndSendSMSOTPPayloadV1.self)
+        let username = payload.username
         let phoneNumber = payload.phoneNumber
         let clientID = payload.clientID
         let type = payload.type
         
-        let availability = try await checkPhoneNumberAvailabilityV1(phoneNumber: phoneNumber, req)
+        let reserve = try await reserveUsernameV1(
+            username: username,
+            clientID: clientID,
+            req)
         
-        guard availability == .available else {
-            return Response(result: SendSMSOTPResponseV1(status: .failure(availability)),
-                            message: availability.message(phoneNumber),
+        switch reserve {
+            case let .failure(failure):
+                let result = ReserveUsernameAndSendSMSOTPResponseV1(status: .failure(.username(failure)))
+                return Response(
+                    result: result,
+                    message: "ok",
+                    code: .ok)
+                
+            case .success:
+                let sms = try await sendSMSOTPV1(
+                    phoneNumber: phoneNumber,
+                    clientID: clientID,
+                    type: type,
+                    req)
+                
+                switch sms {
+                    case let .failure(failure):
+                        let result = ReserveUsernameAndSendSMSOTPResponseV1(status: .failure(.phone(failure)))
+                        
+                        return Response(
+                            result: result,
+                            message: "ok",
                             code: .ok)
+                        
+                    case let .success(success):
+                        let result = ReserveUsernameAndSendSMSOTPResponseV1(status: .success(success))
+                        
+                        return Response(
+                            result: result,
+                            message: "ok",
+                            code: .ok)
+                }
+                
         }
+    }
+    
+    func resendSMSOTPHandlerV1(_ req: Request) async throws -> Response<ResendSMSOTPResponseV1> {
+        
+        let payload = try req.content.decode(ResendSMSOTPPayloadV1.self)
+        let phoneNumber = payload.phoneNumber
+        let clientID = payload.clientID
+        let type = payload.type
+        
+        try await SMSVerificationAttempt.query(on: req.db)
+            .filter(\.$phoneNumber == phoneNumber)
+            .filter(\.$clientID == clientID)
+            .delete()
         
         let otpCode = String.randomDigits(ofLength: 6)
         
@@ -86,30 +123,26 @@ extension AuthController {
         let startTime = Date().timeIntervalSince1970
         let expiryTime = Date().addingTimeInterval(60)
         
-        let attempt = SMSVerificationAttempt(code: otpCode,
-                                             phoneNumber: phoneNumber,
-                                             clientID: clientID,
-                                             expiresAt: expiryTime)
+        let attempt = SMSVerificationAttempt(
+            code: otpCode,
+            phoneNumber: phoneNumber,
+            clientID: clientID,
+            expiresAt: expiryTime)
         
         try await attempt.create(on: req.db)
-        
         let attemptID = try attempt.requireID()
         
+        let response = ResendSMSOTPResponseV1(status: SendSMSOTPAttempt(
+            attemptID: attemptID,
+            startTime: startTime,
+            expiryTime: expiryTime.timeIntervalSince1970))
         return Response(
-            result: SendSMSOTPResponseV1(
-                status: .sended(
-                    SendSMSOtpSuccessV1(
-                        attemptID: attemptID,
-                        startTime: startTime,
-                        expiryTime: expiryTime.timeIntervalSince1970
-                    )
-                )
-            ),
-            message: "An OTP sms has been sent to the \"\(phoneNumber)\" phone number.",
+            result: response,
+            message: "",
             code: .ok)
     }
     
-    // Step 4 - Verify OTP and create account.
+    // Step 3 - Verify OTP and create account.
     func createAccountHandlerV1(_ req: Request) async throws -> Response<CreateAccountResponseV1> {
         let payload = try req.content.decode(CreateAccountPayloadV1.self)
         

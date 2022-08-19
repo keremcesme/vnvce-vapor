@@ -23,19 +23,19 @@ extension AuthController {
                 
                 create.group("phone") { phone in
                     // Step 1 - Check phone number availability.
-                    phone.get("check", ":phone_number", use: checkPhoneNumberHandlerV1)
-                    // Step 3 - Send OTP code to phone number.
-                    phone.post("send_otp", use: sendSMSOTPHandlerV1)
+                    phone.get("check", ":phone_number", ":client_id", use: checkPhoneNumberHandlerV1)
+                    phone.post("resend_otp", use: resendSMSOTPHandlerV1)
                 }
                 
                 create.group("username") { username in
                     // Auto - Check username availabiltiy.
-                    username.get("check", ":username", use: autoCheckUsernameHandlerV1)
-                    // Step 2 - Check username availabiltiy and reserve username.
-                    username.post("reserve", use: reserveUsernameHandlerV1)
+                    username.get("check", ":username", ":client_id", use: autoCheckUsernameHandlerV1)
                 }
                 
-                // Step 4 - Verify OTP and create account.
+                // Step 2 - Reserve Username and Send OTP code to phone number.
+                create.post("reserve_username_and_send_otp", use: reserveUsernameAndSendSMSOTPHandlerV1)
+                
+                // Step 3 - Verify OTP and create account.
                 create.post("new_account", use: createAccountHandlerV1)
                 
             }

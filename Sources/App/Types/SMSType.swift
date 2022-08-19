@@ -25,7 +25,7 @@ extension SMSType {
             }
         }()
         
-        var message = "Verification code for \(type) vnvce account: \(code).\nIf you did not request this, disregard this message."
+        let message = "Verification code for \(type) vnvce account: \(code).\nIf you did not request this, disregard this message."
         
         return message
     }
