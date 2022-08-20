@@ -17,6 +17,9 @@ struct AuthController: RouteCollection {
 extension AuthController {
     
     func v1routes(routes: RoutesBuilder) {
+        let tokenAuthMiddleware = AccessToken.authenticator()
+        let userGuardMiddleware = User.guardMiddleware()
+        
         routes.group("api", "\(APIVersions.v1)", "auth") { auth in
             
             auth.group("create") { create in
@@ -38,6 +41,15 @@ extension AuthController {
                 // Step 3 - Verify OTP and create account.
                 create.post("new_account", use: createAccountHandlerV1)
                 
+                // Optional Steps
+                create.group(tokenAuthMiddleware, userGuardMiddleware) { update in
+                    // Step 4 - Set Profile Picture.
+                    update.post("set_profile_picture", use: profilePictureHandlerV1)
+                    // Step 5 - Set Display Name.
+                    update.patch("set_display_name", ":display_name", use: displayNameHandlerV1)
+                    // Step 6 - Set Biography.
+                    update.patch("set_biography", ":biography", use: biographyHandlerV1)
+                }
             }
             
             auth.group("login") { login in

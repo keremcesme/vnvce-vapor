@@ -49,7 +49,7 @@ final class RefreshToken: Model, Content {
 }
 
 extension RefreshToken {
-    static func generate(userID: UUID, clientID: UUID) throws -> RefreshToken {
+    static func generate(userID: UUID, clientID: UUID) -> RefreshToken {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         let token = String((0 ... 40).map { _ in letters.randomElement()! })
         let expiresAt =  Date().addingTimeInterval(3600 * 24 * 30)

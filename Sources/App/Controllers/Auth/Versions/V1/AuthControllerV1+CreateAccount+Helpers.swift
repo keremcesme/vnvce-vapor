@@ -62,7 +62,6 @@ extension AuthController {
             
             return CreateAccountSuccessV1(user: user, tokens: tokens)
         })
-        
         return result
     }
     
@@ -80,9 +79,12 @@ extension AuthController {
         
         try await ReservedUsername.query(on: db)
             .filter(\.$username == username.username)
+            .filter(\.$username, .contains(inverse: false, .anywhere), "asf")
+//            .filter(\.$username, .custom("@@"), "sadf")
             .delete(force: true)
     }
     
+//        .filter(\.$username, .custom("ilike"), "%\(searchText)%")
     private func createTokensV1(
         userID: UUID,
         clientID: UUID,
@@ -103,4 +105,5 @@ extension AuthController {
         
         return Tokens(accessToken: accessToken.token, refreshToken: refreshToken.token)
     }
+    
 }

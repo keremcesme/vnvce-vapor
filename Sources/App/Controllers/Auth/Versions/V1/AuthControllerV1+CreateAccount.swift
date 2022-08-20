@@ -176,4 +176,50 @@ extension AuthController {
         }
     }
     
+    // MARK: Optional Steps
+    // Step 4 - Set Profile Picture.
+    func profilePictureHandlerV1(_ req: Request) async throws -> HTTPStatus{
+        let user = try req.auth.require(User.self)
+        let payload = try req.content.decode(ProfilePicturePayloadV1.self)
+        let userID = try user.requireID()
+        let url = payload.url
+        let name = payload.name
+        
+        let profilePicture = ProfilePicture(userID: userID, url: url, name: name)
+        
+        try await profilePicture.create(on: req.db)
+        
+        return .ok
+    }
+    
+    // Step 5 - Set Display Name.
+    func displayNameHandlerV1(_ req: Request) async throws -> HTTPStatus {
+        let user = try req.auth.require(User.self)
+        
+        guard let displayName = req.parameters.get("display_name") else {
+            return .notFound
+        }
+        
+        user.displayName = displayName
+        
+        try await user.update(on: req.db)
+        
+        return .ok
+    }
+    
+    // Step 6 - Set Biography.
+    func biographyHandlerV1(_ req: Request) async throws -> HTTPStatus {
+        let user = try req.auth.require(User.self)
+        
+        guard let biography = req.parameters.get("biography") else {
+            return .notFound
+        }
+        
+        user.biography = biography
+        
+        try await user.update(on: req.db)
+        
+        return .ok
+    }
+    
 }
