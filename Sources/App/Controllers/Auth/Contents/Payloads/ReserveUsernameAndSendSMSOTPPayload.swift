@@ -7,8 +7,9 @@
 
 import Vapor
 
-extension AuthController {
-    struct ReserveUsernameAndSendSMSOTPPayloadV1: Content {
+final class ReserveUsernameAndSendSMSOTPPayload {
+    //MARK: V1
+    struct V1: Content {
         let username: String
         let phoneNumber: String
         let clientID: UUID

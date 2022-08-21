@@ -7,15 +7,18 @@
 
 import Vapor
 
-enum PhoneNumberAvailability: String, Content {
+final class PhoneNumberAvailability {
     
-    case available = "available"
-    case alreadyTaken = "alreadyTaken"
-    case otpExist = "otpExist"
+    // MARK: V1
+    enum V1: String, Content {
+        case available = "available"
+        case alreadyTaken = "alreadyTaken"
+        case otpExist = "otpExist"
+    }
     
 }
 
-extension PhoneNumberAvailability {
+extension PhoneNumberAvailability.V1 {
     
     func message(_ phoneNumber: String) -> String {
         switch self {

@@ -2,17 +2,21 @@
 //  File.swift
 //  
 //
-//  Created by Kerem Cesme on 19.08.2022.
+//  Created by Kerem Cesme on 21.08.2022.
 //
 
 import Vapor
 
-enum ReserveUsernameFailure: String, Content {
-    case alreadyTaken = "alreadyTaken"
-    case reserved = "reserved"
+final class ReserveUsernameError {
+    // MARK: V1
+    enum V1: String, Content {
+        case alreadyTaken = "alreadyTaken"
+        case reserved = "reserved"
+    }
+    // ...
 }
 
-extension ReserveUsernameFailure {
+extension ReserveUsernameError.V1 {
     func message(_ username: String) -> String {
         switch self {
             case .alreadyTaken:
@@ -21,9 +25,4 @@ extension ReserveUsernameFailure {
                 return "The username \"\(username)\" is reserved."
         }
     }
-}
-
-enum ReserveUsernameResult: Content {
-    case success
-    case failure(ReserveUsernameFailure)
 }

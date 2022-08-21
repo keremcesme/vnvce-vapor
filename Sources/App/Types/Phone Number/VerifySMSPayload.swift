@@ -7,11 +7,16 @@
 
 import Vapor
 
-extension AuthController {
-    
-    struct SendSMSOTPPayloadV1: Content {
+final class VerifySMSPayload {
+    // MARK: V1
+    struct V1: Content {
         let phoneNumber: String
+        let otpCode: String
         let clientID: UUID
-        let type: SMSType
+        let attemptID: UUID
     }
 }
+
+
+
+

@@ -7,13 +7,18 @@
 
 import Vapor
 
-enum UsernameAvailability: String, Content {
-    case available = "available"
-    case alreadyTaken = "alreadyTaken"
-    case reserved = "reserved"
+final class UsernameAvailability {
+    
+    // MARK: V1
+    enum V1: String, Content {
+        case available = "available"
+        case alreadyTaken = "alreadyTaken"
+        case reserved = "reserved"
+    }
+    
 }
 
-extension UsernameAvailability {
+extension UsernameAvailability.V1 {
     
     func message(_ username: String) -> String {
         switch self {

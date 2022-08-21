@@ -40,3 +40,9 @@ final class SMSVerificationAttempt: Model, Content {
     }
     
 }
+
+struct SMSOTPAttempt: Content {
+    let attemptID: UUID
+    let startTime: TimeInterval
+    let expiryTime: TimeInterval
+}

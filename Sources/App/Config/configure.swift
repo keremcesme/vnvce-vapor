@@ -19,8 +19,10 @@ public func configure(_ app: Application) throws {
     )
     
     runMigrations(app)
+    
+    try app.autoRevert().wait()
     try app.autoMigrate().wait()
-//    try app.autoRevert().wait()
+    
     try routes(app)
     try app.configureAppleAPN()
     
