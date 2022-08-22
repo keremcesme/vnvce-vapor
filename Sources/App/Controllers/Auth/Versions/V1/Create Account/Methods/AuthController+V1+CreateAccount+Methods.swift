@@ -132,6 +132,7 @@ extension AuthController.V1.CreateAccount {
                 return Response(result: .failure(.expired), message: "Expired")
             case .verified:
                 let response = try await createUser(username: username, otp: otp, req)
+                print(response)
                 return Response(result: .success(response), message: "Account created succesfully.")
         }
     }

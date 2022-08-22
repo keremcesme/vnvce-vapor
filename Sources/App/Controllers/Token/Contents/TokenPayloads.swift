@@ -7,9 +7,9 @@
 
 import Vapor
 
-extension TokenController {
+final class GenerateTokensPayload {
     
-    struct GenerateTokensPayload: Content {
+    struct V1: Content {
         let userID: UUID
         let refreshToken: String
         let clientID: UUID

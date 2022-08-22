@@ -9,6 +9,16 @@ enum APIVersions: String {
 
 func routes(_ app: Application) throws {
     
+    app.group("check_token") { check in
+        check.group(AccessToken.authenticator(), User.guardMiddleware()) {
+            route in
+            route.get("test") { req -> HTTPStatus in
+                _ = try req.auth.require(User.self)
+                return .ok
+            }
+        }
+    }
+    
     app.get("health") { req  in
         return "OK"
     }
@@ -77,6 +87,10 @@ func routes(_ app: Application) throws {
     
     let tokenController = TokenController()
     try app.register(collection: tokenController)
+    
+    let meController = MeController()
+    try app.register(collection: meController)
+    
 }
 
 struct PostAPNTest: APNSwiftNotification {

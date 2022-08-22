@@ -8,6 +8,27 @@
 import Vapor
 import Fluent
 
+// MARK: TokenController V1 - Routes -
+extension TokenController {
+    
+    final class V1 {
+        static let shared = V1()
+        
+        public let version = APIVersions.v1
+        
+        init(){}
+        
+        private let authenticator = AccessToken.authenticator()
+        private let middleware = User.guardMiddleware()
+        
+        func routes(_ routes: RoutesBuilder) {
+            routes.group("api", "\(version)", "token") { tokenRoute in
+                tokenRoute.post("generate", use: generate)
+            }
+        }
+    }
+}
+
 //extension TokenController {
 //
 //    func accessTokenValidation(_ req: Request) async throws -> HTTPStatus {

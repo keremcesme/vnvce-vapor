@@ -2,14 +2,14 @@
 //  File.swift
 //  
 //
-//  Created by Kerem Cesme on 21.08.2022.
+//  Created by Kerem Cesme on 22.08.2022.
 //
 
 import Fluent
 import Vapor
 
-// MARK: TokenController - Version Routes -
-struct TokenController: RouteCollection {
+// MARK: MeController - Version Routes -
+struct MeController: RouteCollection {
     
     private let v1 = V1.shared
     
@@ -17,3 +17,4 @@ struct TokenController: RouteCollection {
         v1.routes(routes)
     }
 }
+
