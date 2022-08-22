@@ -67,7 +67,7 @@ extension AccessToken: ModelTokenAuthenticatable {
 extension AccessToken {
     static func generate(userID: UUID, refreshTokenID: UUID, clientID: UUID) -> AccessToken {
         let token = [UInt8].random(count: 16).base64
-        let expiresAt =  Date().addingTimeInterval(10)
+        let expiresAt =  Date().addingTimeInterval(3600)
         
         let accessToken = AccessToken(
             userID: userID,
