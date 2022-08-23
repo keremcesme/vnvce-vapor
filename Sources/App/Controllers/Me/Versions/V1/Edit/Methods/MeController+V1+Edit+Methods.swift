@@ -15,13 +15,19 @@ extension MeController.V1.Edit {
     func editProfilePictureHandler(_ req: Request) async throws -> HTTPStatus {
         let user = try req.auth.require(User.self)
         
-        guard let url = req.parameters.get("url"),
-              let name = req.parameters.get("name")
-        else {
-            return .notFound
-        }
+        let payload = try req.content.decode(EditProfilePicturePayload.V1.self)
+        let url = payload.url
+        let name = payload.name
+        let alignment = payload.alignment
+        
+//        guard let url = req.parameters.get("url"),
+//              let name = req.parameters.get("name")
+//        else {
+//            return .notFound
+//        }
+        
         let userID = try user.requireID()
-        let profilePicture = ProfilePicture(userID: userID, url: url, name: name)
+        let profilePicture = ProfilePicture(userID: userID, alignment: alignment, url: url, name: name)
         try await req.db.transaction({
             try await user.$profilePicture.get(on: $0)?.delete(on: $0)
             try await user.$profilePicture.create(profilePicture, on: $0)

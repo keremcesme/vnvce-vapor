@@ -25,7 +25,7 @@ extension MeController.V1 {
                 
                 // MARK: Profile Picture
                 editRoute
-                    .put("profile_picture", ":url", ":name", use: editProfilePictureHandler)
+                    .put("profile_picture", use: editProfilePictureHandler)
                 editRoute
                     .delete("profile_picture", use: deleteProfilePictureHandler)
                 
