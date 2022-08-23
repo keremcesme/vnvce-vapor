@@ -10,6 +10,7 @@ import Vapor
 func runMigrations(_ app: Application) {
     app.migrations.add([
         CreateUser(),
+        CreateProfilePictureAlignmentType(),
         CreateProfilePicture(),
         CreatePhoneNumber(),
         CreateUsername(),

@@ -17,6 +17,9 @@ final class ProfilePicture: Model, Content, Authenticatable {
     @Parent(key: "user_id")
     var user: User
     
+    @OptionalEnum(key: "alignment")
+    var alignment: ProfilePictureAlignmentType?
+    
     @Field(key: "url")
     var url: String
     
@@ -25,8 +28,14 @@ final class ProfilePicture: Model, Content, Authenticatable {
     
     init() {}
     
-    init(userID: User.IDValue, url: String, name: String) {
+    init(
+        userID: User.IDValue,
+        alignment: ProfilePictureAlignmentType? = nil,
+        url: String,
+        name: String
+    ) {
         self.$user.id = userID
+        self.alignment = alignment
         self.url = url
         self.name = name
     }
