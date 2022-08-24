@@ -12,6 +12,7 @@ final class SendSMSOTPError {
     enum V1: String, Content {
         case alreadyTaken = "alreadyTaken"
         case otpExist = "otpExist"
+        case notFound = "notFound"
     }
     // ...
 }
@@ -23,6 +24,8 @@ extension SendSMSOTPError.V1 {
                 return "OTP code available. Please try again in a short while."
             case .alreadyTaken:
                 return "The phone number \"\(phoneNumber)\" is already taken."
+            case .notFound:
+                return "Could not find a vnvce account associated with this phone number."
         }
     }
 }

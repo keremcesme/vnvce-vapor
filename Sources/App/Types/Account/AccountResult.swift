@@ -7,7 +7,7 @@
 
 import Vapor
 
-final class LoginAccountResponse {
+final class AccountResult {
     // MARK: V1
     struct V1: Content {
         let user: User.Private

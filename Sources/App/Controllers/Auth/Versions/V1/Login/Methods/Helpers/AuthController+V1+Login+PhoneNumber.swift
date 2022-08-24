@@ -2,24 +2,23 @@
 //  File.swift
 //  
 //
-//  Created by Kerem Cesme on 21.08.2022.
+//  Created by Kerem Cesme on 24.08.2022.
 //
 
 import Vapor
 import Fluent
 
-// MARK: AuthController V1 - Create Account - Phone Number - Helper -
-extension AuthController.V1.CreateAccount {
-    
+// MARK: AuthController V1 - Login - Phone Number - Helper -
+extension AuthController.V1.Login {
     func checkPhoneNumberAvailability(
         phoneNumber: String,
         clientID: UUID,
         _ req: Request
-    ) async throws -> CheckPhoneNumberAvailabilityResult<PhoneNumberAvailability.CreateV1>{
+    ) async throws -> CheckPhoneNumberAvailabilityResult<PhoneNumberAvailability.LoginV1>{
         guard try await PhoneNumber.query(on: req.db)
             .filter(\.$phoneNumber == phoneNumber)
-            .first() == nil else {
-            return (.alreadyTaken, nil)
+            .first() != nil else {
+            return (.notFound, nil)
         }
         
         var otpAttempts = try await SMSVerificationAttempt.query(on: req.db)
@@ -60,8 +59,8 @@ extension AuthController.V1.CreateAccount {
             req)
         
         switch result.availability {
-            case .alreadyTaken:
-                return .failure(.alreadyTaken)
+            case .notFound:
+                return .failure(.notFound)
             case .otpExist:
                 return .failure(.otpExist)
             case .available:
@@ -74,10 +73,9 @@ extension AuthController.V1.CreateAccount {
                     
                     return .success(otpAttempt)
                 } else {
-//                    let otpCode = String.randomDigits(ofLength: 6)
-                    let otpCode = "111111"
-//                    _ = try await req.application.smsSender!
-//                        .sendSMS(to: phoneNumber, message: type.message(code: otpCode), on: req.eventLoop)
+                    let otpCode = String.randomDigits(ofLength: 6)
+                    _ = try await req.application.smsSender!
+                        .sendSMS(to: phoneNumber, message: type.message(code: otpCode), on: req.eventLoop)
                     
                     let startTime = Date().timeIntervalSince1970
                     let expiryTime = Date().addingTimeInterval(60)

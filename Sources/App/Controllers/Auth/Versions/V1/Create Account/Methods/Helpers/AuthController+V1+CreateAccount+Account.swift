@@ -14,13 +14,13 @@ extension AuthController.V1.CreateAccount {
         username: String,
         otp: VerifySMSPayload.V1,
         _ req: Request
-    ) async throws -> LoginAccountResponse.V1 {
+    ) async throws -> AccountResult.V1 {
         let clientID = otp.clientID
         let phoneNumber = otp.phoneNumber
         
         let user = User()
         
-        let result: LoginAccountResponse.V1 = try await req.db.transaction({
+        let result: AccountResult.V1 = try await req.db.transaction({
             try await user.create(on: $0)
             let userID = try user.requireID()
             
@@ -37,7 +37,7 @@ extension AuthController.V1.CreateAccount {
             
             let user = try await user.convertToPrivate($0)
             
-            return LoginAccountResponse.V1(user: user, tokens: tokens)
+            return AccountResult.V1(user: user, tokens: tokens)
         })
         return result
     }

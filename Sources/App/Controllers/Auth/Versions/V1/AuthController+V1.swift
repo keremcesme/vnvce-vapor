@@ -26,7 +26,6 @@ extension AuthController {
         
         func routes(_ routes: RoutesBuilder) {
             routes.group("api", "\(version)", "auth") { authRoute in
-                
                 createAccount.routes(
                     routes: authRoute,
                     auth: authenticator,

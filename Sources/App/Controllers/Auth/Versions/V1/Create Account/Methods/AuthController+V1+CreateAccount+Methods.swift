@@ -13,7 +13,7 @@ import Vapor
 extension AuthController.V1.CreateAccount {
     
     // Step 1 - Check phone number availability.
-    func checkPhoneNumberHandler(_ req: Request) async throws -> Response<PhoneNumberAvailability.V1> {
+    func checkPhoneNumberHandler(_ req: Request) async throws -> Response<PhoneNumberAvailability.CreateV1> {
         guard let phoneNumber = req.parameters.get("phone_number"),
               let clientIDString = req.parameters.get("client_id"),
               let clientID = UUID(uuidString: clientIDString)
@@ -118,7 +118,7 @@ extension AuthController.V1.CreateAccount {
     }
     
     // Step 3 - Verify OTP and create account.
-    func createAccountHandler(_ req: Request) async throws -> Response<CreateAccountResponse.V1> {
+    func createAccountHandler(_ req: Request) async throws -> Response<AccountResponse.V1> {
         let payload = try req.content.decode(CreateAccountPayload.V1.self)
         let otp = payload.otp
         let username = payload.username

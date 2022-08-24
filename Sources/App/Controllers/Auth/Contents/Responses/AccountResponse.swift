@@ -8,10 +8,10 @@
 import Vapor
 
 
-final class CreateAccountResponse {
+final class AccountResponse {
     // MARK: V1
     enum V1: Content {
-        case success(LoginAccountResponse.V1)
+        case success(AccountResult.V1)
         case failure(SMSVerificationError.V1)
     }
 }

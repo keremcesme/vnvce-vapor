@@ -21,8 +21,13 @@ extension AuthController.V1 {
             auth authenticator: Authenticator,
             guard middleware: Middleware
         ) {
-            routes.group("login") { createRoute in
-                
+            routes.group("login") { loginRoute in
+                loginRoute
+                    .post("send_otp", use: sendSMSOTPHandler)
+                loginRoute
+                    .post("verify_otp", use: verifySMSOTPHandler)
+                loginRoute
+                    .post("resend_otp", use: resendSMSOTPHandler)
             }
         }
     }
