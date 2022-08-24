@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Vapor
 
 private let allowedCharacterSet: CharacterSet = {
     var set = CharacterSet.decimalDigits

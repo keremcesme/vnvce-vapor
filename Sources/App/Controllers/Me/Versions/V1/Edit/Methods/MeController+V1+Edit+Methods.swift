@@ -20,12 +20,6 @@ extension MeController.V1.Edit {
         let name = payload.name
         let alignment = payload.alignment
         
-//        guard let url = req.parameters.get("url"),
-//              let name = req.parameters.get("name")
-//        else {
-//            return .notFound
-//        }
-        
         let userID = try user.requireID()
         let profilePicture = ProfilePicture(userID: userID, alignment: alignment, url: url, name: name)
         try await req.db.transaction({
@@ -44,9 +38,7 @@ extension MeController.V1.Edit {
     // MARK: Display Name
     func editDisplayNameHandler(_ req: Request) async throws -> HTTPStatus {
         let user = try req.auth.require(User.self)
-        guard let displayName = req.parameters.get("value") else {
-            return .notFound
-        }
+        let displayName = try req.content.decode(String.self)
         user.displayName = displayName
         try await user.update(on: req.db)
         return .ok
@@ -62,9 +54,7 @@ extension MeController.V1.Edit {
     // MARK: Biography
     func editBiographyHandler(_ req: Request) async throws -> HTTPStatus {
         let user = try req.auth.require(User.self)
-        guard let biography = req.parameters.get("value") else {
-            return .notFound
-        }
+        let biography = try req.content.decode(String.self)
         user.biography = biography
         try await user.update(on: req.db)
         return .ok
