@@ -31,13 +31,13 @@ extension MeController.V1 {
                 
                 // MARK: Display Name
                 editRoute
-                    .patch("display_name", ":value", use: editDisplayNameHandler)
+                    .patch("display_name", use: editDisplayNameHandler)
                 editRoute
                     .delete("display_name", use: deleteDisplayNameHandler)
                 
                 // MARK: Biography
                 editRoute
-                    .patch("biography", ":value", use: editBiographyHandler)
+                    .patch("biography", use: editBiographyHandler)
                 editRoute
                     .delete("biography", use: deleteBiographyHandler)
             }
