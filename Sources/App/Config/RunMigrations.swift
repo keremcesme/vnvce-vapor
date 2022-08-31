@@ -17,6 +17,7 @@ func runMigrations(_ app: Application) {
         CreateSMSVerificationAttempt(),
         CreateReservedUsername(),
         CreateRefreshToken(),
-        CreateAccessToken()
+        CreateAccessToken(),
+        CreateFriendRequest()
     ])
 }
