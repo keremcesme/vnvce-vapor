@@ -26,5 +26,5 @@ public func configure(_ app: Application) throws {
     try routes(app)
     try app.configureAppleAPN()
     
-    //app.smsSender = try configureSMSSender()
+    app.smsSender = try configureSMSSender()
 }

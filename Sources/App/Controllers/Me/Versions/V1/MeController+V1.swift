@@ -26,6 +26,9 @@ extension MeController {
         func routes(_ routes: RoutesBuilder) {
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "me") { meRoute in
+                    
+                    meRoute.get("profile", use: profileHandler)
+                    
                     edit.routes(
                         routes: meRoute,
                         auth: authenticator,
