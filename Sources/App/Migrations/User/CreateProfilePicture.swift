@@ -17,7 +17,7 @@ struct CreateProfilePicture: AsyncMigration {
             .schema(ProfilePicture.schema)
             .id()
             .field("user_id", .uuid, .references(User.schema, .id, onDelete: .cascade))
-            .field("alignment", alignment)
+            .field("alignment", alignment, .required)
             .field("url", .string, .required)
             .field("name", .string, .required)
             .create()

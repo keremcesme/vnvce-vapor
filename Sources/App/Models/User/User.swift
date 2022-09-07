@@ -57,6 +57,7 @@ final class User: Model, Content, Authenticatable {
         let phoneNumber: String
         let displayName: String?
         let biography: String?
+        let profilePicture: ProfilePicture.Details?
     }
     
     struct Public: Content {
@@ -64,6 +65,7 @@ final class User: Model, Content, Authenticatable {
         let username: String
         let displayName: String?
         let biography: String?
+        let profilePicture: ProfilePicture.Details?
     }
     
 }
@@ -74,26 +76,30 @@ extension User {
     func convertToPrivate(_ req: Request) async throws -> User.Private {
         try await self.$username.load(on: req.db)
         try await self.$phoneNumber.load(on: req.db)
+        try await self.$profilePicture.load(on: req.db)
         
         return User.Private(
             id: try self.requireID(),
             username: self.username!.username,
             phoneNumber: self.phoneNumber!.phoneNumber,
             displayName: self.displayName,
-            biography: self.biography
+            biography: self.biography,
+            profilePicture: self.profilePicture?.convert()
         )
     }
     
     func convertToPrivate(_ db: Database) async throws -> User.Private {
         try await self.$username.load(on: db)
         try await self.$phoneNumber.load(on: db)
+        try await self.$profilePicture.load(on: db)
         
         return User.Private(
             id: try self.requireID(),
             username: self.username!.username,
             phoneNumber: self.phoneNumber!.phoneNumber,
             displayName: self.displayName,
-            biography: self.biography
+            biography: self.biography,
+            profilePicture: self.profilePicture?.convert()
         )
     }
 }
@@ -102,25 +108,27 @@ extension User {
 extension User {
     func convertToPublic(_ req: Request) async throws -> User.Public {
         try await self.$username.load(on: req.db)
-        try await self.$phoneNumber.load(on: req.db)
+        try await self.$profilePicture.load(on: req.db)
         
         return User.Public(
             id: try self.requireID(),
             username: self.username!.username,
             displayName: self.displayName,
-            biography: self.biography
+            biography: self.biography,
+            profilePicture: self.profilePicture?.convert()
         )
     }
     
     func convertToPublic(_ db: Database) async throws -> User.Public {
         try await self.$username.load(on: db)
-        try await self.$phoneNumber.load(on: db)
+        try await self.$profilePicture.load(on: db)
         
         return User.Public(
             id: try self.requireID(),
             username: self.username!.username,
             displayName: self.displayName,
-            biography: self.biography
+            biography: self.biography,
+            profilePicture: self.profilePicture?.convert()
         )
     }
 }
