@@ -22,14 +22,13 @@ extension SearchController {
         private let middleware = User.guardMiddleware()
         
         func routes(_ routes: RoutesBuilder) {
-//            routes.group(authenticator, middleware) { secureRoute in
-            routes.group("api", "\(version)", "search") { searchRoute in
+            routes.group(authenticator, middleware) { secureRoute in
+                secureRoute.group("api", "\(version)", "search") { searchRoute in
                     searchRoute
-                        .post("user", ":term", use: searchUserHandler)
+                        .get("user", ":term", use: searchUserHandler)
                     
                 }
-//            }
-            
+            }
         }
     }
 }
