@@ -132,3 +132,21 @@ extension User {
         )
     }
 }
+
+extension Array where Element: User {
+    func convertToPublic(_ req: Request) async throws -> [User.Public] {
+        var users = [User.Public]()
+        for user in self {
+            let publicUser = try await user.convertToPublic(req)
+            users.append(publicUser)
+        }
+        return users
+    }
+}
+
+//extension EventLoopFuture where Value: User {
+//    func convertToPublic(_ req: Request) async throws -> EventLoopFuture<User.Public> {
+//
+//    }
+//}
+

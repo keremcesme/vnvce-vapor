@@ -94,6 +94,9 @@ func routes(_ app: Application) throws {
     let relationshipController = RelationshipController()
     try app.register(collection: relationshipController)
     
+    let searchController = SearchController()
+    try app.register(collection: searchController)
+    
 }
 
 struct PostAPNTest: APNSwiftNotification {

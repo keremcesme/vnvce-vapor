@@ -1,0 +1,38 @@
+//
+//  File.swift
+//  
+//
+//  Created by Kerem Cesme on 10.09.2022.
+//
+
+import Fluent
+import Vapor
+import FluentSQL
+import SQLKit
+
+
+// MARK: SearchController V1 - Methods -
+extension SearchController.V1 {
+    
+    func searchUserHandler(_ req: Request) async throws -> Response<SearchUserResponse.V1> {
+//        let queryTerm = try req.query.get(String.self, at: "term")
+        guard let queryTerm = req.parameters.get("term") else {
+            throw Abort(.notFound)
+        }
+        
+        let result = try await User.query(on: req.db)
+            .join(child: \.$username)
+            .group(.or) { group in
+                group
+                    .filter(\.$displayName, .custom("ilike"), "%\(queryTerm)%")
+                    .filter(Username.self, \Username.$username, .custom("ilike"), "%\(queryTerm)%")
+            }
+            .paginate(for: req)
+        
+        let publicUsers: [User.Public] = try await result.items.convertToPublic(req)
+            
+        print(publicUsers)
+        
+        return Response(result: SearchUserResponse.V1(users: publicUsers, metadata: result.metadata), message: "Users returned successfully.")
+    }
+}

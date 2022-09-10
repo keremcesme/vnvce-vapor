@@ -19,5 +19,7 @@ func runMigrations(_ app: Application) {
         CreateRefreshToken(),
         CreateAccessToken(),
         CreateFriendRequest()
+//        CreatePG_TRGMExtension(),
+//        CreateUserDisplayNameAndUsernameIndex()
     ])
 }
