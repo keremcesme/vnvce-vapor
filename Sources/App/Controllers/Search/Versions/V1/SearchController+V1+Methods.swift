@@ -15,7 +15,7 @@ import SQLKit
 extension SearchController.V1 {
     
     func searchUserHandler(_ req: Request) async throws -> Response<SearchUserResponse.V1> {
-//        let queryTerm = try req.query.get(String.self, at: "term")
+        let userID = try req.auth.require(User.self).requireID()
         guard let queryTerm = req.parameters.get("term") else {
             throw Abort(.notFound)
         }
@@ -31,8 +31,6 @@ extension SearchController.V1 {
         
         let publicUsers: [User.Public] = try await result.items.convertToPublic(req)
             
-        print(publicUsers)
-        
         return Response(result: SearchUserResponse.V1(users: publicUsers, metadata: result.metadata), message: "Users returned successfully.")
     }
 }
