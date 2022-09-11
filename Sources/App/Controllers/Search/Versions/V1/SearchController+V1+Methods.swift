@@ -17,7 +17,7 @@ extension SearchController.V1 {
     func searchUserHandler(_ req: Request) async throws -> Response<SearchUserResponse.V1> {
         let userID = try req.auth.require(User.self).requireID()
         
-        let queryTerm = try req.content.decode(SearchUserPayload.V1.self).term
+        let queryTerm = try req.content.decode(String.self)
         
         let result = try await User.query(on: req.db)
             .join(child: \.$username)
