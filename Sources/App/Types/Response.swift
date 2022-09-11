@@ -22,10 +22,10 @@ struct Response<T: Content>: Content {
 }
 
 struct Pagination<T: Content>: Content {
-    var items: T
+    var items: [T]
     var metadata: PageMetadata
     
-    init(items: T,
+    init(items: [T],
          metadata: PageMetadata = PageMetadata(page: 0, per: 0, total: 0)) {
         self.items = items
         self.metadata = metadata

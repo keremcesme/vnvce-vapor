@@ -14,7 +14,7 @@ import SQLKit
 // MARK: SearchController V1 - Methods -
 extension SearchController.V1 {
     
-    func searchUserHandler(_ req: Request) async throws -> PaginationResponse<[User.Public]> {
+    func searchUserHandler(_ req: Request) async throws -> PaginationResponse<User.Public> {
         let userID = try req.auth.require(User.self).requireID()
         
         let queryTerm = try req.content.decode(String.self)
