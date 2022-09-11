@@ -6,19 +6,30 @@
 //
 
 import Vapor
+import FluentKit
 
 struct Response<T: Content>: Content {
     var result: T?
     var message: String
-//    var code: HTTPStatus
     
     init(
         result: T? = nil,
         message: String
-//        code: HTTPStatus
     ) {
         self.result = result
         self.message = message
-//        self.code = code
     }
 }
+
+struct Pagination<T: Content>: Content {
+    var items: T
+    var metadata: PageMetadata
+    
+    init(items: T,
+         metadata: PageMetadata = PageMetadata(page: 0, per: 0, total: 0)) {
+        self.items = items
+        self.metadata = metadata
+    }
+}
+
+typealias PaginationResponse<T: Content> = Response<Pagination<T>>
