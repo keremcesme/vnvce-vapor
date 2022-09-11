@@ -25,7 +25,7 @@ extension SearchController {
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "search") { searchRoute in
                     searchRoute
-                        .get("user", ":term", use: searchUserHandler)
+                        .post("user", use: searchUserHandler)
                     
                 }
             }
