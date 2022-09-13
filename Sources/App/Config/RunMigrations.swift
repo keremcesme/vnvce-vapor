@@ -9,17 +9,29 @@ import Vapor
 
 func runMigrations(_ app: Application) {
     app.migrations.add([
-        CreateUser(),
+        // ENUMS
         CreateProfilePictureAlignmentType(),
+        CreateCoPostApprovalStatus(),
+        CreateMediaType(),
+        CreatePostType(),
+        
+        // MODELS
+        CreateSMSVerificationAttempt(),
+        CreateReservedUsername(),
+        
+        CreateUser(),
         CreateProfilePicture(),
         CreatePhoneNumber(),
         CreateUsername(),
-        CreateSMSVerificationAttempt(),
-        CreateReservedUsername(),
+        
         CreateRefreshToken(),
         CreateAccessToken(),
-        CreateFriendRequest()
-//        CreatePG_TRGMExtension(),
-//        CreateUserDisplayNameAndUsernameIndex()
+        
+        CreateFriendRequest(),
+        CreatePost(),
+        
+        // EXTENSIONS
+        CreatePG_TRGMExtension(),
+        CreateUserDisplayNameAndUsernameIndex()
     ])
 }

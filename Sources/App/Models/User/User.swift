@@ -104,7 +104,7 @@ extension User {
     }
 }
 
-// MARK: pUBLIC User
+// MARK: Public User
 extension User {
     func convertToPublic(_ req: Request) async throws -> User.Public {
         try await self.$username.load(on: req.db)
@@ -143,10 +143,3 @@ extension Array where Element: User {
         return users
     }
 }
-
-//extension EventLoopFuture where Value: User {
-//    func convertToPublic(_ req: Request) async throws -> EventLoopFuture<User.Public> {
-//
-//    }
-//}
-

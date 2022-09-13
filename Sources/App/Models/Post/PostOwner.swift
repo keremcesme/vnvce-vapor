@@ -14,11 +14,14 @@ final class PostOwner: Model, Content {
     @ID(key: .id)
     var id: UUID?
     
-    @Parent(key: "user_1_id")
-    var user1: User
+    @Parent(key: "owner_id")
+    var owner: User
     
-    @OptionalParent(key: "user_2_id")
-    var user2: User?
+    @OptionalParent(key: "co_post_owner_id")
+    var coOwner: User?
+    
+    @OptionalEnum(key: "co_post_approval_status")
+    var approvalStatus: CoPostApprovalStatus?
     
     @OptionalChild(for: \.$owner)
     var post: Post?
@@ -26,11 +29,82 @@ final class PostOwner: Model, Content {
     init(){}
     
     init(
-        user1id : User.IDValue,
-        user2id : User.IDValue? = nil
+        owner : User.IDValue,
+        coOwner : User.IDValue? = nil,
+        approvalStatus: CoPostApprovalStatus? = nil
     ){
-        self.$user1.id = user1id
-        self.$user2.id = user2id
+        self.$owner.id = owner
+        self.$coOwner.id = coOwner
+        self.approvalStatus = approvalStatus
     }
     
+    struct V1: Content {
+        let owner: User.Public
+        let coOwner: User.Public?
+        let approvalStatus: CoPostApprovalStatus?
+        
+        init(owner: User.Public,
+             coOwner: User.Public? = nil,
+             approvalStatus: CoPostApprovalStatus? = nil) {
+            self.owner = owner
+            self.coOwner = coOwner
+            self.approvalStatus = approvalStatus
+        }
+    }
+}
+
+extension PostOwner {
+    
+    func convertV1(
+        owner: User,
+        coOwner: User? = nil,
+        on req: Request
+    ) async throws -> PostOwner.V1 {
+        let publicOwner = try await owner.convertToPublic(req)
+        
+        if let coOwner = coOwner {
+            let publicCoOwner = try await coOwner.convertToPublic(req)
+            return PostOwner.V1(owner: publicOwner,
+                                coOwner: publicCoOwner,
+                                approvalStatus: self.approvalStatus)
+        } else {
+            return PostOwner.V1(owner: publicOwner)
+        }
+    }
+    
+    func convertV1(
+        owner: User,
+        coOwner: User? = nil,
+        on db: Database
+    ) async throws -> PostOwner.V1 {
+        let publicOwner = try await owner.convertToPublic(db)
+        
+        if let coOwner = coOwner {
+            let publicCoOwner = try await coOwner.convertToPublic(db)
+            return PostOwner.V1(owner: publicOwner,
+                                coOwner: publicCoOwner,
+                                approvalStatus: self.approvalStatus)
+        } else {
+            return PostOwner.V1(owner: publicOwner)
+        }
+    }
+    
+    func convertV1(
+        owner: User.Public,
+        coOwner: User.Public? = nil
+    ) -> PostOwner.V1 {
+        return PostOwner.V1(owner: owner,
+                            coOwner: coOwner,
+                            approvalStatus: self.approvalStatus)
+    }
+    
+    func convertPostOwner(db: Database) async throws -> PostOwner.V1 {
+        try await self.$owner.load(on: db)
+        try await self.$coOwner.load(on: db)
+        
+        let owner = try await self.owner.convertToPublic(db)
+        let coOwner = try await self.coOwner?.convertToPublic(db)
+        
+        return PostOwner.V1(owner: owner, coOwner: coOwner, approvalStatus: self.approvalStatus)
+    }
 }
