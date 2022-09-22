@@ -25,7 +25,8 @@ extension PostController {
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "post") { postRoute in
                     postRoute.post("upload", use: uploadPostHandler)
-                    postRoute.get("posts", use: postsHandler)
+                    
+                    postRoute.get("fetch_posts", use: postsHandler)
                 }
             }
         }

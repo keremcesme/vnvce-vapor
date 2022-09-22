@@ -63,6 +63,7 @@ extension PostController.V1 {
             postID: postID,
             mediaType: media.type,
             name: media.name,
+            ratio: media.ratio,
             url: media.url,
             thumbnailURL: media.thumbnailURL,
             storageLocation: userID)

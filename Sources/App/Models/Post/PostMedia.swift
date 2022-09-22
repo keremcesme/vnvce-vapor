@@ -26,6 +26,9 @@ final class PostMedia: Model, Content {
     @Field(key: "name")
     var name: String
     
+    @Field(key: "ratio")
+    var ratio: Float
+    
     @Field(key: "url")
     var url: String
     
@@ -42,6 +45,7 @@ final class PostMedia: Model, Content {
         mediaType: MediaType,
         sensitiveContent: Bool = false,
         name: String,
+        ratio: Float,
         url: String,
         thumbnailURL: String? = nil,
         storageLocation: UUID
@@ -50,6 +54,7 @@ final class PostMedia: Model, Content {
         self.mediaType = mediaType
         self.sensitiveContent = sensitiveContent
         self.name = name
+        self.ratio = ratio
         self.url = url
         self.thumbnailURL = thumbnailURL
         self.storageLocation = storageLocation
@@ -59,6 +64,7 @@ final class PostMedia: Model, Content {
         let mediaType: MediaType
         let sensitiveContent: Bool
         let name: String
+        let ratio: Float
         let url: String
         let thumbnailURL: String?
         let storageLocation: UUID
@@ -66,12 +72,14 @@ final class PostMedia: Model, Content {
         init(mediaType: MediaType,
              sensitiveContent: Bool,
              name: String,
+             ratio: Float,
              url: String,
              thumbnailURL: String? = nil,
              storageLocation: UUID) {
             self.mediaType = mediaType
             self.sensitiveContent = sensitiveContent
             self.name = name
+            self.ratio = ratio
             self.url = url
             self.thumbnailURL = thumbnailURL
             self.storageLocation = storageLocation
@@ -84,6 +92,7 @@ extension PostMedia {
         return PostMedia.V1(mediaType: self.mediaType,
                             sensitiveContent: self.sensitiveContent,
                             name: self.name,
+                            ratio: self.ratio,
                             url: self.url,
                             thumbnailURL: self.thumbnailURL,
                             storageLocation: self.storageLocation)
@@ -93,6 +102,7 @@ extension PostMedia {
         return PostMedia.V1(mediaType: self.mediaType,
                             sensitiveContent: self.sensitiveContent,
                             name: self.name,
+                            ratio: self.ratio,
                             url: self.url,
                             thumbnailURL: self.thumbnailURL,
                             storageLocation: self.storageLocation)

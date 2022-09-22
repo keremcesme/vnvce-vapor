@@ -39,6 +39,7 @@ struct CreatePost: AsyncMigration {
             .field("media_type", mediaType, .required)
             .field("sensitive_content", .bool, .required)
             .field("name", .string, .required)
+            .field("ratio", .float, .required)
             .field("url", .string, .required)
             .field("thumbnail_url", .string)
             .field("storage_location", .uuid, .required)

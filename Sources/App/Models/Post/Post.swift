@@ -116,9 +116,9 @@ extension Post {
 extension Array where Element: Post {
     func convertPosts(on db: Database) async throws -> [Post.V1] {
         var posts = [Post.V1]()
+        
         for post in self {
             let result = try await post.convertPost(on: db)
-            
             posts.append(result)
         }
         
