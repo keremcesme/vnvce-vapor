@@ -33,3 +33,13 @@ final class FriendRequest: Model, Content {
         self.$submittedUser.id = submittedUser
     }
 }
+
+extension FriendRequest {
+    func convertRelationship(_ userID: User.IDValue) -> Relationship.V1 {
+        if userID == self.$user.$id.value! {
+            return .friendRequestSubmitted
+        } else {
+            return .friendRequestReceived
+        }
+    }
+}

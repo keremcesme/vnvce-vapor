@@ -21,12 +21,14 @@ extension SearchController.V1 {
         
         let result = try await User.query(on: req.db)
             .join(child: \.$username)
+            .join(Block.self, on: \User.$id == \Block.$user.$id)
 //            .filter(\.$id, .notEqual, userID)
             .group(.or) { group in
                 group
                     .filter(\.$displayName, .custom("ilike"), "%\(queryTerm)%")
                     .filter(Username.self, \Username.$username, .custom("ilike"), "%\(queryTerm)%")
             }
+            .filter(Block.self, \Block.$blockedUser.$id != userID)
             .paginate(for: req)
         
         let publicUsers: [User.Public] = try await result.items.convertToPublic(req)

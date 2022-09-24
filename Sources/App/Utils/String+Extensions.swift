@@ -37,4 +37,9 @@ extension String {
     var removingInvalidCharacters: String {
         return String(unicodeScalars.filter { allowedCharacterSet.contains($0) })
     }
+    
+    var convertUUID: UUID {
+        return UUID(uuidString: self)!
+    }
+    
 }
