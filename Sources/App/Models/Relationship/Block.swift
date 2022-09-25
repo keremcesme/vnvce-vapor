@@ -32,9 +32,10 @@ final class Block: Model, Content {
 }
 
 extension Block {
-    func convertRelationship(_ userID: User.IDValue) -> Relationship.V1 {
+    func convertRelationship(_ userID: User.IDValue) throws -> Relationship.V1 {
         if userID == self.$user.$id.value! {
-            return .blocked
+            let id = try self.requireID()
+            return .blocked(blockID: id)
         } else {
             return .targetUserBlocked
         }

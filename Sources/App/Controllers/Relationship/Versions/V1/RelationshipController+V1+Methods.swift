@@ -19,67 +19,108 @@ extension RelationshipController.V1 {
             targetUserID: targetUserID,
             req)
         
-        return Response(result: relationship, message: relationship.rawValue)
+        return Response(result: relationship, message: relationship.message)
     }
-    
-    // MARK: ACTIONs
-    func sendFriendRequestHandler(_ req: Request) async throws -> HTTPStatus {
+}
+
+// MARK: ACTIONs
+extension RelationshipController.V1 {
+    func sendFriendRequestHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
         let targetUserID = try await findTargetUserID(req)
+        let relationship = try req.content.decode(Relationship.V1.self)
         
         try await checkRelationshipBeforeAction(
             userID: userID,
             targetUserID: targetUserID,
+            relationship: relationship,
             req)
         
         let friendRequest = FriendRequest(user: userID, submittedUser: targetUserID)
         
         try await friendRequest.create(on: req.db)
         
-        return .ok
+        let requestID = try friendRequest.requireID()
+        
+        let newRelationship: Relationship.V1 = .friendRequestSubmitted(requestID: requestID)
+        
+        return Response(result: newRelationship, message: newRelationship.message)
     }
     
-    func undoOrRejectFriendRequestHandler(_ req: Request) async throws -> HTTPStatus {
+    func undoOrRejectFriendRequestHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
+        let relationship = try req.content.decode(Relationship.V1.self)
         
-        let request = try await findFriendRequest(req)
+        let friendRequest = try await findFriendRequest(relationship: relationship, req)
         
-        let targetUserID = try findTargetUserIDFromFriendRequest(
-            userID: userID,
-            request: request)
+        let targetUserID = try findTargetUserIDFromFriendRequest(userID: userID, request: friendRequest)
         
         try await checkRelationshipBeforeAction(
             userID: userID,
             targetUserID: targetUserID,
+            relationship: relationship,
             req)
+        try await friendRequest.delete(force: true, on: req.db)
         
-        try await request.delete(force: true, on: req.db)
+        let newRelationship: Relationship.V1 = .nothing
         
-        return .ok
+        return Response(result: newRelationship, message: newRelationship.message)
     }
     
-    func acceptFriendRequestHandler(_ req: Request) async throws -> HTTPStatus {
+    func acceptFriendRequestHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
-        let targetUserID = try await findTargetUserID(req)
+        let relationship = try req.content.decode(Relationship.V1.self)
+        
+        let friendRequest = try await findFriendRequest(relationship: relationship, req)
+        
+        guard let targetUserID = friendRequest.$user.$id.value else {
+            throw Abort(.notFound, reason: "Target User ID not found.")
+        }
         
         try await checkRelationshipBeforeAction(
             userID: userID,
             targetUserID: targetUserID,
+            relationship: relationship,
             req)
-        
-        let request = try await findFriendRequest(req)
         
         let friendship = Friendship(user1: userID, user2: targetUserID)
         
         try await req.db.transaction{ transaction in
-            try await request.delete(force: true, on: transaction)
+            try await friendRequest.delete(force: true, on: transaction)
             try await friendship.create(on: transaction)
         }
         
-        return .ok
+        let friendshipID = try friendship.requireID()
+        
+        let newRelationship: Relationship.V1 = .friend(friendshipID: friendshipID)
+        
+        return Response(result: newRelationship, message: newRelationship.message)
     }
     
-    func blockUserHandler(_ req: Request) async throws -> HTTPStatus {
+    func removeFriendHandler(_ req: Request) async throws -> Response<Relationship.V1> {
+        let userID = try req.auth.require(User.self).requireID()
+        let relationship = try req.content.decode(Relationship.V1.self)
+        
+        let friendship = try await findFriendship(relationship: relationship, req)
+        
+        let targetUserID = try findTargetUserIDFromFriendship(
+            userID: userID,
+            friendship: friendship)
+        
+        try await checkRelationshipBeforeAction(
+            userID: userID,
+            targetUserID: targetUserID,
+            relationship: relationship,
+            req)
+        
+        try await friendship.delete(force: true, on: req.db)
+        
+        let newRelationship: Relationship.V1 = .nothing
+        
+        return Response(result: newRelationship, message: newRelationship.message)
+    }
+    
+    func blockUserHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
         let targetUserID = try await findTargetUserID(req)
         
@@ -98,36 +139,22 @@ extension RelationshipController.V1 {
             try await block.create(on: transaction)
         }
         
-        return .ok
+        let blockID = try block.requireID()
+        
+        let newRelationship: Relationship.V1 = .blocked(blockID: blockID)
+        
+        return Response(result: newRelationship, message: newRelationship.message)
     }
     
-    func unblockUserHandler(_ req: Request) async throws -> HTTPStatus {
+    func unblockUserHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         _ = try req.auth.require(User.self)
         
         let block = try await findBlock(req)
         
         try await block.delete(force: true, on: req.db)
         
-        return .ok
+        let relationship: Relationship.V1 = .nothing
+        
+        return Response(result: relationship, message: relationship.message)
     }
-    
-    func removeFriendHandler(_ req: Request) async throws -> HTTPStatus {
-        let userID = try req.auth.require(User.self).requireID()
-        
-        let friendship = try await findFriendship(req)
-        
-        let targetUserID = try findTargetUserIDFromFriendship(
-            userID: userID,
-            friendship: friendship)
-        
-        try await checkRelationshipBeforeAction(
-            userID: userID,
-            targetUserID: targetUserID,
-            req)
-        
-        try await friendship.delete(force: true, on: req.db)
-        
-        return .ok
-    }
-    
 }

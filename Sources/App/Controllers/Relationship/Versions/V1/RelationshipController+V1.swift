@@ -25,35 +25,36 @@ extension RelationshipController {
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "relationship") { relationshipRoute in
                     
-                    relationshipRoute
-                        .get("fetch", ":user_id", use: relationshipHandler)
+                    relationshipRoute.get("fetch", ":user_id", use: relationshipHandler)
                     
-                    relationshipRoute.group("friend") { friendRoute in
-                        friendRoute.group("request") { requestRoute in
-                            requestRoute
-                                .post("send", ":user_id", use: sendFriendRequestHandler)
-                            requestRoute
-                                .delete("undo_or_reject", ":request_id", use: undoOrRejectFriendRequestHandler)
-                            
-                            requestRoute
-                                .post("accept", ":user_id", ":request_id", use: acceptFriendRequestHandler)
-                        }
-                        
-                        friendRoute
-                            .delete("remove", ":friendship_id", use: removeFriendHandler)
-                    }
-                    
-                    relationshipRoute.group("user") { userRoute in
-                        userRoute
-                            .post("block", ":user_id", use: blockUserHandler)
-                        userRoute
-                            .delete("unblock", ":block_id", use: unblockUserHandler)
-                    }
+                    relationshipRoute.group("friend", configure: friendRoutes)
+                    relationshipRoute.group("user", configure: userRoutes)
                     
                     
                 }
             }
             
+        }
+        
+        private func friendRoutes(_ route: RoutesBuilder) {
+            route.group("request", configure: friendRequestRoutes)
+            route.delete("remove", use: removeFriendHandler)
+        }
+        
+        private func friendRequestRoutes(_ route: RoutesBuilder) {
+            route
+                .post("send", ":user_id", use: sendFriendRequestHandler)
+            route
+                .delete("undo_or_reject", use: undoOrRejectFriendRequestHandler)
+            route
+                .post("accept", use: acceptFriendRequestHandler)
+        }
+        
+        private func userRoutes(_ route: RoutesBuilder) {
+            route
+                .post("block", ":user_id", use: blockUserHandler)
+            route
+                .delete("unblock", ":block_id", use: unblockUserHandler)
         }
         
     }

@@ -10,7 +10,6 @@ import Vapor
 import FluentSQL
 import SQLKit
 
-
 // MARK: SearchController V1 - Methods -
 extension SearchController.V1 {
     
@@ -21,17 +20,19 @@ extension SearchController.V1 {
         
         let result = try await User.query(on: req.db)
             .join(child: \.$username)
-            .join(Block.self, on: \User.$id == \Block.$user.$id)
+//            .join(Block.self, on: \User.$id == \Block.$user.$id)
 //            .filter(\.$id, .notEqual, userID)
             .group(.or) { group in
                 group
                     .filter(\.$displayName, .custom("ilike"), "%\(queryTerm)%")
                     .filter(Username.self, \Username.$username, .custom("ilike"), "%\(queryTerm)%")
             }
-            .filter(Block.self, \Block.$blockedUser.$id != userID)
             .paginate(for: req)
         
-        let publicUsers: [User.Public] = try await result.items.convertToPublic(req)
+        
+        let publicUsers: [User.Public] = try await result.items
+            .checkBlockStatus(userID: userID, req)
+            .convertToPublic(req)
         
         let pagination = Pagination(items: publicUsers, metadata: result.metadata)
         

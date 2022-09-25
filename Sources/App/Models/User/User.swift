@@ -38,6 +38,7 @@ final class User: Model, Content, Authenticatable {
     @OptionalChild(for: \.$user)
     var profilePicture: ProfilePicture?
     
+    
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -139,6 +140,23 @@ extension Array where Element: User {
         for user in self {
             let publicUser = try await user.convertToPublic(req)
             users.append(publicUser)
+        }
+        return users
+    }
+}
+
+extension Array where Element: User {
+    func checkBlockStatus(userID: User.IDValue, _ req: Request) async throws -> [User] {
+        var users = [User]()
+        for user in self {
+            let id = try user.requireID()
+            guard try await Block.query(on: req.db)
+                .filter(\.$blockedUser.$id == userID)
+                .filter(\.$user.$id == id)
+                .first() == nil else {
+                continue
+            }
+            users.append(user)
         }
         return users
     }

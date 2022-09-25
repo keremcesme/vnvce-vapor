@@ -18,9 +18,13 @@ public func configure(_ app: Application) throws {
         as: .psql
     )
     
+//    app.http.server.configuration.supportVersions = [.two]
+//    try app.http.server.configuration.tlsConfiguration = .makeClientConfiguration()
+    
     runMigrations(app)
     
 //    try app.autoRevert().wait()
+    
     try app.autoMigrate().wait()
     
     try routes(app)
