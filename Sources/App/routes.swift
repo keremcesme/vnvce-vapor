@@ -100,6 +100,9 @@ func routes(_ app: Application) throws {
     let postController = PostController()
     try app.register(collection: postController)
     
+    let userController = UserController()
+    try app.register(collection: userController)
+    
 }
 
 struct PostAPNTest: APNSwiftNotification {
