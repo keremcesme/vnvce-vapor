@@ -13,7 +13,8 @@ extension RelationshipController.V1 {
     
     // MARK: Target User
     // User
-    func findTargetUser(_ req: Request) async throws -> User {
+    func findTargetUser(_ req: Request)
+    async throws -> User {
         guard let userIDStr = req.parameters.get("user_id") else {
             throw Abort(.notFound, reason: "'user_id' parameter is missing.")
         }
@@ -27,7 +28,8 @@ extension RelationshipController.V1 {
         return user
     }
     // User ID
-    func findTargetUserID(_ req: Request) async throws -> User.IDValue {
+    func findTargetUserID(_ req: Request)
+    async throws -> User.IDValue {
         guard let userIDStr = req.parameters.get("user_id") else {
             throw Abort(.notFound, reason: "'user_id' parameter is missing.")
         }
@@ -43,10 +45,8 @@ extension RelationshipController.V1 {
     
     // User ID - Friend Request:
     // Finds the target user id from `Friend Request`.
-    func findTargetUserIDFromFriendRequest(
-        userID: User.IDValue,
-        request: FriendRequest
-    ) throws -> User.IDValue {
+    func findTargetUserIDFromFriendRequest(userID: User.IDValue, request: FriendRequest)
+    throws -> User.IDValue {
         let requestedUserID = request.$user.$id.value
         let submittedUserID = request.$submittedUser.$id.value
         
@@ -61,10 +61,8 @@ extension RelationshipController.V1 {
     
     // User ID - Friendship:
     // Finds the target user id from `Friendship`.
-    func findTargetUserIDFromFriendship(
-        userID: User.IDValue,
-        friendship: Friendship
-    ) throws -> User.IDValue {
+    func findTargetUserIDFromFriendship(userID: User.IDValue, friendship: Friendship)
+    throws -> User.IDValue {
         let user1_ID = friendship.$user1.$id.value
         let user2_ID = friendship.$user2.$id.value
 
@@ -85,7 +83,8 @@ extension RelationshipController.V1 {
     
     // MARK: Friend Request
     // Friend Request
-    func findFriendRequest(relationship: Relationship.V1, _ req: Request) async throws -> FriendRequest {
+    func findFriendRequest(relationship: Relationship.V1, _ req: Request)
+    async throws -> FriendRequest {
         guard let requestID = relationship.requestID else {
             throw Abort(.notFound, reason: "Content of request is not equal to 'Relationship.V1.friendRequestReceived' or 'Relationship.V1.friendRequestSubmitted'.")
         }
@@ -96,29 +95,14 @@ extension RelationshipController.V1 {
         
         return request
     }
-    // Friend Request ID
-    func findFriendRequestID(_ req: Request) async throws -> FriendRequest.IDValue {
-        guard let requestIDString = req.parameters.get("request_id") else {
-            throw Abort(.notFound, reason: "'request_id' parameter is missing.")
-        }
-        
-        let requestID = requestIDString.convertUUID
-        
-        guard let request = try await FriendRequest.find(requestID, on: req.db) else {
-            throw Abort(.notFound, reason: "Request not found.")
-        }
-        
-        return try request.requireID()
-    }
     
     // MARK: Block
     // Block
-    func findBlock(_ req: Request) async throws -> Block {
-        guard let blockIDString = req.parameters.get("block_id") else {
-            throw Abort(.notFound, reason: "'block_id' parameter is missing.")
+    func findBlock(relationship: Relationship.V1, _ req: Request)
+    async throws -> Block {
+        guard let blockID = relationship.blockID else {
+            throw Abort(.notFound, reason: "Content of request is not equal to 'Relationship.V1.blocked'.")
         }
-        
-        let blockID = blockIDString.convertUUID
         
         guard let block = try await Block.find(blockID, on: req.db) else {
             throw Abort(.notFound, reason: "Block not found.")
@@ -129,7 +113,8 @@ extension RelationshipController.V1 {
     
     // MARK: Friendship
     // Friendship
-    func findFriendship(relationship: Relationship.V1, _ req: Request) async throws -> Friendship {
+    func findFriendship(relationship: Relationship.V1, _ req: Request)
+    async throws -> Friendship {
         guard let friendshipID = relationship.friendshipID else {
             throw Abort(.notFound, reason: "Content of request is not equal to 'Relationship.V1.friend'.")
         }
@@ -144,12 +129,9 @@ extension RelationshipController.V1 {
 
 extension RelationshipController.V1 {
     // MARK: Block Status
-    func checkBlockStatus(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        _ req: Request
-    ) async throws -> Relationship.V1? {
-        var query = try await Block.query(on: req.db)
+    func checkBlockStatus(userID: User.IDValue, targetUserID: User.IDValue, _ on: Database )
+    async throws -> Relationship.V1? {
+        var query = try await Block.query(on: on)
             .group(.or) { group in
                 group
                     .group(.and) { user in
@@ -174,19 +156,16 @@ extension RelationshipController.V1 {
         query.removeFirst()
         
         if !query.isEmpty {
-            try await query.delete(force: true, on: req.db)
+            try await query.delete(force: true, on: on)
         }
         
         return try first.convertRelationship(userID)
     }
     
     // MARK: Friend Request Status
-    func checkFriendRequestStatus(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        _ req: Request
-    ) async throws -> Relationship.V1? {
-        var query = try await FriendRequest.query(on: req.db)
+    func checkFriendRequestStatus(userID: User.IDValue, targetUserID: User.IDValue, _ on: Database)
+    async throws -> Relationship.V1? {
+        var query = try await FriendRequest.query(on: on)
             .group(.or) { group in
                 group
                     .group(.and) { user in
@@ -211,19 +190,16 @@ extension RelationshipController.V1 {
         query.removeFirst()
         
         if !query.isEmpty {
-            try await query.delete(force: true, on: req.db)
+            try await query.delete(force: true, on: on)
         }
         
         return try first.convertRelationship(userID)
     }
     
     // MARK: Friendship Status
-    func checkFriendshipStatus(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        _ req: Request
-    ) async throws -> Relationship.V1 {
-        var query = try await Friendship.query(on: req.db)
+    func checkFriendshipStatus(userID: User.IDValue, targetUserID: User.IDValue, _ on: Database)
+    async throws -> Relationship.V1 {
+        var query = try await Friendship.query(on: on)
             .group(.or) { group in
                 group
                     .group(.and) { user in
@@ -248,7 +224,7 @@ extension RelationshipController.V1 {
         query.removeFirst()
         
         if !query.isEmpty {
-            try await query.delete(force: true, on: req.db)
+            try await query.delete(force: true, on: on)
         }
         
         let id = try first.requireID()
@@ -257,44 +233,37 @@ extension RelationshipController.V1 {
     }
     
     // MARK: Check Relationship
-    func checkRelationship(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        _ req: Request
-    ) async throws -> Relationship.V1 {
+    func checkRelationship(userID: User.IDValue, targetUserID: User.IDValue, _ on: Database)
+    async throws -> Relationship.V1 {
         if let blockStatus = try await checkBlockStatus(
             userID: userID,
             targetUserID: targetUserID,
-            req) {
+            on) {
             return blockStatus
         }
         
         if let requestStatus = try await checkFriendRequestStatus(
             userID: userID,
-            targetUserID: targetUserID, req) {
+            targetUserID: targetUserID, on) {
             return requestStatus
         }
         
         let friendshipStatus = try await checkFriendshipStatus(
             userID: userID,
             targetUserID: targetUserID,
-            req)
+            on)
         
         return friendshipStatus
     }
     
     // MARK: Check Relationship Before Action
     // Before entering the relationship interaction, when the request reaches the server, it checks whether the existing relationship is valid.
-    func checkRelationshipBeforeAction(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        relationship: Relationship.V1,
-        _ req: Request
-    ) async throws {
+    func checkRelationshipBeforeAction(userID: User.IDValue, targetUserID: User.IDValue, relationship: Relationship.V1, _ on: Database)
+    async throws {
         let checkedRelationship = try await checkRelationship(
             userID: userID,
             targetUserID: targetUserID,
-            req)
+            on)
         
         guard relationship == checkedRelationship else {
             throw Abort(.badRequest, reason: "burasi")
@@ -303,49 +272,43 @@ extension RelationshipController.V1 {
     
     // MARK: Block User Helper
     // Before the user blocks a user, it clears any relationship between them.
-    func blockUserHelper(
-        userID: User.IDValue,
-        targetUserID: User.IDValue,
-        relationship: Relationship.V1,
-        _ db: Database
-    ) async throws {
-        switch relationship {
-        case .nothing:
-            return
-        case .friend:
-            try await Friendship.query(on: db)
-                .group(.or) { group in
-                    group
-                        .group(.and) { user in
-                            user
-                                .filter(\.$user1.$id == userID)
-                                .filter(\.$user2.$id == targetUserID)
-                        }
-                        .group(.and) { targetUser in
-                            targetUser
-                                .filter(\.$user1.$id == targetUserID)
-                                .filter(\.$user2.$id == userID)
-                        }
-                }
-                .delete(force: true)
-        case .friendRequestSubmitted, .friendRequestReceived:
-            try await FriendRequest.query(on: db)
-                .group(.or) { group in
-                    group
-                        .group(.and) { user in
-                            user
-                                .filter(\.$user.$id == userID)
-                                .filter(\.$submittedUser.$id == targetUserID)
-                        }
-                        .group(.and) { targetUser in
-                            targetUser
-                                .filter(\.$user.$id == targetUserID)
-                                .filter(\.$submittedUser.$id == userID)
-                        }
-                }
-                .delete(force: true)
-        case .blocked, .targetUserBlocked:
-            throw Abort(.badRequest, reason: "Target user is already blocked the requested user.")
-        }
+    func forceBlockUser(userID: User.IDValue, targetUserID: User.IDValue, relationship: Relationship.V1, _ on: Database)
+    async throws {
+        let checkedRelationship = try await checkRelationship(
+            userID: userID,
+            targetUserID: targetUserID,
+            on)
+        
+        try await forceBlockUserHelper(
+            relationship: relationship,
+            checkedRelationship: checkedRelationship,
+            on)
     }
+    
+    func forceBlockUserHelper(relationship: Relationship.V1, checkedRelationship: Relationship.V1, _ on: Database)
+    async throws {
+        guard relationship == checkedRelationship else {
+            return try await deleteRelationship(relationship: checkedRelationship, on)
+        }
+        
+        try await deleteRelationship(relationship: relationship, on)
+    }
+    
+    func deleteRelationship(relationship: Relationship.V1, _ on: Database)
+    async throws {
+        switch relationship {
+        case let .friend(friendshipID):
+            try await Friendship.find(friendshipID, on: on)?.delete(force: true, on: on)
+        case let .friendRequestSubmitted(requestID):
+            try await FriendRequest.find(requestID, on: on)?.delete(force: true, on: on)
+        case let .friendRequestReceived(requestID):
+            try await FriendRequest.find(requestID, on: on)?.delete(force: true, on: on)
+        case .blocked(_):
+            throw Abort(.badRequest, reason: "User already blocked.")
+        default:
+            return
+        }
+        return
+    }
+    
 }

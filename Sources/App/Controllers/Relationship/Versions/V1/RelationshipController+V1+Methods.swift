@@ -9,6 +9,8 @@ import Fluent
 import Vapor
 
 // MARK: RelationshipController V1 - Methods -
+
+// MARK: Fetch Relationship
 extension RelationshipController.V1 {
     func relationshipHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
@@ -17,13 +19,13 @@ extension RelationshipController.V1 {
         let relationship = try await checkRelationship(
             userID: userID,
             targetUserID: targetUserID,
-            req)
+            req.db)
         
         return Response(result: relationship, message: relationship.message)
     }
 }
 
-// MARK: ACTIONs
+// MARK: Relationship Actions
 extension RelationshipController.V1 {
     func sendFriendRequestHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
@@ -34,7 +36,7 @@ extension RelationshipController.V1 {
             userID: userID,
             targetUserID: targetUserID,
             relationship: relationship,
-            req)
+            req.db)
         
         let friendRequest = FriendRequest(user: userID, submittedUser: targetUserID)
         
@@ -59,7 +61,7 @@ extension RelationshipController.V1 {
             userID: userID,
             targetUserID: targetUserID,
             relationship: relationship,
-            req)
+            req.db)
         try await friendRequest.delete(force: true, on: req.db)
         
         let newRelationship: Relationship.V1 = .nothing
@@ -81,7 +83,7 @@ extension RelationshipController.V1 {
             userID: userID,
             targetUserID: targetUserID,
             relationship: relationship,
-            req)
+            req.db)
         
         let friendship = Friendship(user1: userID, user2: targetUserID)
         
@@ -111,7 +113,7 @@ extension RelationshipController.V1 {
             userID: userID,
             targetUserID: targetUserID,
             relationship: relationship,
-            req)
+            req.db)
         
         try await friendship.delete(force: true, on: req.db)
         
@@ -123,23 +125,22 @@ extension RelationshipController.V1 {
     func blockUserHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         let userID = try req.auth.require(User.self).requireID()
         let targetUserID = try await findTargetUserID(req)
+        let relationship = try req.content.decode(Relationship.V1.self)
         
-        let block = Block(user: userID, blockedUser: targetUserID)
         
-        let relationship = try await checkRelationship(userID: userID,
-                                                       targetUserID: targetUserID,
-                                                       req)
-        
-        try await req.db.transaction{ transaction in
-            try await self.blockUserHelper(
+        let blockID: Block.IDValue = try await req.db.transaction{ transaction in
+            try await self.forceBlockUser(
                 userID: userID,
                 targetUserID: targetUserID,
                 relationship: relationship,
                 transaction)
+            
+            let block = Block(user: userID, blockedUser: targetUserID)
+            
             try await block.create(on: transaction)
+            
+            return try block.requireID()
         }
-        
-        let blockID = try block.requireID()
         
         let newRelationship: Relationship.V1 = .blocked(blockID: blockID)
         
@@ -148,13 +149,14 @@ extension RelationshipController.V1 {
     
     func unblockUserHandler(_ req: Request) async throws -> Response<Relationship.V1> {
         _ = try req.auth.require(User.self)
+        let relationship = try req.content.decode(Relationship.V1.self)
         
-        let block = try await findBlock(req)
+        let block = try await findBlock(relationship: relationship, req)
         
         try await block.delete(force: true, on: req.db)
         
-        let relationship: Relationship.V1 = .nothing
+        let newRelationship: Relationship.V1 = .nothing
         
-        return Response(result: relationship, message: relationship.message)
+        return Response(result: newRelationship, message: newRelationship.message)
     }
 }

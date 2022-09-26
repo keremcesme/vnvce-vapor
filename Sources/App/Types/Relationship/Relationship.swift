@@ -55,4 +55,12 @@ extension Relationship.V1 {
         default: return nil
         }
     }
+    
+    var blockID: UUID? {
+        switch self {
+        case let .blocked(blockID):
+            return blockID
+        default: return nil
+        }
+    }
 }
