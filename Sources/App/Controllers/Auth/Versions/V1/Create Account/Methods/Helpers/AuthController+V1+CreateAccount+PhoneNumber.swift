@@ -76,8 +76,16 @@ extension AuthController.V1.CreateAccount {
                 } else {
 //                    let otpCode = String.randomDigits(ofLength: 6)
                     let otpCode = "111111"
+                    
 //                    _ = try await req.application.smsSender!
 //                        .sendSMS(to: phoneNumber, message: type.message(code: otpCode), on: req.eventLoop)
+                    
+//                    let result = try await req
+//                        .application
+//                        .smsSender!
+//                        .sendSMS2(to: phoneNumber, message: type.message(code: otpCode), on: req.eventLoop)
+//                    
+//                    print(result)
                     
                     let startTime = Date().timeIntervalSince1970
                     let expiryTime = Date().addingTimeInterval(60)

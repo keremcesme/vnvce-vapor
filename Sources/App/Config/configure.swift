@@ -3,7 +3,7 @@ import Fluent
 import FluentPostgresDriver
 import APNS
 import JWT
-import SNS
+import SotoSNS
 
 public func configure(_ app: Application) throws {
     
@@ -23,7 +23,7 @@ public func configure(_ app: Application) throws {
     
     runMigrations(app)
     
-//    try app.autoRevert().wait()
+    try app.autoRevert().wait()
     
     try app.autoMigrate().wait()
     

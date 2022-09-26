@@ -15,7 +15,8 @@ let package = Package(
 //        .package(url: "https://github.com/SwifQL/PostgresBridge.git", from:"1.0.0-rc"),
         .package(url: "https://github.com/vapor/apns.git", from: "3.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.2.1"),
-        .package(name: "AWSSDKSwift", url: "https://github.com/soto-project/soto.git", from: "4.8.0")
+        .package(url: "https://github.com/soto-project/soto.git", from: "6.1.0")
+//        .package(name: "AWSSDKSwift", url: "https://github.com/soto-project/soto.git", from: "4.8.0")
     ],
     targets: [
         .target(
@@ -28,7 +29,9 @@ let package = Package(
 //                .product(name: "PostgresBridge", package: "PostgresBridge"),
                 .product(name: "APNS", package: "apns"),
                 .product(name: "JWT", package: "jwt"),
-                .product(name: "SNS", package: "AWSSDKSwift"),
+                .product(name: "SotoS3", package: "soto"),
+                .product(name: "SotoSNS", package: "soto"),
+//                .product(name: "SNS", package: "AWSSDKSwift"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

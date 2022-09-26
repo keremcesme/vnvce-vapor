@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import SNS
+import SotoSNS
 
 func configureSMSSender() throws -> AWSSNSSender {
     guard
@@ -20,6 +20,7 @@ func configureSMSSender() throws -> AWSSNSSender {
     let snsSender = AWSSNSSender(accessKeyID: accessKeyId,
                                  secretAccessKey: secretKey,
                                  senderId: senderID)
+    
     return snsSender
 }
 

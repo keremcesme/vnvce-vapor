@@ -73,12 +73,12 @@
       }
     },
     {
-      "identity" : "hypertextapplicationlanguage",
+      "identity" : "jmespath.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-aws/HypertextApplicationLanguage.git",
+      "location" : "https://github.com/adam-fowler/jmespath.swift.git",
       "state" : {
-        "revision" : "aa2c9141d491682f17b2310aed17b9adfc006256",
-        "version" : "1.1.1"
+        "revision" : "4513d319c4aaa6c3b2ac18e1e6566a803515ad91",
+        "version" : "1.0.2"
       }
     },
     {
@@ -106,15 +106,6 @@
       "state" : {
         "revision" : "0d55c35e788451ee27222783c7d363cb88092fab",
         "version" : "4.5.2"
-      }
-    },
-    {
-      "identity" : "perfect-iniparser",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-aws/Perfect-INIParser.git",
-      "state" : {
-        "revision" : "42de0efc7a01105e19b80d533d3d282a98277f6c",
-        "version" : "3.0.3"
       }
     },
     {
@@ -149,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soto-project/soto.git",
       "state" : {
-        "revision" : "b402b8a434ca39f24d189289ab93fbee96664502",
-        "version" : "4.9.0"
+        "revision" : "a56557ac972515f185ad77777d1e504572ebe137",
+        "version" : "6.1.0"
       }
     },
     {
@@ -158,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soto-project/soto-core.git",
       "state" : {
-        "revision" : "856a7df0c15763de4f9f3e3d7baea4a8aa009d22",
-        "version" : "4.7.2"
+        "revision" : "d8b87771ea25868a6db177ab113aab5e746c07f1",
+        "version" : "6.1.2"
       }
     },
     {

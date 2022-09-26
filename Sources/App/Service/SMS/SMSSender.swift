@@ -9,6 +9,7 @@ import Vapor
 
 protocol SMSSender {
     func sendSMS(to phoneNumber: String, message: String, on eventLoop: EventLoop) async throws -> EventLoopFuture<Bool>
+    func sendSMS2(to phoneNumber: String, message: String, on eventLoop: EventLoop) async throws -> Bool
 }
 
 private struct SMSSenderKey: StorageKey {
