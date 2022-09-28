@@ -24,7 +24,7 @@ extension UserController {
         func routes(_ routes: RoutesBuilder) {
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "user") { userRoute in
-                    userRoute.get("profile", ":user_id", use: profileHandler)
+                    userRoute.post("profile", ":user_id", use: profileHandler)
                 }
                 
             }
