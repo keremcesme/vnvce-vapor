@@ -54,23 +54,7 @@ extension PostController.V1 {
         let user = try req.auth.require(User.self)
         let userID = try user.requireID()
         
-        let result = try await Post.query(on: req.db)
-            .with(\.$owner)
-            .join(parent: \.$owner)
-            .with(\.$media)
-            .group(.or) { group in
-                group
-                    .filter(PostOwner.self, \.$owner.$id == userID)
-                    .group(.and) { coPost in
-                        coPost
-                            .filter(\.$type == .coPost)
-                            .filter(PostOwner.self, \.$coOwner.$id == userID)
-                            .filter(PostOwner.self, \.$approvalStatus == .approved)
-                    }
-            }
-            .filter(\.$archived == false)
-            .sort(\.$createdAt, .descending)
-            .paginate(for: req)
+        let result = try await postsQueryBuilder(userID: userID, req)
         
         let posts = try await result.items.convertPosts(on: req.db)
         
