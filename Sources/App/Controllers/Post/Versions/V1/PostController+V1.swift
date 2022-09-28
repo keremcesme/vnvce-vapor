@@ -26,7 +26,7 @@ extension PostController {
                 secureRoute.group("api", "\(version)", "post") { postRoute in
                     postRoute.post("upload", use: uploadPostHandler)
                     
-                    postRoute.get("fetch_posts", use: postsHandler)
+                    postRoute.post("fetch_posts", use: postsHandler)
                 }
             }
         }
