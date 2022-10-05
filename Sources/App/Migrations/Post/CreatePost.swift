@@ -44,9 +44,19 @@ struct CreatePost: AsyncMigration {
             .field("thumbnail_url", .string)
             .field("storage_location", .uuid, .required)
             .create()
+        
+        try await database.schema(PostCounter.schema)
+            .id()
+            .field("post_id", .uuid, .required, .references(Post.schema, .id, onDelete: .cascade))
+            .field("owner_id", .uuid, .required, .references(User.schema, .id, onDelete: .cascade))
+            .field("second", .double, .required)
+            .field("created_at", .datetime, .required)
+            .field("modified_at", .datetime, .required)
+            .create()
     }
     
     func revert(on database: Database) async throws {
+        try await database.schema(PostCounter.schema).delete()
         try await database.schema(PostMedia.schema).delete()
         try await database.schema(Post.schema).delete()
         try await database.schema(PostOwner.schema).delete()

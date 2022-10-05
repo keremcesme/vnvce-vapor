@@ -27,6 +27,9 @@ final class Post: Model, Content {
     @Enum(key: "post_type")
     var type: PostType
     
+    @Children(for: \.$post)
+    var counters: [PostCounter]
+    
 //    @Field(key: "is_live")
 //    var isLive: Bool
     
@@ -66,6 +69,7 @@ final class Post: Model, Content {
         let owner: PostOwner.V1
         let media: PostMedia.V1
         let type: PostType
+        let totalSeconds: Int
         let archived: Bool
         let createdAt: TimeInterval
         let modifiedAt: TimeInterval
@@ -79,12 +83,13 @@ extension Post {
         else {
             throw NSError(domain: "", code: 1)
         }
-        
+
         return Post.V1(id: try self.requireID(),
                        description: self.description,
                        owner: owner,
                        media: media,
                        type: self.type,
+                       totalSeconds: 0,
                        archived: self.archived,
                        createdAt: createdAt,
                        modifiedAt: modifiedAt)
@@ -100,11 +105,17 @@ extension Post {
         
         let postOwner = try await self.owner.convertPostOwner(db: db)
         
+        let totalSeconds = try await PostCounter
+            .query(on: db)
+            .filter(\.$post.$id == self.requireID())
+            .sum(\.$second)
+        
         return Post.V1(id: try self.requireID(),
                        description: self.description,
                        owner: postOwner,
                        media: media,
                        type: self.type,
+                       totalSeconds: Int(totalSeconds ?? 0),
                        archived: self.archived,
                        createdAt: createdAt,
                        modifiedAt: modifiedAt)

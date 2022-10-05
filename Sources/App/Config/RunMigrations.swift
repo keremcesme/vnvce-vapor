@@ -11,38 +11,38 @@ func runMigrations(_ app: Application) {
     app.migrations.add([
         
         // ENUMS - DATA TYPEs
-        CreateProfilePictureAlignmentType(),
-        CreateCoPostApprovalStatus(),
-        CreateMediaType(),
+//        CreateProfilePictureAlignmentType(),
+//        CreateCoPostApprovalStatus(),
+//        CreateMediaType(),
         CreatePostType(),
         
         // AUTHENTICATION
-        CreateSMSVerificationAttempt(),
+//        CreateSMSVerificationAttempt(),
         
         // USERNAME
-        CreateReservedUsername(),
+//        CreateReservedUsername(),
         
         // USER
-        CreateUser(),
-        CreateProfilePicture(),
-        CreatePhoneNumber(),
-        CreateUsername(),
+//        CreateUser(),
+//        CreateProfilePicture(),
+//        CreatePhoneNumber(),
+//        CreateUsername(),
         
         // AUTH TOKENS
-        CreateRefreshToken(),
-        CreateAccessToken(),
+//        CreateRefreshToken(),
+//        CreateAccessToken(),
         
         // RELATIONSHIP
-        CreateFriendship(),
-        CreateFriendRequest(),
-        CreateBlock(),
+//        CreateFriendship(),
+//        CreateFriendRequest(),
+//        CreateBlock(),
         
         // POST
         CreatePost(),
         
         // EXTENSIONS
-        CreatePG_TRGMExtension(),
-        CreateUserDisplayNameAndUsernameIndex()
+//        CreatePG_TRGMExtension(),
+//        CreateUserDisplayNameAndUsernameIndex()
         
     ])
 }

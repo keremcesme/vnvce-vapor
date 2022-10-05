@@ -31,7 +31,6 @@ extension PostController.V1 {
                         }
                 }
                 .filter(\.$archived == archived)
-                
         case let .user(userID):
             query
                 .group(.or) { group in
