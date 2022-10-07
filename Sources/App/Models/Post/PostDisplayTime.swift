@@ -8,8 +8,8 @@
 import Fluent
 import Vapor
 
-final class PostCounter: Model, Content {
-    static let schema = "post_counters"
+final class PostDisplayTime: Model, Content {
+    static let schema = "post_display_times"
     
     @ID(key: .id)
     var id: UUID?
@@ -41,4 +41,15 @@ final class PostCounter: Model, Content {
         self.second = second
     }
     
+    struct V1: Content {
+        let id: UUID
+        let second: Double
+    }
+    
+}
+
+extension PostDisplayTime {
+    func convertDisplayTime() throws -> PostDisplayTime.V1 {
+        return PostDisplayTime.V1(id: try self.requireID(), second: self.second)
+    }
 }

@@ -27,6 +27,8 @@ extension PostController {
                     postRoute.post("upload", use: uploadPostHandler)
                     
                     postRoute.post("fetch_posts", use: postsHandler)
+                    
+                    postRoute.put("set_display_time", use: setPostDisplayTimeHandler)
                 }
             }
         }

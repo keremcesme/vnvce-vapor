@@ -28,13 +28,7 @@ final class Post: Model, Content {
     var type: PostType
     
     @Children(for: \.$post)
-    var counters: [PostCounter]
-    
-//    @Field(key: "is_live")
-//    var isLive: Bool
-    
-//    @Field(key: "is_friends_only")
-//    var isFriendsOnly: Bool
+    var displayTime: [PostDisplayTime]
     
     @Field(key: "archived")
     var archived: Bool
@@ -50,15 +44,11 @@ final class Post: Model, Content {
     init(
         ownerID: PostOwner.IDValue,
         type: PostType,
-//        isLive: Bool,
-//        isFriendsOnly: Bool,
         description: String? = nil,
         archived: Bool = false
     ){
         self.$owner.id = ownerID
         self.type = type
-//        self.isLive = isLive
-//        self.isFriendsOnly = isFriendsOnly
         self.description = description
         self.archived = archived
     }
@@ -69,7 +59,8 @@ final class Post: Model, Content {
         let owner: PostOwner.V1
         let media: PostMedia.V1
         let type: PostType
-        let totalSeconds: Int
+        let totalWatchTime: Int
+        let displayTime: PostDisplayTime.V1?
         let archived: Bool
         let createdAt: TimeInterval
         let modifiedAt: TimeInterval
@@ -89,13 +80,14 @@ extension Post {
                        owner: owner,
                        media: media,
                        type: self.type,
-                       totalSeconds: 0,
+                       totalWatchTime: 0,
+                       displayTime: nil,
                        archived: self.archived,
                        createdAt: createdAt,
                        modifiedAt: modifiedAt)
     }
     
-    func convertPost(on db: Database) async throws -> Post.V1 {
+    func convertPost(userID: User.IDValue, on db: Database) async throws -> Post.V1 {
         guard let createdAt = self.createdAt?.timeIntervalSince1970,
               let modifiedAt = self.modifiedAt?.timeIntervalSince1970,
               let media = self.media?.convertPostMedia()
@@ -105,31 +97,36 @@ extension Post {
         
         let postOwner = try await self.owner.convertPostOwner(db: db)
         
-        let totalSeconds = try await PostCounter
-            .query(on: db)
+        let totalWatchTime = try await PostDisplayTime.query(on: db)
             .filter(\.$post.$id == self.requireID())
             .sum(\.$second)
         
-        return Post.V1(id: try self.requireID(),
-                       description: self.description,
-                       owner: postOwner,
-                       media: media,
-                       type: self.type,
-                       totalSeconds: Int(totalSeconds ?? 0),
-                       archived: self.archived,
-                       createdAt: createdAt,
-                       modifiedAt: modifiedAt)
+        let displayTime = try await PostDisplayTime.query(on: db)
+            .filter(\.$owner.$id == userID)
+            .first()
+        
+        return Post.V1(
+            id: try self.requireID(),
+            description: self.description,
+            owner: postOwner,
+            media: media,
+            type: self.type,
+            totalWatchTime: Int(totalWatchTime ?? 0),
+            displayTime: try displayTime?.convertDisplayTime(),
+            archived: self.archived,
+            createdAt: createdAt,
+            modifiedAt: modifiedAt)
         
     }
     
 }
 
 extension Array where Element: Post {
-    func convertPosts(on db: Database) async throws -> [Post.V1] {
+    func convertPosts(userID: User.IDValue,on db: Database) async throws -> [Post.V1] {
         var posts = [Post.V1]()
         
         for post in self {
-            let result = try await post.convertPost(on: db)
+            let result = try await post.convertPost(userID: userID, on: db)
             posts.append(result)
         }
         

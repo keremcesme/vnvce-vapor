@@ -56,11 +56,20 @@ extension PostController.V1 {
         
         let result = try await postsQueryBuilder(userID: userID, req)
         
-        let posts = try await result.items.convertPosts(on: req.db)
+        let posts = try await result.items.convertPosts(userID: userID, on: req.db)
         
         let pagination = Pagination(items: posts, metadata: result.metadata)
         
         return PaginationResponse(result: pagination, message: "Posts returned successfully.")
+    }
+    
+    func setPostDisplayTimeHandler(_ req: Request) async throws -> Response<PostDisplayTime.V1> {
+        let user = try req.auth.require(User.self)
+        let userID = try user.requireID()
+        
+        let displayTime = try await setPostDisplayTime(userID: userID, req: req)
+        
+        return Response(result: displayTime, message: "Post Display Time returned succesfully.")
     }
     
 }

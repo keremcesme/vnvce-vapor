@@ -51,4 +51,25 @@ extension PostController.V1 {
             .paginate(for: req)
     }
     
+    func setPostDisplayTime(userID: User.IDValue, req: Request) async throws -> PostDisplayTime.V1 {
+        let payload = try req.content.decode(PostDisplayTimePayload.V1.self)
+        
+        if let displayTime = try await PostDisplayTime.find(payload.postDisplayTimeID, on: req.db) {
+            displayTime.second = payload.second
+            try await displayTime.update(on: req.db)
+            return try displayTime.convertDisplayTime()
+        } else {
+            guard let post = try await Post.find(payload.postID, on: req.db) else {
+                throw Abort(.notFound)
+            }
+            
+            let postID = try post.requireID()
+            
+            let displayTime = PostDisplayTime(postID: postID, ownerID: userID, second: payload.second)
+            
+            try await post.$displayTime.create(displayTime, on: req.db)
+            return try displayTime.convertDisplayTime()
+        }
+    }
+    
 }
