@@ -103,6 +103,7 @@ extension Post {
         
         let displayTime = try await PostDisplayTime.query(on: db)
             .filter(\.$owner.$id == userID)
+            .filter(\.$post.$id == self.requireID())
             .first()
         
         return Post.V1(
