@@ -14,7 +14,10 @@ func runMigrations(_ app: Application) {
 //        CreateProfilePictureAlignmentType(),
 //        CreateCoPostApprovalStatus(),
 //        CreateMediaType(),
-        CreatePostType(),
+        
+        CreateMonth(),
+//        CreatePostType(),
+        
         
         // AUTHENTICATION
 //        CreateSMSVerificationAttempt(),
@@ -38,7 +41,8 @@ func runMigrations(_ app: Application) {
 //        CreateBlock(),
         
         // POST
-        CreatePost(),
+//        CreatePost(),
+        CreateMoment(),
         
         // EXTENSIONS
 //        CreatePG_TRGMExtension(),

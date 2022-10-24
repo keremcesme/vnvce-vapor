@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-// MARK: PostController V1 - Upload - Helper -
+// MARK: PostController V1 - Helper -
 extension PostController.V1 {
     
     func postsQueryBuilder(userID: User.IDValue, _ req: Request) async throws -> Page<Post> {
@@ -45,6 +45,32 @@ extension PostController.V1 {
                 }
                 .filter(\.$archived == false)
         }
+        
+//        let date = Date().startOfMonth
+//        let date2 = Date().endOfMonth
+//
+//        print(date)
+//        print(date2)
+//        let date = Date()
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "dd-MM-yyyy"
+//
+//        let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: date)
+//        let startOfMonth = Calendar.current.date(from: comp)!
+//
+//        let timestamp = startOfMonth.timeIntervalSince1970
+//
+//        let start = dateFormatter.string(from: startOfMonth)
+//
+//
+//
+//        print(start)
+//        var comps2 = DateComponents()
+//        comps2.month = 1
+//        comps2.day = -1
+//        let endOfMonth = Calendar.current.date(byAdding: comps2, to: startOfMonth)
+//        let end = dateFormatter.string(from: endOfMonth!)
+//        print(end)
         
         return try await query
             .sort(\.$createdAt, .descending)

@@ -100,6 +100,9 @@ func routes(_ app: Application) throws {
     let postController = PostController()
     try app.register(collection: postController)
     
+    let momentController = MomentController()
+    try app.register(collection: momentController)
+    
     let userController = UserController()
     try app.register(collection: userController)
     

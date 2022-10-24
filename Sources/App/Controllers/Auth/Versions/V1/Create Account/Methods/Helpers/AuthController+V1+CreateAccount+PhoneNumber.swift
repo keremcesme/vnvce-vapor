@@ -112,6 +112,7 @@ extension AuthController.V1.CreateAccount {
         otp: VerifySMSPayload.V1,
         _ req: Request
     ) async throws -> SMSVerificationResult.V1 {
+        
         guard let attempt = try await SMSVerificationAttempt.query(on: req.db)
             .filter(\.$id == otp.attemptID)
             .filter(\.$phoneNumber == otp.phoneNumber)
@@ -126,6 +127,7 @@ extension AuthController.V1.CreateAccount {
         }
         
         try await attempt.delete(force: true, on: req.db)
+        
         return .verified
     }
     

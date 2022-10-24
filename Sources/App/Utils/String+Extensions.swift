@@ -7,6 +7,7 @@
 
 import Foundation
 import Vapor
+import Fluent
 
 private let allowedCharacterSet: CharacterSet = {
     var set = CharacterSet.decimalDigits
@@ -42,4 +43,10 @@ extension String {
         return UUID(uuidString: self)!
     }
     
+}
+
+extension String {
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self)
+    }
 }
