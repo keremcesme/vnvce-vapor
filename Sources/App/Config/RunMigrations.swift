@@ -15,7 +15,7 @@ func runMigrations(_ app: Application) {
 //        CreateCoPostApprovalStatus(),
 //        CreateMediaType(),
         
-        CreateMonth(),
+//        CreateMonth(),
 //        CreatePostType(),
         
         

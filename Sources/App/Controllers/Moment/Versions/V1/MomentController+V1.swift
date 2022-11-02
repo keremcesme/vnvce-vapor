@@ -23,11 +23,13 @@ extension MomentController {
         
         func routes(_ routes: RoutesBuilder) {
             routes.group("api", "test", "moment") { testRoute in
-                testRoute.post("upload2", ":day", ":month", use: uploadMomentHandler2)
-                testRoute.delete("delete_all", use: deleteAllHandler)
-//                testRoute.get("all2", use: fetchMomentsHandler2)
-                testRoute.get("all", use: fetchMomentsHandler2)
+                testRoute.post("upload", use: uploadMomentTest)
+                testRoute.get("all", use: fetchMomentsTest)
+//                testRoute.post("upload2", ":day", ":month", use: uploadMomentHandler2)
+//                testRoute.delete("delete_all", use: deleteAllHandler)
+//                testRoute.get("all", use: fetchMomentsHandler2)
             }
+            
             routes.group(authenticator, middleware) { secureRoute in
                 secureRoute.group("api", "\(version)", "moment") { momentRoute in
                     momentRoute.post("upload", use: uploadMomentHandler)
