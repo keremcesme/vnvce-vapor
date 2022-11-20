@@ -23,12 +23,12 @@ public func configure(_ app: Application) throws {
         ),
         as: .psql
     )
-    
 //    app.redis.configuration = try RedisConfiguration(hostname: "localhost")
     
-    app.redis.configuration = try RedisConfiguration(hostname: Environment.get("REDIS_HOST") ?? "localhost", port:6379 )
+    app.redis.configuration = try RedisConfiguration(
+        hostname: Environment.get("REDIS_HOST") ?? "localhost",
+        port:6379)
     
-//    6379
     
     
     // Views
