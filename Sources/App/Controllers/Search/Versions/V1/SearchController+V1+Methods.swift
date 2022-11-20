@@ -29,7 +29,7 @@ extension SearchController.V1 {
             }
             .paginate(for: req)
         
-        
+            
         let publicUsers: [User.Public] = try await result.items
             .checkBlockStatus(userID: userID, req)
             .convertToPublic(req)

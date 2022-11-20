@@ -6,15 +6,16 @@
 //
 
 import Vapor
+import FluentPostGIS
 
 func runMigrations(_ app: Application) {
     app.migrations.add([
-        
         // ENUMS - DATA TYPEs
+//        EnablePostGISMigration(),
 //        CreateProfilePictureAlignmentType(),
 //        CreateCoPostApprovalStatus(),
 //        CreateMediaType(),
-        
+//        CreateDeviceOS(),
 //        CreateMonth(),
 //        CreatePostType(),
         
@@ -30,6 +31,7 @@ func runMigrations(_ app: Application) {
 //        CreateProfilePicture(),
 //        CreatePhoneNumber(),
 //        CreateUsername(),
+//        CreateNotificationToken(),
         
         // AUTH TOKENS
 //        CreateRefreshToken(),
@@ -42,7 +44,7 @@ func runMigrations(_ app: Application) {
         
         // POST
 //        CreatePost(),
-        CreateMoment(),
+//        CreateMoment(),
         
         // EXTENSIONS
 //        CreatePG_TRGMExtension(),

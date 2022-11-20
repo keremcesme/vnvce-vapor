@@ -7,6 +7,7 @@
 
 import Fluent
 import FluentPostgresDriver
+import FluentPostGIS
 import Foundation
 
 struct CreateMoment: AsyncMigration {
@@ -49,6 +50,7 @@ struct CreateMoment: AsyncMigration {
             .field("url", .string, .required)
             .field("thumbnail_url", .string)
             .field("sensitive_content", .bool, .required)
+            .field("location", .geometricPoint2D)
             .field("created_at", .datetime, .required)
             .create()
     }

@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import FluentPostGIS
 
 final class Moment: Model, Content {
     static let schema = "moments"
@@ -32,6 +33,9 @@ final class Moment: Model, Content {
     @Field(key: "sensitive_content")
     var sensitiveContent: Bool
     
+    @OptionalField(key: "location")
+    var location: GeometricPoint2D?
+    
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -43,7 +47,8 @@ final class Moment: Model, Content {
         name: String,
         url: String,
         thumbnailURL: String? = nil,
-        sensitiveContent: Bool = false
+        sensitiveContent: Bool = false,
+        location: GeometricPoint2D? = nil
     ){
         self.$owner.id = ownerID
         self.mediaType = mediaType
@@ -51,6 +56,7 @@ final class Moment: Model, Content {
         self.url = url
         self.thumbnailURL = thumbnailURL
         self.sensitiveContent = sensitiveContent
+        self.location = location
     }
     
     struct V1: Content {

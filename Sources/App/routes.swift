@@ -1,6 +1,8 @@
 import Vapor
 import APNS
 import APNSwift
+import Leaf
+import Redis
 
 enum APIVersions: String {
      case v1 = "v1"
@@ -23,13 +25,34 @@ func routes(_ app: Application) throws {
         return "OK"
     }
     
-    app.get { req async in
-        "It works!"
+//    app.get { req async in
+//        "It works!"
+//    }
+    
+    app.get("redis-test") { req async -> String in
+        let key = RedisKey("redis-test-key")
+        let freshDog = Dog(height: 10, width: 100, url: "url", id: "idexample")
+        
+        do {
+            try await req.redis.setex(key, toJSON: freshDog, expirationInSeconds: 10)
+            print("Dog was cached.")
+            
+            return "REDIS IS WORKED ✅"
+        } catch {
+            return "REDIS IS NOT WORKED ❌"
+        }
+    }
+    
+    app.get("read") { req async throws -> View in
+        let dog = try await req.redis.get(RedisKey("cuteDog"), asJSON: Dog.self)
+        
+        if let dog = dog {
+            print(dog)
+        }
+        
+        return try await req.view.render("index")
     }
 
-    app.get("hello") { req async -> String in
-        "Hello, world!"
-    }
     
     app.get("sms") { req async -> String in
         
@@ -82,6 +105,49 @@ func routes(_ app: Application) throws {
         return "sended"
     }
     
+    app.get { req in
+        req.leaf.render("index")
+    }
+    
+    app.post("upload") { req -> EventLoopFuture<View> in
+            struct Input: Content {
+                var file: File
+            }
+        struct PageContent: Codable {
+            var fileUrl: String
+            var isImage: String
+        }
+            let input = try req.content.decode(Input.self)
+
+            guard input.file.data.readableBytes > 0 else {
+                throw Abort(.badRequest)
+            }
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "y-m-d-HH-MM-SS-"
+            let prefix = formatter.string(from: .init())
+            let fileName = prefix + input.file.filename
+            let path = app.directory.publicDirectory + fileName
+            let isImage = ["png", "jpeg", "jpg", "gif"].contains(input.file.extension?.lowercased())
+
+            return req.application.fileio.openFile(path: path,
+                                                   mode: .write,
+                                                   flags: .allowFileCreation(posixMode: 0x744),
+                                                   eventLoop: req.eventLoop)
+                .flatMap { handle in
+                    req.application.fileio.write(fileHandle: handle,
+                                                 buffer: input.file.data,
+                                                 eventLoop: req.eventLoop)
+                        .flatMapThrowing { _ in
+                            try handle.close()
+                        }
+                        .flatMap {
+                            let items = PageContent(fileUrl: "\(fileName)", isImage: ".bool(isImage)")
+                            return req.leaf.render("result", items)
+                        }
+                }
+        }
+    
     let authController = AuthController()
     try app.register(collection: authController)
     
@@ -116,4 +182,17 @@ struct PostAPNTest: APNSwiftNotification {
         self.aps = aps
         self.from = from
     }
+}
+
+private func expireTheKey(_ key: RedisKey, redis: Vapor.Request.Redis) {
+    //This expires the key after 30s for demonstration purposes
+    let expireDuration = TimeAmount.seconds(30)
+    _ = redis.expire(key, after: expireDuration)
+}
+
+struct Dog: Content, Encodable {
+  let height: Int
+  let width: Int
+  let url: String
+  let id: String
 }

@@ -8,6 +8,19 @@
 import Vapor
 import SotoSNS
 
+func configureS3() throws -> AWSS3 {
+    guard
+        let accessKeyID = Environment.get("AWS_S3_ACCESS_KEY_ID"),
+        let secretAccessKey = Environment.get("AWS_S3_SECRET_ACCESS_KEY")
+    else {
+        throw ConfigError.missingAWSKeys
+    }
+    
+    let s3 = AWSS3(accessKeyID: accessKeyID, secretAccessKey: secretAccessKey)
+    
+    return s3
+}
+
 func configureSMSSender() throws -> AWSSNSSender {
     guard
         let accessKeyId = Environment.get("AWS_SNS_KEY_ID"),
