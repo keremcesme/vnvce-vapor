@@ -54,11 +54,12 @@ ARG APPLE_TEAM_ID
 
 # ARS AWS Environment ARG
 ARG AWS_ACCESS_KEY_ID
-ARG AWS_REGION
 ARG AWS_SECRET_ACCESS_KEY
-ARG AWS_SNS_KEY_ID
-ARG AWS_SNS_SECRET_KEY
 ARG AWS_SNS_SENDER_ID
+ARG AWS_REGION
+
+# ARS Redis Environment ARG
+ARG REDIS_HOST
 
 # ARS iOS Environment ARG
 ARG IOS_APP_BUNDLE_ID
@@ -68,18 +69,14 @@ RUN echo "DB_PORT=${DB_PORT}" >> .env.production
 RUN echo "DB_USERNAME=${DB_USERNAME}" >> .env.production
 RUN echo "DB_PASSWORD=${DB_PASSWORD}" >> .env.production
 RUN echo "DB_NAME=${DB_NAME}" >> .env.production
-
 RUN echo "APPLE_APN_ECP8_PRIVATE_KEY=${APPLE_APN_ECP8_PRIVATE_KEY}" >> .env.production
 RUN echo "APPLE_APN_KEY_ID=${APPLE_APN_KEY_ID}" >> .env.production
 RUN echo "APPLE_TEAM_ID=${APPLE_TEAM_ID}" >> .env.production
-
 RUN echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env.production
 RUN echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env.production
 RUN echo "AWS_SNS_SENDER_ID=${AWS_SNS_SENDER_ID}" >> .env.production
 RUN echo "AWS_REGION=${AWS_REGION}" >> .env.production
-
 RUN echo "REDIS_HOST=${REDIS_HOST}" >> .env.production
-
 RUN echo "IOS_APP_BUNDLE_ID=${IOS_APP_BUNDLE_ID}" >> .env.production
 
 USER vapor:vapor
