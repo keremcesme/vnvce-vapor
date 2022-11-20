@@ -74,11 +74,11 @@ RUN echo "APPLE_APN_KEY_ID=${APPLE_APN_KEY_ID}" >> .env.production
 RUN echo "APPLE_TEAM_ID=${APPLE_TEAM_ID}" >> .env.production
 
 RUN echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env.production
-RUN echo "AWS_REGION=${AWS_REGION}" >> .env.production
 RUN echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env.production
-RUN echo "AWS_SNS_KEY_ID=${AWS_SNS_KEY_ID}" >> .env.production
-RUN echo "AWS_SNS_SECRET_KEY=${AWS_SNS_SECRET_KEY}" >> .env.production
 RUN echo "AWS_SNS_SENDER_ID=${AWS_SNS_SENDER_ID}" >> .env.production
+RUN echo "AWS_REGION=${AWS_REGION}" >> .env.production
+
+RUN echo "REDIS_HOST=${REDIS_HOST}" >> .env.production
 
 RUN echo "IOS_APP_BUNDLE_ID=${IOS_APP_BUNDLE_ID}" >> .env.production
 
