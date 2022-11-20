@@ -26,7 +26,7 @@ func configureSMSSender() throws -> AWSSNSSender {
         let accessKeyId = Environment.get("AWS_ACCESS_KEY_ID"),
         let secretKey = Environment.get("AWS_SECRET_ACCESS_KEY"),
         let senderID = Environment.get("AWS_SNS_SENDER_ID")
-    else {
+    else { 
         throw ConfigError.missingAWSKeys
     }
     
