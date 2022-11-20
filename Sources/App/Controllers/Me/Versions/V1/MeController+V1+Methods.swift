@@ -12,7 +12,10 @@ import Vapor
 extension MeController.V1 {
     
     func profileHandler(_ req: Request) async throws -> Response<User.Private> {
+        print(req)
+        
         let user = try req.auth.require(User.self)
+        
         let privateProfile = try await user.convertToPrivate(req)
         
         return Response(result: privateProfile, message: "User private profile returned successfuly.")

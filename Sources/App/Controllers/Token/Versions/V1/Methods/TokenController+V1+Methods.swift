@@ -30,7 +30,6 @@ extension TokenController.V1 {
             return Response(result: .failure(error), message: error.rawValue)
         }
         
-        
         try await AccessToken.query(on: req.db)
             .filter(\.$user.$id == userID)
             .all()

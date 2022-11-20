@@ -13,12 +13,12 @@ class AWSSNSSender {
     private let messageAttributes: [String: SNS.MessageAttributeValue]?
     
     init(accessKeyID: String, secretAccessKey: String, senderId: String?) {
-        let client = AWSClient(credentialProvider: .static(accessKeyId: accessKeyID,
-                                                           secretAccessKey: secretAccessKey),
-                               httpClientProvider: .createNew)
+        let client = AWSClient(
+            credentialProvider: .static(
+                accessKeyId: accessKeyID,
+                secretAccessKey: secretAccessKey),
+            httpClientProvider: .createNew)
         
-        
-//        sns = SNS(client: client, accessKeyId: accessKeyID, secretAccessKey: secretAccessKey, region: .eucentral1)
         sns = SNS(client: client, region: .eucentral1)
         
         messageAttributes = senderId.map { sender in

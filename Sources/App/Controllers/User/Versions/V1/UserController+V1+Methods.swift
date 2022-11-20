@@ -10,10 +10,6 @@ import Vapor
 
 // MARK: UserController V1 - Methods -
 extension UserController.V1 {
-    
-    
-    
-    
     func profileHandler(_ req: Request) async throws -> Response<User.Public> {
         _ = try req.auth.require(User.self)
         

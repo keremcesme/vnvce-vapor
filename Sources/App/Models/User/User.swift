@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import JWT
 
 struct UserModel: Content {
     let id: UUID
@@ -159,5 +160,23 @@ extension Array where Element: User {
             users.append(user)
         }
         return users
+    }
+}
+
+extension User {
+    func generateToken(_ app: Application) async throws -> String {
+        var expDate = Date()
+        expDate.addTimeInterval(60000)
+        
+        let exp = ExpirationClaim(value: expDate)
+        
+        guard let username = try await self.$username.get(reload: true, on: app.db)?.username else {
+            throw Abort(.notFound)
+        }
+        
+        let jwt = try app.jwt.signers.get(kid: .private)!
+            .sign(MyJWTPayload(id: self.id, username: username, exp: exp))
+        
+        return jwt
     }
 }

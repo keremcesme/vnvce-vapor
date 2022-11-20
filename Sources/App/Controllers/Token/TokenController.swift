@@ -7,7 +7,7 @@
 
 import Fluent
 import Vapor
-
+import JWT
 // MARK: TokenController - Version Routes -
 struct TokenController: RouteCollection {
     

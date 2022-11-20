@@ -27,3 +27,11 @@ extension Application {
         }
     }
 }
+
+extension Application {
+    
+    public func sendSMS(to phoneNumber: String, message: String) async throws {
+        
+    }
+    
+}
