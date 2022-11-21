@@ -38,7 +38,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: "058406849523.dkr.ecr.eu-central-1.amazonaws.com/vnvce-vapor:latest"
+        tags: ${{ secrets.AWS_DOCKER_IMAGE_TAG }}
         build-args: |
           "DB_HOST=${{secrets.FREE_TIER_DB_HOST}}"
           "DB_PORT=${{secrets.FREE_TIER_DB_PORT}}"
@@ -48,9 +48,12 @@ jobs:
           "APPLE_APN_ECP8_PRIVATE_KEY=${{secrets.APPLE_APN_ECP8_PRIVATE_KEY}}"
           "APPLE_APN_KEY_ID=${{secrets.APPLE_APN_KEY_ID}}"
           "APPLE_TEAM_ID=${{secrets.APPLE_TEAM_ID}}"
+          "RSA_PUBLIC_KEY=${{secrets.RSA_PUBLIC_KEY}}"
+          "RSA_PRIVATE_KEY=${{secrets.RSA_PRIVATE_KEY}}"
           "AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}"
           "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}"
           "AWS_SNS_SENDER_ID=${{secrets.AWS_SNS_SENDER_ID}}"
           "AWS_REGION=${{secrets.AWS_REGION}}"
           "REDIS_HOST=${{secrets.REDIS_HOST}}"
+          "REDIS_PORT=${{secrets.REDIS_PORT}}"
           "IOS_APP_BUNDLE_ID=${{secrets.IOS_APP_BUNDLE_ID}}"

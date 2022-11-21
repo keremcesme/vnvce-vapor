@@ -1,5 +1,4 @@
 import Vapor
-import JWT
 
 public func configure(_ app: Application) throws {
     
@@ -8,7 +7,7 @@ public func configure(_ app: Application) throws {
     app.configureMigrations()
     
     try app.configureRedis()
-//    try app.configureJWT()
+    try app.configureJWT()
     try app.configureRoutes()
     try app.configureAppleAPN()
     try app.configureAWS()
@@ -17,8 +16,3 @@ public func configure(_ app: Application) throws {
 //    try app.autoMigrate().wait()
 }
 
-struct Example: JWTPayload {
-    var test: String
-    
-    func verify(using signer: JWTSigner) throws {}
-}

@@ -13,16 +13,14 @@ extension Application {
     public func configureRoutes() throws {
         let jwt = self.grouped("jwt")
         
+        try jwtPlayground(self)
+        
         jwt.get { req async throws -> String in
-            let signed = try req.jwt.sign(Example(test: "Hello world!"), kid: .private)
-            let verified = try req.jwt.verify(signed, as: Example.self)
+            let signed = try req.jwt.sign(JWTExample(test: "Hello world!"), kid: .private)
+            let verified = try req.jwt.verify(signed, as: JWTExample.self)
             print(signed)
             
-            
-            
             return signed
-            // verify a token using the public key
-            //try request.jwt.verify(token, as: Example.self)
         }
         
         self.post("token") { req async -> String in
