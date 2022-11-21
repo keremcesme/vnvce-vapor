@@ -22,13 +22,11 @@ extension Application {
     }
     
     private func getPrivateKEY() throws -> String {
-        
         if let envKey = Environment.get("RSA_PRIVATE_KEY") {
             return envKey
         } else {
             return try String(contentsOfFile: self.directory.workingDirectory + "Credentials/jwtRS256.key")
         }
-        
     }
     
     private func getPublicKEY() throws -> String {

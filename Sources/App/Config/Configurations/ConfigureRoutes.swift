@@ -3,6 +3,8 @@ import APNS
 import APNSwift
 import Leaf
 import Redis
+import VaporDeviceCheck
+import JWT
 
 enum APIVersions: String {
      case v1 = "v1"
@@ -11,6 +13,54 @@ enum APIVersions: String {
 
 extension Application {
     public func configureRoutes() throws {
+        
+        if let teamID = Environment.get("APPLE_TEAM_ID")
+        {
+            
+            let deviceCheck = DeviceCheck(jwkKid: .deviceCheckPrivate, jwkIss: teamID)
+            
+            self.get("device-check") { req in
+                
+                guard let xAppleDeviceToken = req.headers.first(name: .xAppleDeviceToken) else {
+                    return "No Auth Token"
+                }
+                
+                let url = URI(string: "https://api.development.devicecheck.apple.com/v1/validate_device_token")
+//                Q2USH84B88
+                let jwtPayload = DeviceCheckJWT(iss: teamID)
+                
+                let jwt = try req.jwt.sign(jwtPayload, kid: .deviceCheckPrivate)
+                
+//                var headers = HTTPHeaders()
+//                headers.add(name: .authorization, value: "Bearer \(jwt)")
+//
+                let content = DeviceCheckRequest(deviceToken: xAppleDeviceToken)
+//
+//                let result = req.client.post(url, headers: headers, content: content)
+                print(content)
+                print("~~~~~~~~~~~~~~~~~~~~")
+                print(jwt)
+                print("~~~~~~~~~~~~~~~~~~~~")
+                
+                return jwt
+            }
+            
+            self.group(deviceCheck) { route in
+                route.get("health") { req  in
+                    return "OK"
+                }
+            }
+            
+        }
+        
+        
+        
+//        self.group(deviceCheck) { route in
+//            route.get("health") { req  in
+//                return "OK"
+//            }
+//        }
+        
         let jwt = self.grouped("jwt")
         
         try jwtPlayground(self)
@@ -64,9 +114,7 @@ extension Application {
             }
         }
         
-        self.get("health") { req  in
-            return "OK"
-        }
+        
         
     //    self.get { req async in
     //        "It works!"
