@@ -30,7 +30,29 @@ class AWSSNSSender {
     }
 }
 
-
+extension Application {
+    class AWSSMS {
+        private let sns: SNS
+        private let messageAttributes: [String: SNS.MessageAttributeValue]?
+        
+        init(accessKeyID: String, secretAccessKey: String, senderId: String?) {
+            let client = AWSClient(
+                credentialProvider: .static(
+                    accessKeyId: accessKeyID,
+                    secretAccessKey: secretAccessKey),
+                httpClientProvider: .createNew)
+            
+            sns = SNS(client: client, region: .eucentral1)
+            
+            messageAttributes = senderId.map { sender in
+                let senderAttribute = SNS.MessageAttributeValue(binaryValue: nil,
+                                                                dataType: "String",
+                                                                stringValue: sender)
+                return ["AWS.SNS.SMS.SenderID": senderAttribute]
+            }
+        }
+    }
+}
 
 
 

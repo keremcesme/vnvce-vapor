@@ -14,7 +14,7 @@ extension UserController {
     final class V1 {
         static let shared = V1()
         
-        public let version = APIVersions.v1
+        public let version = APIVersion.v1
         
         init() {}
         

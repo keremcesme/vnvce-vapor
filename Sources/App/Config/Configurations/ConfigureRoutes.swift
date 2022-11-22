@@ -3,17 +3,51 @@ import APNS
 import APNSwift
 import Leaf
 import Redis
-import VaporDeviceCheck
 import JWT
 
-enum APIVersions: String {
+enum APIVersion: String {
      case v1 = "v1"
      case v2 = "v2"
 }
 
 extension Application {
     public func configureRoutes() throws {
+        let api = self.grouped("api")
         
+        // MARK: AUTH API
+        let authController = AuthController()
+        try api.register(collection: authController)
+        
+        try routesPlayground()
+        
+        // MARK: RESOURCE APIs
+//        let tokenController = TokenController()
+//        try api.register(collection: tokenController)
+//
+//        let meController = MeController()
+//        try api.register(collection: meController)
+//
+//        let relationshipController = RelationshipController()
+//        try api.register(collection: relationshipController)
+//
+//        let searchController = SearchController()
+//        try api.register(collection: searchController)
+//
+//        let postController = PostController()
+//        try api.register(collection: postController)
+//
+//        let momentController = MomentController()
+//        try api.register(collection: momentController)
+//
+//        let userController = UserController()
+//        try api.register(collection: userController)
+    }
+}
+
+// MARK: TRASH
+extension Application {
+    
+    private func routesPlayground() throws {
         if let teamID = Environment.get("APPLE_TEAM_ID")
         {
             
@@ -238,34 +272,8 @@ extension Application {
                             }
                     }
             }
-        
-        let authController = AuthController()
-        try self.register(collection: authController)
-        
-        let tokenController = TokenController()
-        try self.register(collection: tokenController)
-        
-        let meController = MeController()
-        try self.register(collection: meController)
-        
-        let relationshipController = RelationshipController()
-        try self.register(collection: relationshipController)
-        
-        let searchController = SearchController()
-        try self.register(collection: searchController)
-        
-        let postController = PostController()
-        try self.register(collection: postController)
-        
-        let momentController = MomentController()
-        try self.register(collection: momentController)
-        
-        let userController = UserController()
-        try self.register(collection: userController)
-        
     }
 }
-
 
 struct PostAPNTest: APNSwiftNotification {
     let aps: APNSwiftPayload

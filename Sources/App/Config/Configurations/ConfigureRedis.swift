@@ -11,12 +11,12 @@ import Redis
 extension Application {
     func configureRedis() throws {
         // MARK: PROD
-        self.redis.configuration = try RedisConfiguration(
-            hostname: Environment.get("REDIS_HOST") ?? "localhost",
-            port: getRedisPort())
+//        self.redis.configuration = try RedisConfiguration(
+//            hostname: Environment.get("REDIS_HOST") ?? "localhost",
+//            port: getRedisPort())
         
         // MARK: DEV
-//        self.redis.configuration = try RedisConfiguration(hostname: "localhost")
+        self.redis.configuration = try RedisConfiguration(hostname: "localhost")
     }
     
     private func getRedisPort() -> Int {

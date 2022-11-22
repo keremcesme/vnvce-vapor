@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import SotoSNS
 
 protocol SMSSender {
     func sendSMS(to phoneNumber: String, message: String, on eventLoop: EventLoop) async throws -> EventLoopFuture<Bool>
@@ -27,6 +28,23 @@ extension Application {
         }
     }
 }
+
+//extension Application {
+//    var aws: AWS {
+//        aws()
+//    }
+//
+//    private func aws(_ client: AWSClient? = nil) -> AWS {
+//        .init()
+//    }
+//}
+//
+//extension Application.AWS {
+//    public mutating func configure(accessKeyID: String, secretAccessKey: String, senderId: String?) {
+//
+//        self.client = AWSClient(credentialProvider: .static(accessKeyId: accessKeyID, secretAccessKey: secretAccessKey), httpClientProvider: .createNew)
+//    }
+//}
 
 extension Application {
     
