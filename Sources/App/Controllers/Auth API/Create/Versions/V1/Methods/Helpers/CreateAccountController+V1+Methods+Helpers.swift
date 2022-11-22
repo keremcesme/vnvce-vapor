@@ -55,17 +55,17 @@ extension AuthController.CreateAccountController.V1 {
         
         let key = RedisKey(username)
         
-        let reservedUsernameQuery = try await req.redis.get(key, asJSON: String.self)
+        let reservedUsernameQuery = try await req.redis.get(key, asJSON: RedisReservedUsernameModel.V1.self)
         
-        if let value = reservedUsernameQuery {
-            if value == clientID {
+        if let reservedUsername = reservedUsernameQuery {
+            if reservedUsername.clientID == clientID && reservedUsername.userID == nil {
                 return .available
             } else {
                 return .reserved
             }
         }
-        return .available
         
+        return .available
     }
     
 }
