@@ -19,7 +19,7 @@ extension AuthController.CreateAccountController.V1 {
         var exp: ExpirationClaim
         
         init(_ clientID: String) {
-            let date = Date.now
+            let date = Date()
             
             self.clientID = clientID
             self.company = "Socialayf"

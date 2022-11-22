@@ -15,7 +15,13 @@ extension AuthController.CreateAccountController.V1 {
     
     public func checkPhoneNumber(_ req: Request)
     async throws -> AvailabilityResponse {
-        let availability = try await checkPhoneNumberAvailability(req)
+        let p = try req.content.decode(CheckPhonePayload.self)
+        
+        let availability = try await checkPhoneNumberAvailability(
+            phone: p.phoneNumber,
+            clientID: p.clientID,
+            req)
+        
         var result: AvailabilityResponse
         
         switch availability {
@@ -32,7 +38,12 @@ extension AuthController.CreateAccountController.V1 {
     
     public func autoCheckUsernameHandler(_ req: Request)
     async throws -> AvailabilityResponse {
-        let availability = try await checkUsernameAvailability(req)
+        let p = try req.content.decode(CheckUsernamePayload.self)
+        let availability = try await checkUsernameAvailability(
+            username: p.username,
+            clientID: p.clientID,
+            req)
+        
         var result: AvailabilityResponse
         
         switch availability {
@@ -50,8 +61,16 @@ extension AuthController.CreateAccountController.V1 {
     public func reserveUsernameAndSendOTPHandler(_ req: Request) async throws -> Response<String> {
         let p = try req.content.decode(ReserveUsernameAndSendOTPPayload.self)
         
-        // first re-check username availability
-//        try await req.redis.expire(key, after: .seconds(120))
+        let usernameAvailability = try await checkUsernameAvailability(
+            username: p.username,
+            clientID: p.clientID,
+            req)
+        
+        guard usernameAvailability == .available else {
+            throw Abort(.notFound)
+        }
+        
+        
         
         let key = RedisKey(p.username)
         

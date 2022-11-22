@@ -23,7 +23,7 @@ final class RedisOTPModel {
             self.clientID = clientID
             self.userID = userID
             self.jti = jti
-            self.exp = Date.now.addingTimeInterval(60).timeIntervalSince1970
+            self.exp = Date().addingTimeInterval(60).timeIntervalSince1970
         }
         
         enum CodingKeys: String, CodingKey {

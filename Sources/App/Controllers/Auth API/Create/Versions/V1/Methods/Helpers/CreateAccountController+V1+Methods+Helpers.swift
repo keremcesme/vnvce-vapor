@@ -13,11 +13,10 @@ import JWT
 
 extension AuthController.CreateAccountController.V1 {
     
-    public func checkPhoneNumberAvailability(_ req: Request) async throws -> PhoneNumberAvailability{
-        let p = try req.content.decode(CheckPhonePayload.self)
-        let phone = p.phoneNumber
-        let clientID = p.clientID
-        
+    public func checkPhoneNumberAvailability(
+        phone: String,
+        clientID: String, _ req: Request
+    ) async throws -> PhoneNumberAvailability {
         let phoneQuery = try await PhoneNumber.query(on: req.db)
             .filter(\.$phoneNumber == phone)
             .first()
@@ -40,11 +39,11 @@ extension AuthController.CreateAccountController.V1 {
         return .available
     }
     
-    public func checkUsernameAvailability(_ req: Request) async throws -> UsernameAvailability {
-        let p = try req.content.decode(CheckUsernamePayload.self)
-        let username = p.username
-        let clientID = p.clientID
-        
+    public func checkUsernameAvailability(
+        username: String,
+        clientID: String,
+        _ req: Request
+    ) async throws -> UsernameAvailability {
         let usernameQuery = try await Username.query(on: req.db)
             .filter(\.$username == username)
             .first()

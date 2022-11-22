@@ -17,7 +17,7 @@ final class RedisReservedUsernameModel {
         init(clientID: String, userID: String?) {
             self.clientID = clientID
             self.userID = userID
-            self.exp = Date.now.addingTimeInterval(60).timeIntervalSince1970
+            self.exp = Date().addingTimeInterval(60).timeIntervalSince1970
         }
         
         enum CodingKeys: String, CodingKey {
