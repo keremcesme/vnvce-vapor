@@ -9,9 +9,6 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get install libssl-dev -y \
     && rm -rf /var/lib/apt/lists/*
     
-
-git clone ssh://git@github.com/socialayf/vnvce-core.git
-
 WORKDIR /build
 
 COPY ./Package.* ./
