@@ -11,10 +11,6 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 
 WORKDIR /build
 
-RUN apk add --no-cache openssh-client git
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh git clone --depth=1 'git@github.com:socialayf/vnvce-core.git'
-
 COPY ./Package.* ./
 RUN swift package resolve
 
