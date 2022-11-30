@@ -11,8 +11,13 @@ final private class Regex {
     init() {}
     
     public func validate(_ value: String, type: RegexType) -> Bool {
-        let inputpred = NSPredicate(format: "SELF MATCHES %@", type.rawValue)
-        return inputpred.evaluate(with: value)
+//        let inputpred = NSPredicate(format: "SELF MATCHES %@", type.rawValue)
+//        return inputpred.evaluate(with: value)
+        
+        let range = NSRange(location: 0, length: value.utf16.count)
+        let regex = try! NSRegularExpression(pattern: type.rawValue)
+        return regex.firstMatch(in: value, options: [], range: range) != nil
+        
     }
 }
 
