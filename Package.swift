@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7.1
 import PackageDescription
 
 let package = Package(
@@ -8,7 +8,7 @@ let package = Package(
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.67.3"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.67.4"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.5.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.4.0"),
         .package(url: "https://github.com/vapor/apns.git", from: "3.0.0"),
@@ -18,6 +18,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/redis.git", from: "4.6.0"),
         .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.3"),
         .package(url: "https://github.com/brokenhandsio/fluent-postgis.git", from: "0.3.0"),
+        .package(url: "https://github.com/socialayf/vnvce-core", branch: "main"), 
         .package(url: "https://github.com/soto-project/soto.git", from: "6.2.0")
     ],
     targets: [
@@ -34,6 +35,7 @@ let package = Package(
                 .product(name: "Redis", package: "redis"),
                 .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
                 .product(name: "FluentPostGIS", package: "fluent-postgis"),
+                .product(name: "VNVCECore", package: "vnvce-core"),
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "SotoSNS", package: "soto"),
             ],

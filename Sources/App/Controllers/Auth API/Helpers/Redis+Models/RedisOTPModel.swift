@@ -9,30 +9,29 @@ import Foundation
 import Vapor
 
 final class RedisOTPModel {
-    struct V1: Content, Encodable {
-        let otp: Int
-        let phoneNumber: String
-        let clientID: String
-        let userID: String?
-        let jti: String
-        let exp: TimeInterval
+    struct V1: Content, Hashable {
+        let encryptedCode: String
+        let encrypedClientID: String
         
-        init(otp: Int, phoneNumber: String, clientID: String, userID: String? = nil, jti: String) {
-            self.otp = otp
-            self.phoneNumber = phoneNumber
-            self.clientID = clientID
-            self.userID = userID
-            self.jti = jti
-            self.exp = Date().addingTimeInterval(60).timeIntervalSince1970
+        let expireAt: TimeInterval
+        let createdAt: TimeInterval
+        
+        init(
+            encryptedCode: String,
+            encrypedClientID: String
+        ) {
+            self.encryptedCode = encryptedCode
+            self.encrypedClientID = encrypedClientID
+            let date = Date()
+            self.expireAt = date.addingTimeInterval(60).timeIntervalSince1970
+            self.createdAt = date.timeIntervalSince1970
         }
         
         enum CodingKeys: String, CodingKey {
-            case otp
-            case phoneNumber = "phone_number"
-            case clientID = "client_id"
-            case userID = "user_id"
-            case jti
-            case exp
+            case encryptedCode = "encrypted_code"
+            case encrypedClientID = "encryped_client_id"
+            case expireAt = "expire_at"
+            case createdAt = "created_at"
         }
     }
 }

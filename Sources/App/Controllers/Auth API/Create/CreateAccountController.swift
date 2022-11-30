@@ -16,14 +16,14 @@ import Vapor
 ///     - ....
 
 extension AuthController {
-    
     struct CreateAccountController: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
-            let v1 = V1()
-            try routes.register(collection: v1)
-            let v2 = V2()
-            try routes.register(collection: v2)
+            
+            let collectionV1 = V1()
+            try routes
+                .register(collection: collectionV1)
+            
+            
         }
     }
 }
-

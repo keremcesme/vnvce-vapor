@@ -11,6 +11,7 @@ extension AuthController.CreateAccountController.V1 {
     
     enum UsernameAvailability {
         case available
+        case userHasAlreadyReserved
         case alreadyTaken
         case reserved
         
@@ -18,6 +19,8 @@ extension AuthController.CreateAccountController.V1 {
             switch self {
             case .available:
                 return "Username is available."
+            case .userHasAlreadyReserved:
+                return "User has already reserved the username."
             case .alreadyTaken:
                 return "Username is already in use."
             case .reserved:

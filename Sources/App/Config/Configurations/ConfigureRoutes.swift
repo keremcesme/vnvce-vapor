@@ -4,19 +4,27 @@ import APNSwift
 import Leaf
 import Redis
 import JWT
+import VNVCECore
 
-enum APIVersion: String {
-     case v1 = "v1"
-     case v2 = "v2"
+enum APIVersion {
+     static let v1 = PathComponent(stringLiteral: "v1")
+     static let v2 = PathComponent(stringLiteral: "v1")
 }
 
 extension Application {
     public func configureRoutes() throws {
+        let endpoint = Endpoint.shared
+        
         let api = self.grouped("api")
         
         // MARK: AUTH API
         let authController = AuthController()
-        try api.register(collection: authController)
+        
+        try api
+//            .grouped(endpoint.routes.auth.path.toPathComponents)
+            .register(collection: authController)
+        
+//        try api.register(collection: authController)
         
         try routesPlayground()
         
@@ -43,6 +51,7 @@ extension Application {
 //        try api.register(collection: userController)
     }
 }
+
 
 // MARK: TRASH
 extension Application {
@@ -83,6 +92,12 @@ extension Application {
                 route.get("health") { req  in
                     return "OK"
                 }
+            }
+            
+            self.get("version-test") { req -> String in
+//                print(req.headers.acceptVersion)
+                print(req.headers)
+                return ""
             }
             
         }

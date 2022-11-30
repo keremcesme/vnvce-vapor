@@ -1,7 +1,8 @@
 import Vapor
-
+import VNVCECore
 
 public func configure(_ app: Application) throws {
+    
     
     app.configureDatabase()
     app.configureViews()
@@ -13,12 +14,27 @@ public func configure(_ app: Application) throws {
     try app.configureAppleAPN()
     try app.configureAppleDeviceCheck()
     try app.configureAWS()
-
+    
     app.sms.configuration = .init(
         accessKeyID: Environment.get("AWS_ACCESS_KEY_ID")!,
         secretAccessKey: Environment.get("AWS_SECRET_ACCESS_KEY")!,
         senderId: Environment.get("AWS_SNS_SENDER_ID")!
     )
+    
+    
+#if canImport(Nuke)
+//    print("Vapor is available")
+#endif
+    
+#if os(iOS)
+    
+//    print("it is ios")
+    
+#elseif os(macOS)
+    
+//    print("it is macos")
+    
+#endif
     
 //    Task {
 //        try await app.sms.send(to: "+905533352131", message:"test message")

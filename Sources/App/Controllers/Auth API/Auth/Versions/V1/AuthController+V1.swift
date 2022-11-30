@@ -21,20 +21,20 @@ extension AuthController {
         private let authenticator = AccessToken.authenticator()
         private let middleware = User.guardMiddleware()
         
-        private let createAccount = CreateAccount.shared
-        private let login = Login.shared
+//        private let createAccount = CreateAccount.shared
+//        private let login = Login.shared
         
         func routes(_ routes: RoutesBuilder) {
             routes.group("api", "\(version)", "auth") { authRoute in
-                createAccount.routes(
-                    routes: authRoute,
-                    auth: authenticator,
-                    guard: middleware)
+//                createAccount.routes(
+//                    routes: authRoute,
+//                    auth: authenticator,
+//                    guard: middleware)
                 
-                login.routes(
-                    routes: authRoute,
-                    auth: authenticator,
-                    guard: middleware)
+//                login.routes(
+//                    routes: authRoute,
+//                    auth: authenticator,
+//                    guard: middleware)
                 
             }
         }

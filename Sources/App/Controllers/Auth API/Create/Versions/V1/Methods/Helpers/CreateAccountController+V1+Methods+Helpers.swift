@@ -13,6 +13,8 @@ import JWT
 
 extension AuthController.CreateAccountController.V1 {
     
+    
+    
     public func checkPhoneNumberAvailability(
         phone: String,
         clientID: String, _ req: Request
@@ -30,11 +32,11 @@ extension AuthController.CreateAccountController.V1 {
         let otpAttemptQuery = try await req.redis.get(key, asJSON: RedisOTPModel.V1.self)
         
         if let otpAttempt = otpAttemptQuery {
-            if otpAttempt.clientID == clientID {
-                return .available
-            } else {
-                return .otpExist
-            }
+//            if otpAttempt.clientID == clientID {
+//                return .available
+//            } else {
+//                return .otpExist
+//            }
         }
         return .available
     }
@@ -42,6 +44,7 @@ extension AuthController.CreateAccountController.V1 {
     public func checkUsernameAvailability(
         username: String,
         clientID: String,
+        phoneNumber: String,
         _ req: Request
     ) async throws -> UsernameAvailability {
         let usernameQuery = try await Username.query(on: req.db)
@@ -52,13 +55,13 @@ extension AuthController.CreateAccountController.V1 {
             return .alreadyTaken
         }
         
-        let key = RedisKey(username)
+        let key = RedisKey("reserved_\(username)")
         
         let reservedUsernameQuery = try await req.redis.get(key, asJSON: RedisReservedUsernameModel.V1.self)
         
         if let reservedUsername = reservedUsernameQuery {
-            if reservedUsername.clientID == clientID && reservedUsername.userID == nil {
-                return .available
+            if reservedUsername.clientID == clientID {
+                return .userHasAlreadyReserved
             } else {
                 return .reserved
             }

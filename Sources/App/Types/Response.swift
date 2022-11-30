@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentKit
+import VNVCECore
 
 struct Response<T: Content>: Content {
     var result: T?
@@ -33,3 +34,5 @@ struct Pagination<T: Content>: Content {
 }
 
 typealias PaginationResponse<T: Content> = Response<Pagination<T>>
+
+extension ResultResponse.V1: Content { }
