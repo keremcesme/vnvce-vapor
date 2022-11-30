@@ -9,10 +9,8 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get install libssl-dev -y \
     && rm -rf /var/lib/apt/lists/*
     
-RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh pip install git+ssh://git@github.com/socialayf/vnvce-core.git
+RUN git config --global url.”https://{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}:@github.com/".insteadOf “https://github.com/"
 
-    
 WORKDIR /build
 
 COPY ./Package.* ./
