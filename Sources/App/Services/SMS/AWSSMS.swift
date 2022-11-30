@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 22.11.2022.
-//
 
 import Vapor
 import SotoSNS
@@ -38,8 +32,7 @@ extension Application {
                                          messageAttributes: config.messageAttributes,
                                          phoneNumber: phoneNumber)
             
-            let result = try await config.sns.publish(input)
-            
+            _ = try await config.sns.publish(input)
         }
         
     }

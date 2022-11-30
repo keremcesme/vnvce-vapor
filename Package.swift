@@ -18,6 +18,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/redis.git", from: "4.6.0"),
         .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.3"),
         .package(url: "https://github.com/brokenhandsio/fluent-postgis.git", from: "0.3.0"),
+        .package(url: "https://github.com/swift-server/swift-backtrace.git", from: "1.3.3"),
         .package(url: "https://github.com/socialayf/vnvce-core", branch: "main"), 
         .package(url: "https://github.com/soto-project/soto.git", from: "6.2.0")
     ],
@@ -35,6 +36,7 @@ let package = Package(
                 .product(name: "Redis", package: "redis"),
                 .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
                 .product(name: "FluentPostGIS", package: "fluent-postgis"),
+                .product(name: "Backtrace", package: "swift-backtrace"),
                 .product(name: "VNVCECore", package: "vnvce-core"),
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "SotoSNS", package: "soto"),

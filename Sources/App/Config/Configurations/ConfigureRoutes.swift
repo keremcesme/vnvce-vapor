@@ -203,12 +203,12 @@ extension Application {
                                   Verification code for \(messageType) account: \(code).
                                   If you did not request this, disregard this message.
                                   """
-            do {
-                _ = try await req.application.smsSender!
-                    .sendSMS(to: "+905533352131", message: message, on: req.eventLoop)
-            } catch {
-                
-            }
+//            do {
+//                _ = try await req.application.smsSender!
+//                    .sendSMS(to: "+905533352131", message: message, on: req.eventLoop)
+//            } catch {
+//
+//            }
             
             
             return "sended"
