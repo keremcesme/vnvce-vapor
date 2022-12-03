@@ -6,6 +6,7 @@
 //
 
 import Fluent
+import VNVCECore
 
 struct CreateNotificationToken: AsyncMigration {
     func prepare(on database: Database) async throws {

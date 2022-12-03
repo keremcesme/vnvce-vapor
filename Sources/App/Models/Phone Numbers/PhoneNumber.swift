@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 11.08.2022.
-//
 
 import Fluent
 import Vapor
@@ -34,5 +28,22 @@ final class PhoneNumber: Model, Content {
     ) {
         self.phoneNumber  = phoneNumber
         self.$user.id = user
+    }
+}
+
+extension User {
+    func getPhoneNumber(on db: Database) async throws -> String {
+        if let phoneNumber = self.phoneNumber?.phoneNumber {
+            return phoneNumber
+        } else {
+            try await self.$phoneNumber.load(on: db)
+            if let phoneNumber = self.phoneNumber?.phoneNumber {
+                return phoneNumber
+            } else if let phoneNumber = try await self.$phoneNumber.get(on: db)?.phoneNumber {
+                return phoneNumber
+            } else {
+                throw Abort(.notFound)
+            }
+        }
     }
 }

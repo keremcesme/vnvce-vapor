@@ -13,6 +13,7 @@ extension AuthController {
             throw Abort(.notFound)
         }
         
+        
         switch version {
         case .v1:
             let p = try req.content.decode(CheckPhoneNumberPayload.V1.self)
@@ -45,7 +46,7 @@ extension AuthController {
         let otpAttemptQuery = try await req.redis.get(key, asJSON: RedisOTPModel.V1.self)
         
         if let otpAttempt = otpAttemptQuery {
-            if try Bcrypt.verify(p.clientID, created: otpAttempt.encrypedClientID) {
+            if try Bcrypt.verify(p.clientID, created: otpAttempt.encryptedClientID) {
                 let otp = SMSOTPModel.V1(createdAt: otpAttempt.createdAt, expireAt: otpAttempt.expireAt)
                 
                 return .init(otp: otp, availability: .otpExpectedBySameUser)
@@ -70,14 +71,13 @@ extension AuthController {
         let encryptedCode = try Bcrypt.hash(code)
         let encryptedClientID = try Bcrypt.hash(clientID)
         
-        let otp = RedisOTPModel.V1(encryptedCode: encryptedCode, encrypedClientID: encryptedClientID)
+        let otp = RedisOTPModel.V1(encryptedCode: encryptedCode, encryptedClientID: encryptedClientID)
         
         let key = RedisKey("phone_number:\(phoneNumber)")
         
         try await req.redis.setex(key, toJSON: otp, expirationInSeconds: 60)
         
         try await req.application.sms.send(to: phoneNumber, message: "Your code: \(code)")
-        
         
         return .init(createdAt: otp.createdAt, expireAt: otp.expireAt)
     }

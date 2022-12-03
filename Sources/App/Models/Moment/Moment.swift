@@ -8,6 +8,7 @@
 import Fluent
 import Vapor
 import FluentPostGIS
+import VNVCECore
 
 final class Moment: Model, Content {
     static let schema = "moments"

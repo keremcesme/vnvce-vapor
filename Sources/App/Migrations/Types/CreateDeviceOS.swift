@@ -6,7 +6,7 @@
 //
 
 import Fluent
-import FluentPostgresDriver
+import VNVCECore
 
 struct CreateDeviceOS: AsyncMigration {
     func prepare(on database: Database) async throws {

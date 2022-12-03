@@ -6,8 +6,7 @@
 //
 
 import Fluent
-import FluentPostgresDriver
-import Foundation
+import VNVCECore
 
 struct CreateMediaType: AsyncMigration {
     func prepare(on database: Database) async throws {

@@ -109,6 +109,15 @@
       }
     },
     {
+      "identity" : "jwtdecode.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/JWTDecode.swift.git",
+      "state" : {
+        "revision" : "d07041068fed2d4b8a38f2b321ea6d97c9152c4a",
+        "version" : "3.0.0"
+      }
+    },
+    {
       "identity" : "leaf",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/leaf.git",
@@ -354,10 +363,10 @@
     {
       "identity" : "vnvce-core",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/socialayf/vnvce-core",
+      "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "4a641aa835da95a8433fff888af06171681b1420"
+        "revision" : "0f5264ff1591b61a10b2d363b09f56f9499f7881"
       }
     },
     {

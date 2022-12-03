@@ -9,6 +9,7 @@ import Fluent
 import FluentPostgresDriver
 import FluentPostGIS
 import Foundation
+import VNVCECore
 
 struct CreateMoment: AsyncMigration {
     func prepare(on database: Database) async throws {

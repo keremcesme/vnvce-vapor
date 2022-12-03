@@ -17,7 +17,7 @@ struct CreateUsername: AsyncMigration {
             .field("user_id", .uuid, .references(User.schema, .id, onDelete: .cascade))
             .field("created_at", .datetime, .required)
             .field("modified_at", .datetime, .required)
-            .unique(on: "username", name: "uk_username")
+            .unique(on: "username", name: "usernames_username_ukey")
             .create()
     }
     

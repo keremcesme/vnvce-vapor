@@ -13,13 +13,14 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.4.0"),
         .package(url: "https://github.com/vapor/apns.git", from: "3.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.2.1"),
+        .package(url: "https://github.com/auth0/JWTDecode.swift.git", from: "3.0.0"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.2.2"),
         .package(url: "https://github.com/vapor/leaf-kit", from: "1.8.0"),
         .package(url: "https://github.com/vapor/redis.git", from: "4.6.0"),
         .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.3"),
         .package(url: "https://github.com/brokenhandsio/fluent-postgis.git", from: "0.3.0"),
         .package(url: "https://github.com/swift-server/swift-backtrace.git", from: "1.3.3"),
-        .package(url: "https://github.com/socialayf/vnvce-core", branch: "main"), 
+        .package(url: "https://github.com/socialayf/vnvce-core.git", branch: "main"),
         .package(url: "https://github.com/soto-project/soto.git", from: "6.2.0")
     ],
     targets: [
@@ -31,6 +32,7 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "APNS", package: "apns"),
                 .product(name: "JWT", package: "jwt"),
+                .product(name: "JWTDecode", package: "JWTDecode.swift"),
                 .product(name: "Leaf", package: "leaf"),
                 .product(name: "LeafKit", package: "leaf-kit"),
                 .product(name: "Redis", package: "redis"),

@@ -31,6 +31,8 @@ extension AuthController {
             availabiltiy: usernameAvailability,
             req)
         
+        
+        
         let phonePayload = CheckPhoneNumberPayload.V1(clientID: p.clientID, phoneNumber: p.phoneNumber)
         let result = try await checkPhoneNumberV1(payload: phonePayload, req)
         let phoneAvailability = result.availability

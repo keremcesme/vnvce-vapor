@@ -11,17 +11,17 @@ import Vapor
 final class RedisOTPModel {
     struct V1: Content, Hashable {
         let encryptedCode: String
-        let encrypedClientID: String
+        let encryptedClientID: String
         
         let expireAt: TimeInterval
         let createdAt: TimeInterval
         
         init(
             encryptedCode: String,
-            encrypedClientID: String
+            encryptedClientID: String
         ) {
             self.encryptedCode = encryptedCode
-            self.encrypedClientID = encrypedClientID
+            self.encryptedClientID = encryptedClientID
             let date = Date()
             self.expireAt = date.addingTimeInterval(60).timeIntervalSince1970
             self.createdAt = date.timeIntervalSince1970
@@ -29,7 +29,7 @@ final class RedisOTPModel {
         
         enum CodingKeys: String, CodingKey {
             case encryptedCode = "encrypted_code"
-            case encrypedClientID = "encryped_client_id"
+            case encryptedClientID = "encrypted_client_id"
             case expireAt = "expire_at"
             case createdAt = "created_at"
         }

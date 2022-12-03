@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import VNVCECore
 
 final class PostMedia: Model, Content {
     static let schema = "post_media_details"

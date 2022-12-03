@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import VNVCECore
 
 final class PostMediaPayload {
     

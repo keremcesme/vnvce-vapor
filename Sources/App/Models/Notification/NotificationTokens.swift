@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import VNVCECore
 
 final class NotificationToken: Model, Content {
     static let schema = "notification_tokens"

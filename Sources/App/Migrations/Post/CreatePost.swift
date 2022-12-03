@@ -8,6 +8,7 @@
 import Fluent
 import FluentPostgresDriver
 import Foundation
+import VNVCECore
 
 struct CreatePost: AsyncMigration {
     func prepare(on database: Database) async throws {

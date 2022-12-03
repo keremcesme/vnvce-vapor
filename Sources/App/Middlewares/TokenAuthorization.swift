@@ -42,6 +42,9 @@ struct TokenAuthMiddleware: AsyncMiddleware {
 //            print("NOT AUTHENTICATED")
 //            return try await next.respond(to: request)
 //        }
+        
+        
+        
         return try await next.respond(to: request)
     }
 }

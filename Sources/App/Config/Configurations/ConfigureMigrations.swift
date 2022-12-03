@@ -13,43 +13,43 @@ extension Application {
     func configureMigrations() {
         self.migrations.add([
             // ENUMS - DATA TYPEs
-    //        EnablePostGISMigration(),
-    //        CreateProfilePictureAlignmentType(),
-    //        CreateCoPostApprovalStatus(),
-    //        CreateMediaType(),
-    //        CreateDeviceOS(),
-    //        CreateMonth(),
-    //        CreatePostType(),
-            
+            EnablePostGISMigration(),
+            CreateProfilePictureAlignmentType(),
+//            CreateCoPostApprovalStatus(),
+            CreateMediaType(),
+            CreateDeviceOS(),
+//            CreateMonth(),
+//            CreatePostType(),
+
             // AUTHENTICATION
-    //        CreateSMSVerificationAttempt(),
-            
+//            CreateSMSVerificationAttempt(),
+
             // USERNAME
-    //        CreateReservedUsername(),
+//            CreateReservedUsername(),
             
             // USER
-    //        CreateUser(),
-    //        CreateProfilePicture(),
-    //        CreatePhoneNumber(),
-    //        CreateUsername(),
-    //        CreateNotificationToken(),
+            CreateUser(),
+            CreateProfilePicture(),
+            CreatePhoneNumber(),
+            CreateUsername(),
+            CreateNotificationToken(),
             
             // AUTH TOKENS
-    //        CreateRefreshToken(),
-    //        CreateAccessToken(),
+//            CreateRefreshToken(),
+//            CreateAccessToken(),
             
             // RELATIONSHIP
-    //        CreateFriendship(),
-    //        CreateFriendRequest(),
-    //        CreateBlock(),
+            CreateFriendship(),
+            CreateFriendRequest(),
+            CreateBlock(),
             
             // POST
-    //        CreatePost(),
-    //        CreateMoment(),
+//            CreatePost(),
+//            CreateMoment(),
             
             // EXTENSIONS
-    //        CreatePG_TRGMExtension(),
-    //        CreateUserDisplayNameAndUsernameIndex()
+//            CreatePG_TRGMExtension(),
+//            CreateUserDisplayNameAndUsernameIndex()
             
         ])
     }

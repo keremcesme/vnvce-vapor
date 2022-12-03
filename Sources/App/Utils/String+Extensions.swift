@@ -50,3 +50,15 @@ extension String {
         return FieldKey(stringLiteral: self)
     }
 }
+
+extension String {
+    func uuid() throws -> UUID {
+        let uuid = UUID(uuidString: self)
+        
+        guard let uuid else {
+            throw NSError(domain: "String dont convert to UUID", code: 0)
+        }
+        
+        return uuid
+    }
+}

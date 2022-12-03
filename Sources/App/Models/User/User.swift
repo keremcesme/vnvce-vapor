@@ -8,6 +8,7 @@
 import Fluent
 import Vapor
 import JWT
+import VNVCECore
 
 struct UserModel: Content {
     let id: UUID
@@ -38,7 +39,6 @@ final class User: Model, Content, Authenticatable {
     
     @OptionalChild(for: \.$user)
     var profilePicture: ProfilePicture?
-    
     
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
