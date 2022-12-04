@@ -101,7 +101,7 @@ public struct AuthController: RouteCollection {
             
             switch result {
             case let .success(result):
-                var tokenIDs = result.tokens
+                let tokenIDs = result.tokens
                 try await plugin.setLoggedInUserToBucket(userID, refresh: refreshToken.jwtID, currentTokens: tokenIDs)
             case let .failure(failure):
                 print(failure)
