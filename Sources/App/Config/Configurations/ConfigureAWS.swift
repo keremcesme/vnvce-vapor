@@ -2,13 +2,22 @@
 import Vapor
 
 extension Application {
-
-    
     public func configureAWSSMS() {
+        
+        self.logger.info("Setting AWS")
+        
+        let accessID = Environment.get("AWS_ACCESS_KEY_ID")
+        let key = Environment.get("AWS_SECRET_ACCESS_KEY")
+        let senderID = Environment.get("AWS_SNS_SENDER_ID")
+        
+        self.logger.info("Access Key ID: \(accessID ?? "nil")")
+        self.logger.info("Access Secret Key: \(key ?? "nil")")
+        self.logger.info("Sender ID: \(senderID ?? "nil")")
+        
         self.sms.configuration = .init(
-            accessKeyID: Environment.get("AWS_ACCESS_KEY_ID")!,
-            secretAccessKey: Environment.get("AWS_SECRET_ACCESS_KEY")!,
-            senderId: Environment.get("AWS_SNS_SENDER_ID")!
+            accessKeyID: accessID!,
+            secretAccessKey: key!,
+            senderId: senderID!
         )
     }
 }
