@@ -14,14 +14,14 @@ extension Application {
         self.logger.info("Access Secret Key: \(key ?? "nil")")
         self.logger.info("Sender ID: \(senderID ?? "nil")")
         
-        self.sms.configuration = .init(
-            accessKeyID: accessID!,
-            secretAccessKey: key!,
-            senderId: senderID!
-        )
+//        self.sms.configuration = .init(
+//            accessKeyID: accessID!,
+//            secretAccessKey: key!,
+//            senderId: senderID!
+//        )
     }
 }
-    
+
 
 //enum ConfigError: Error {
 //    case missingAWSKeys

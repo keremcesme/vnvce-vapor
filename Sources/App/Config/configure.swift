@@ -1,9 +1,7 @@
 import Vapor
-import Backtrace
 import VNVCECore
 
 public func configure(_ app: Application) throws {
-//    Backtrace.install()
     
     app.http.server.configuration.supportPipelining = true
     app.http.server.configuration.responseCompression = .enabled
