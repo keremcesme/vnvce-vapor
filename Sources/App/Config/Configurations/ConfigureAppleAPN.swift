@@ -36,7 +36,7 @@ extension Application {
         
         let authMethod: AuthMethod = try .jwt(
             key: .private(pem: privateKey),
-            keyIdentifier: .init(string: keyID),
+            keyIdentifier: JWKIdentifier(string: keyID),
             teamIdentifier: teamID)
         
         let apnConfiguration = APNSwiftConfiguration(
@@ -50,3 +50,11 @@ extension Application {
     }
 }
 
+//apns.configuration = try .init(
+//    authenticationMethod: .jwt(
+//        key: .private(pem: Environment.get("APPLE_APN_PRIVATE_KEY") ?? ""),
+//        keyIdentifier: JWKIdentifier(string: Environment.get("APPLE_APN_KEY_ID") ?? ""),
+//        teamIdentifier: Environment.get("APPLE_TEAM_ID") ?? ""),
+//    topic: Environment.get("IOS_APP_BUNDLE_ID") ?? "",
+//    environment: .sandbox
+//)
