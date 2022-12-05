@@ -111,11 +111,9 @@ extension Application {
             throw error
         }
         
-        let privateKey = """
------BEGIN RSA PRIVATE KEY-----
-\(privateRaw)
------END RSA PRIVATE KEY-----
-"""
+        let privateKey = "-----BEGIN RSA PRIVATE KEY-----\n\(privateRaw)-----END RSA PRIVATE KEY-----"
+        
+        print(privateKey)
         
         let publicKey = """
 -----BEGIN PUBLIC KEY-----
