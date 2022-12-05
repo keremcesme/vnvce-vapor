@@ -15,7 +15,7 @@ fileprivate enum EnvironmentKey {
 
 extension Application {
     public func configureJWT() async throws {
-        self.logger.notice("[ 3/8 ] Configuring JWT")
+        self.logger.notice("[ 5/8 ] Configuring JWT")
         
         let privateKey = EnvironmentKey.privateKey
         let publicKey = EnvironmentKey.publicKey

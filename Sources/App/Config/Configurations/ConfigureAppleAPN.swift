@@ -21,7 +21,7 @@ fileprivate typealias AuthMethod = APNSwiftConfiguration.AuthenticationMethod
 
 extension Application {
     func configureAppleAPN() async throws {
-        self.logger.notice("[ 5/8 ] Configuring Apple APNs")
+        self.logger.notice("[ 3/8 ] Configuring Apple APNs")
         
         guard
             let keyID = EnvironmentKey.keyID,
