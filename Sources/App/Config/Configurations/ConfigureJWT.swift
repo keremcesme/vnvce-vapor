@@ -8,48 +8,43 @@
 import Vapor
 import JWT
 
-fileprivate enum EnvironmentKey {
-    static let publicKey = Environment.get("RSA_PUBLIC_KEY")
-    static let privateKey = Environment.get("RSA_PRIVATE_KEY")
-}
-
 extension Application {
     public func configureJWT() async throws {
         self.logger.notice("[ 5/8 ] Configuring JWT")
         
-        let privateKey = EnvironmentKey.privateKey
-        let publicKey = EnvironmentKey.publicKey
-        
-        if privateKey == nil {
-            let error = ConfigureError.missingRSAPrivateKey
-            self.logger.notice(error.rawValue)
-        }
-        
-        if publicKey == nil {
-            let error = ConfigureError.missingRSAPublicKey
-            self.logger.notice(error.rawValue)
-        }
-        
-        if privateKey == nil || publicKey == nil {
-            let error = ConfigureError.missingRSAKeys
-            self.logger.notice(error.rawValue)
-            throw error
-        }
-        
-//        guard
-//            let publicKey = EnvironmentKey.public,
-//            let privateKey = EnvironmentKey.private
-//        else {
+//        let privateKey = Environment.get("RSA_PRIVATE_KEY")
+//        let publicKey = Environment.get("RSA_PUBLIC_KEY")
+//
+//        if privateKey == nil {
+//            let error = ConfigureError.missingRSAPrivateKey
+//            self.logger.notice(error.rawValue)
+//        }
+//
+//        if publicKey == nil {
+//            let error = ConfigureError.missingRSAPublicKey
+//            self.logger.notice(error.rawValue)
+//        }
+//
+//        if privateKey == nil || publicKey == nil {
 //            let error = ConfigureError.missingRSAKeys
 //            self.logger.notice(error.rawValue)
 //            throw error
 //        }
-//
-//        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-//        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
-//
-//        self.jwt.signers.use(privateSigner, kid: .private)
-//        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+        
+        guard
+            let publicKey = Environment.get("RSA_PUBLIC_KEY"),
+            let privateKey = Environment.get("RSA_PRIVATE_KEY")
+        else {
+            let error = ConfigureError.missingRSAKeys
+            self.logger.notice(error.rawValue)
+            throw error
+        }
+
+        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
+        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
+
+        self.jwt.signers.use(privateSigner, kid: .private)
+        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
         
         self.logger.notice("✅ JWT Configured")
     }

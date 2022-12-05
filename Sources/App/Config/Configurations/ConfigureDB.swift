@@ -9,24 +9,16 @@ import Vapor
 import Fluent
 import FluentPostgresDriver
 
-fileprivate enum EnvironmentKey {
-    static let host = Environment.get("DB_HOST")
-    static let port = Environment.get("DB_PORT")
-    static let username = Environment.get("DB_USERNAME")
-    static let password = Environment.get("DB_PASSWORD")
-    static let database = Environment.get("DB_NAME")
-}
-
 extension Application {
     public func configureDatabase() async throws {
         self.logger.notice("[ 1/8 ] Configuring Database (PSQL)")
         
         guard
-            let host = EnvironmentKey.host,
-            let port = EnvironmentKey.port.flatMap(Int.init),
-            let username = EnvironmentKey.username,
-            let password = EnvironmentKey.password,
-            let database = EnvironmentKey.database
+            let host = Environment.get("DB_HOST"),
+            let port = Environment.get("DB_PORT").flatMap(Int.init),
+            let username = Environment.get("DB_USERNAME"),
+            let password = Environment.get("DB_PASSWORD"),
+            let database = Environment.get("DB_NAME")
         else {
             let error = ConfigureError.missingDBEnvironments
             self.logger.notice(error.rawValue)

@@ -8,11 +8,6 @@
 import Vapor
 import Redis
 
-fileprivate enum EnvironmentKey {
-    static let host = Environment.get("REDIS_HOST")
-    static let port = Environment.get("REDIS_PORT")
-}
-
 extension Application {
     func configureRedis() async throws {
         self.logger.notice("[ 2/8 ] Configuring Redis")
@@ -20,8 +15,8 @@ extension Application {
         switch self.environment {
         case .production:
             guard
-                let host = EnvironmentKey.host,
-                let portRaw = EnvironmentKey.port,
+                let host = Environment.get("REDIS_HOST"),
+                let portRaw = Environment.get("REDIS_PORT"),
                 let port = Int(portRaw)
             else {
                 let error = ConfigureError.missingRedisEnvironments

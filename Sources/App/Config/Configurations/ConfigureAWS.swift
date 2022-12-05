@@ -1,20 +1,14 @@
 
 import Vapor
 
-fileprivate enum EnvironmentKey {
-    static let keyID = Environment.get("AWS_ACCESS_KEY_ID")
-    static let privateKey = Environment.get("AWS_SECRET_ACCESS_KEY")
-    static let senderID = Environment.get("AWS_SNS_SENDER_ID")
-}
-
 extension Application {
     public func configureAWSSMS() async throws {
         self.logger.notice("[ 4/8 ] Configuring AWS")
         
         guard
-            let keyID = EnvironmentKey.keyID,
-            let privateKey = EnvironmentKey.privateKey,
-            let senderID = EnvironmentKey.senderID
+            let keyID = Environment.get("AWS_ACCESS_KEY_ID"),
+            let privateKey = Environment.get("AWS_SECRET_ACCESS_KEY"),
+            let senderID = Environment.get("AWS_SNS_SENDER_ID")
         else {
             let error = ConfigureError.missingAWSEnvironments
             self.logger.notice(error.rawValue)

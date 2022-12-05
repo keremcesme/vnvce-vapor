@@ -10,13 +10,6 @@ import APNS
 import APNSwift
 import JWT
 
-fileprivate enum EnvironmentKey {
-    static let keyID = Environment.get("APPLE_APN_KEY_ID")
-    static let privateKey = Environment.get("APPLE_APN_PRIVATE_KEY")
-    static let teamID = Environment.get("APPLE_TEAM_ID")
-    static let appBundleID = Environment.get("IOS_APP_BUNDLE_ID")
-}
-
 fileprivate typealias AuthMethod = APNSwiftConfiguration.AuthenticationMethod
 
 extension Application {
@@ -24,10 +17,10 @@ extension Application {
         self.logger.notice("[ 3/8 ] Configuring Apple APNs")
         
         guard
-            let keyID = EnvironmentKey.keyID,
-            let privateKey = EnvironmentKey.privateKey,
-            let teamID = EnvironmentKey.teamID,
-            let appBundleID = EnvironmentKey.appBundleID
+            let keyID = Environment.get("APPLE_APN_KEY_ID"),
+            let privateKey = Environment.get("APPLE_APN_PRIVATE_KEY"),
+            let teamID = Environment.get("APPLE_TEAM_ID"),
+            let appBundleID = Environment.get("IOS_APP_BUNDLE_ID")
         else {
             let error = ConfigureError.missingAppleAPNSEnvironments
             self.logger.notice(error.rawValue)
