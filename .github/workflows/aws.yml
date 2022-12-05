@@ -13,12 +13,14 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
-
-    run: echo "${{secrets.RSA_PRIVATE_KEY}}"
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: RSA PRIVATE KEY
+      env:
+        RSA_PRIVATE: ${{secrets.RSA_PRIVATE_KEY}}
+      run: echo "$RSA_PRIVATE"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
