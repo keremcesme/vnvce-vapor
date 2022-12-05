@@ -85,14 +85,31 @@ ucmqlKkk8LfUkER8T3hOpFEOH1qReAa1DyGF3XPaQNaQ1/T3cOMtlfMvbu2B
 -----END RSA PRIVATE KEY-----
 """
         
-        guard
-            let publicKey = Environment.get("RSA_PUBLIC_KEY")
-//            let privateKey = Environment.get("RSA_PRIVATE_KEY")
-        else {
-            let error = ConfigureError.missingRSAKeys
-            self.logger.notice(error.rawValue)
-            throw error
-        }
+        let publicKey = """
+-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoHXDivYXaI7zb9GG76QC
+zstH5PuvUhjCG/Y6cZKoF1+alhFuays5e+OxBfesYTy9QEDzo+sDH5qRN/aBF8gf
+aCeIiQbKKakNYwkuP2xOcovd4xeNv35QLnXmPl4QW9aP2AWT8konEp8vsIUZfI7Q
+k6LZ/EbHUFXq3uW5lqjXkUY6JB2h3KzlOAixO9VnvsYzoi9APBbl0Z+ax+RhAsnh
+K/6OxxWwTxf9aykWMqMrFBmWmpJdPCUWKmRqySBl8ieZULFdK/lE677DH3zOAf/D
+1Nf6n10Wf7kB4e77eZog1I9M/Gg6y9qTnAb0SoL4nyS+8Uy90SnZZL11Oi8gxaVA
+7oXpTCxstK+XIjpMX9EwICVMTG45oxZBl7SEMMJsLjvCQx6ccrqDucrtGreGHg6T
+88Y6qumpxgqbDYsGQU+EfDTUo1zcqc/2mG6Nmapdrc3EDngWLwcOoewQtEST32Td
+vZOb7fAugThyJHieCYSX6VL16WGHNHvYHxarpdBSh5BYt0om97EJP/WSw8dECYyO
+oI9D4OnWCNcCw6RqWMgECW13IzYGhsokU42cZqsq8zPO8OMmrXcUfcm/O1lS7+n1
+0tlJz1erDg/XL6B2lNYEuIoV9bTHyIqj34c4XH9Gq30+DWvv277ZsCLdkYH9X0Tk
+wr0eD6pt8P8W6rqSav9idY8CAwEAAQ==
+-----END PUBLIC KEY-----
+"""
+        
+//        guard
+//            let publicKey = Environment.get("RSA_PUBLIC_KEY")
+////            let privateKey = Environment.get("RSA_PRIVATE_KEY")
+//        else {
+//            let error = ConfigureError.missingRSAKeys
+//            self.logger.notice(error.rawValue)
+//            throw error
+//        }
 
         let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
         let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
