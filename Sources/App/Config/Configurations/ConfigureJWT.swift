@@ -17,20 +17,39 @@ extension Application {
     public func configureJWT() async throws {
         self.logger.notice("[ 3/8 ] Configuring JWT")
         
-        guard
-            let publicKey = EnvironmentKey.public,
-            let privateKey = EnvironmentKey.private
-        else {
+        let privateKey = EnvironmentKey.private
+        let publicKey = EnvironmentKey.public
+        
+        if privateKey == nil {
+            let error = ConfigureError.missingRSAPrivateKey
+            self.logger.notice(error.rawValue)
+        }
+        
+        if publicKey == nil {
+            let error = ConfigureError.missingRSAPublicKey
+            self.logger.notice(error.rawValue)
+        }
+        
+        if privateKey == nil || publicKey == nil {
             let error = ConfigureError.missingRSAKeys
             self.logger.notice(error.rawValue)
             throw error
         }
         
-        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
-        
-        self.jwt.signers.use(privateSigner, kid: .private)
-        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+//        guard
+//            let publicKey = EnvironmentKey.public,
+//            let privateKey = EnvironmentKey.private
+//        else {
+//            let error = ConfigureError.missingRSAKeys
+//            self.logger.notice(error.rawValue)
+//            throw error
+//        }
+//        
+//        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
+//        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
+//        
+//        self.jwt.signers.use(privateSigner, kid: .private)
+//        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
         
         self.logger.notice("✅ JWT Configured")
     }

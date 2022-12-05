@@ -8,7 +8,11 @@ enum ConfigurePhase: Logger.Message {
 enum ConfigureError: Logger.Message, Error {
     case missingDBEnvironments = "❌ Missing DB Environments"
     case missingRedisEnvironments = "❌ Missing Redis Environments"
+    
     case missingRSAKeys = "❌ Missing RSA keys for JWT"
+    case missingRSAPublicKey = "❌ Missing RSA public key for JWT"
+    case missingRSAPrivateKey = "❌ Missing RSA private keyfor JWT"
+    
     case missingAWSEnvironments = "❌ Missing AWS Environments"
     case missingAppleAPNSEnvironments = "❌ Missing Apple APNs Environments"
 }
