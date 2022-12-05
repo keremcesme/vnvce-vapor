@@ -13,21 +13,19 @@ extension Application {
         self.logger.notice("[ 5/8 ] Configuring JWT")
         
         guard
-            let privateKeyRaw = Environment.get("RSA_PRIVATE_KEY"),
-            let publicKeyRaw = Environment.get("RSA_PUBLIC_KEY")
+            let privateKey: String = Environment.get("RSA_PRIVATE_KEY"),
+            let publicKey: String = Environment.get("RSA_PUBLIC_KEY")
         else {
             let error = ConfigureError.missingRSAKeys
             self.logger.notice(error.rawValue)
             throw error
         }
         
-        let privateKey = String(privateKeyRaw)
-        let publicKey = String(publicKeyRaw)
+        self.logger.notice("Public Key: \(publicKey)")
+        self.logger.notice("Private Key: \(privateKey)")
         
-        print(publicKey)
         
-//        print(String(publicKeyRaw))
-
+        
         let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
         let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
 
