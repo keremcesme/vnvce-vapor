@@ -92,10 +92,8 @@ extension Application {
                 return jwt
             }
             
-            self.group(deviceCheck) { route in
-                route.get("health") { req  in
-                    return "OK"
-                }
+            self.get("health") { req  in
+                return "OK"
             }
             
             self.get("version-test") { req -> String in
