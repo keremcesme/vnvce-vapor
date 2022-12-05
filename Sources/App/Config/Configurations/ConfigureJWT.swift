@@ -21,8 +21,12 @@ extension Application {
             throw error
         }
         
-        let privateKey = String(privateKeyRaw).key
-        let publicKey = String(publicKeyRaw).key
+        let privateKey = String(privateKeyRaw)
+        let publicKey = String(publicKeyRaw)
+        
+        print(publicKey)
+        
+//        print(String(publicKeyRaw))
 
         let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
         let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
