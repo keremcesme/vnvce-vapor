@@ -9,17 +9,40 @@ import Vapor
 import Fluent
 import FluentPostgresDriver
 
+fileprivate enum EnvironmentKey {
+    static let host = Environment.get("DB_HOST")
+    static let port = Environment.get("DB_PORT")
+    static let username = Environment.get("DB_USERNAME")
+    static let password = Environment.get("DB_PASSWORD")
+    static let database = Environment.get("DB_NAME")
+}
+
 extension Application {
-    public func configureDatabase() {
+    public func configureDatabase() async throws {
+        self.logger.notice("[ 1/8 ] Configuring Database (PSQL)")
+        
+        guard
+            let host = EnvironmentKey.host,
+            let port = EnvironmentKey.port.flatMap(Int.init),
+            let username = EnvironmentKey.username,
+            let password = EnvironmentKey.password,
+            let database = EnvironmentKey.database
+        else {
+            let error = ConfigureError.missingDBEnvironments
+            self.logger.notice(error.rawValue)
+            throw error
+        }
+        
         self.databases.use(
             .postgres(
-                hostname: Environment.get("DB_HOST") ?? "localhost",
-                port: Environment.get("DB_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
-                username: Environment.get("DB_USERNAME") ?? "vapor_username",
-                password: Environment.get("DB_PASSWORD") ?? "vapor_password",
-                database: Environment.get("DB_NAME") ?? "vapor_database"
-            ),
+                hostname: host,
+                port: port,
+                username: username,
+                password: password,
+                database: database),
             as: .psql
         )
+        
+        self.logger.notice("✅ Database Configured")
     }
 }

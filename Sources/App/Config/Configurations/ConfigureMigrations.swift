@@ -10,7 +10,9 @@ import FluentPostGIS
 import Fluent
 
 extension Application {
-    func configureMigrations() {
+    func configureMigrations() async {
+        self.logger.notice("[ 7/8 ] Configuring Migrations")
+        
         self.migrations.add([
             // ENUMS - DATA TYPEs
             EnablePostGISMigration(),
@@ -52,5 +54,7 @@ extension Application {
 //            CreateUserDisplayNameAndUsernameIndex()
             
         ])
+        
+        self.logger.notice("✅ Migrations Configured")
     }
 }

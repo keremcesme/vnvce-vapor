@@ -12,7 +12,9 @@ enum APIVersion {
 }
 
 extension Application {
-    public func configureRoutes() throws {
+    public func configureRoutes() async throws {
+        self.logger.notice("[ 6/8 ] Configuring Routes")
+        
         let endpoint = Endpoint.shared
         
         let api = self.grouped("api")
@@ -27,6 +29,8 @@ extension Application {
 //        try api.register(collection: authController)
         
         try routesPlayground()
+        
+        self.logger.notice("✅ Routes Configured")
         
         // MARK: RESOURCE APIs
 //        let tokenController = TokenController()

@@ -1,31 +1,38 @@
 
 import Vapor
 
+fileprivate enum EnvironmentKey {
+    static let keyID = Environment.get("AWS_ACCESS_KEY_ID")
+    static let privateKey = Environment.get("AWS_SECRET_ACCESS_KEY")
+    static let senderID = Environment.get("AWS_SNS_SENDER_ID")
+}
+
 extension Application {
-    public func configureAWSSMS() {
+    public func configureAWSSMS() async throws {
+        self.logger.notice("[ 4/8 ] Configuring AWS")
         
-        self.logger.info("Setting AWS")
+        guard
+            let keyID = EnvironmentKey.keyID,
+            let privateKey = EnvironmentKey.privateKey,
+            let senderID = EnvironmentKey.senderID
+        else {
+            let error = ConfigureError.missingAWSEnvironments
+            self.logger.notice(error.rawValue)
+            throw error
+        }
         
-        let accessID = Environment.get("AWS_ACCESS_KEY_ID")
-        let key = Environment.get("AWS_SECRET_ACCESS_KEY")
-        let senderID = Environment.get("AWS_SNS_SENDER_ID")
+        self.sms.configuration = .init(
+            accessKeyID: keyID,
+            secretAccessKey: privateKey,
+            senderId: senderID
+        )
         
-        self.logger.info("Access Key ID: \(accessID ?? "nil")")
-        self.logger.info("Access Secret Key: \(key ?? "nil")")
-        self.logger.info("Sender ID: \(senderID ?? "nil")")
-        
-//        self.sms.configuration = .init(
-//            accessKeyID: accessID!,
-//            secretAccessKey: key!,
-//            senderId: senderID!
-//        )
+        self.logger.notice("✅ AWS Configured")
     }
 }
 
 
-//enum ConfigError: Error {
-//    case missingAWSKeys
-//}
+
 //
 //extension ConfigError: CustomDebugStringConvertible {
 //    var debugDescription: String {

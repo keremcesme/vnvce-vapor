@@ -8,17 +8,31 @@
 import Vapor
 import JWT
 
+fileprivate enum EnvironmentKey {
+    static let `public` = Environment.get("RSA_PUBLIC_KEY")
+    static let `private` = Environment.get("RSA_PRIVATE_KEY")
+}
+
 extension Application {
-    public func configureJWT() throws {
+    public func configureJWT() async throws {
+        self.logger.notice("[ 3/8 ] Configuring JWT")
         
-        let privateKey = try getPrivateKEY()
+        guard
+            let publicKey = EnvironmentKey.public,
+            let privateKey = EnvironmentKey.private
+        else {
+            let error = ConfigureError.missingRSAKeys
+            self.logger.notice(error.rawValue)
+            throw error
+        }
+        
         let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-        
-        let publicKey = try getPublicKEY()
         let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
         
         self.jwt.signers.use(privateSigner, kid: .private)
         self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+        
+        self.logger.notice("✅ JWT Configured")
     }
     
     private func getPrivateKEY() throws -> String {
