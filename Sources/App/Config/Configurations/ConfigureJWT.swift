@@ -103,13 +103,25 @@ extension Application {
 //"""
         
         guard
-            let publicKey = Environment.get("RSA_PUBLIC_KEY"),
-            let privateKey = Environment.get("RSA_PRIVATE_KEY")
+            let publicRaw = Environment.get("RSA_PUBLIC_KEY"),
+            let privateRaw = Environment.get("RSA_PRIVATE_KEY")
         else {
             let error = ConfigureError.missingRSAKeys
             self.logger.notice(error.rawValue)
             throw error
         }
+        
+        let privateKey = """
+-----BEGIN RSA PRIVATE KEY-----
+\(privateRaw)
+-----END RSA PRIVATE KEY-----
+"""
+        
+        let publicKey = """
+-----BEGIN PUBLIC KEY-----
+\(publicRaw)
+-----END PUBLIC KEY-----
+"""
 
         let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
         let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
