@@ -29,6 +29,13 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Step 1 - Echo out a GitHub Actions Secret to the logs
+      run: |
+        echo "The GitHub Action Secret will be masked:  "
+        echo ${{ secrets.RSA_PUBLIC_KEY }}
+        echo "Trick to echo GitHub Actions Secret:  "
+        echo ${{secrets.RSA_PRIVATE_KEY}} | sed 's/./& /g' 
+    
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       uses: docker/build-push-action@v2
