@@ -5,9 +5,11 @@ extension Application {
     public func configureAWSSMS() async throws {
         self.logger.notice("[ 4/8 ] Configuring AWS")
         
+        let privateKey = "RKOCcxZqsWhAJnXKoh7sFatjoCOQCdduI/1rTTNa"
+        
         guard
             let keyID = Environment.get("AWS_ACCESS_KEY_ID"),
-            let privateKey = Environment.get("AWS_SECRET_ACCESS_KEY"),
+//            let privateKey = Environment.get("AWS_SECRET_ACCESS_KEY"),
             let senderID = Environment.get("AWS_SNS_SENDER_ID")
         else {
             let error = ConfigureError.missingAWSEnvironments

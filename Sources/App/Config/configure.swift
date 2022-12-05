@@ -35,12 +35,11 @@ public func configure(_ app: Application) async throws {
     
     try await app.configureDatabase()
     try await app.configureRedis()
-//    try await app.configureAppleAPN()
+    try await app.configureAppleAPN()
     try await app.configureAWSSMS()
     try await app.configureJWT()
-//
-//    try await app.configureRoutes()
-//
+    try await app.configureRoutes()
+
 //    await app.configureMigrations()
 //    await app.configureViews()
     
