@@ -12,19 +12,25 @@ extension Application {
     public func configureJWT() async throws {
         self.logger.notice("[ 5/8 ] Configuring JWT")
         
-        guard
-            let privateKey: String = Environment.get("RSA_PRIVATE_KEY"),
-            let publicKey: String = Environment.get("RSA_PUBLIC_KEY")
-        else {
-            let error = ConfigureError.missingRSAKeys
-            self.logger.notice(error.rawValue)
-            throw error
-        }
-        
-        self.logger.notice("Public Key: \(publicKey)")
-        self.logger.notice("Private Key: \(privateKey)")
+//        print(Environment.get("RSA_PRIVATE_KEY"))
+//        print(Environment.get("RSA_PUBLIC_KEY"))
         
         do {
+            guard
+                let privateKey = Environment.get("RSA_PRIVATE_KEY")?.key,
+                let publicKey = Environment.get("RSA_PUBLIC_KEY")?.key
+            else {
+                let error = ConfigureError.missingRSAKeys
+                self.logger.notice(error.rawValue)
+                throw error
+            }
+            
+//            let privateKey = String(privateKeyRaw).key
+//            let publicKey = String(publicKeyRaw).key
+            
+            self.logger.notice("Public Key: \(publicKey)")
+            self.logger.notice("Private Key: \(privateKey)")
+            
             let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
             let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
 
@@ -34,6 +40,7 @@ extension Application {
             print(error.localizedDescription)
             return
         }
+        
         self.logger.notice("✅ JWT Configured")
     }
     
