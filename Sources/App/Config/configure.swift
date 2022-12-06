@@ -19,6 +19,10 @@ enum ConfigureError: Logger.Message, Error {
 
 public func configure(_ app: Application) async throws {
     
+//    let key = "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoHXDivYXaI7zb9GG76QC\nzstH5PuvUhjCG/Y6cZKoF1+alhFuays5e+OxBfesYTy9QEDzo+sDH5qRN/aBF8gf\naCeIiQbKKakNYwkuP2xOcovd4xeNv35QLnXmPl4QW9aP2AWT8konEp8vsIUZfI7Q\nk6LZ/EbHUFXq3uW5lqjXkUY6JB2h3KzlOAixO9VnvsYzoi9APBbl0Z+ax+RhAsnh\nK/6OxxWwTxf9aykWMqMrFBmWmpJdPCUWKmRqySBl8ieZULFdK/lE677DH3zOAf/D\n1Nf6n10Wf7kB4e77eZog1I9M/Gg6y9qTnAb0SoL4nyS+8Uy90SnZZL11Oi8gxaVA\n7oXpTCxstK+XIjpMX9EwICVMTG45oxZBl7SEMMJsLjvCQx6ccrqDucrtGreGHg6T\n88Y6qumpxgqbDYsGQU+EfDTUo1zcqc/2mG6Nmapdrc3EDngWLwcOoewQtEST32Td\nvZOb7fAugThyJHieCYSX6VL16WGHNHvYHxarpdBSh5BYt0om97EJP/WSw8dECYyO\noI9D4OnWCNcCw6RqWMgECW13IzYGhsokU42cZqsq8zPO8OMmrXcUfcm/O1lS7+n1\n0tlJz1erDg/XL6B2lNYEuIoV9bTHyIqj34c4XH9Gq30+DWvv277ZsCLdkYH9X0Tk\nwr0eD6pt8P8W6rqSav9idY8CAwEAAQ==\n-----END PUBLIC KEY-----"
+//    
+//    print(key)
+    
 //    app.http.server.configuration.supportPipelining = true
 //    app.http.server.configuration.responseCompression = .enabled
 //    app.http.server.configuration.requestDecompression = .enabled
@@ -112,19 +116,6 @@ public func configure(_ app: Application) async throws {
 //ucmqlKkk8LfUkER8T3hOpFEOH1qReAa1DyGF3XPaQNaQ1/T3cOMtlfMvbu2B
 //-----END RSA PRIVATE KEY-----
 
-//-----BEGIN PUBLIC KEY-----
-//MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoHXDivYXaI7zb9GG76QC
-//zstH5PuvUhjCG/Y6cZKoF1+alhFuays5e+OxBfesYTy9QEDzo+sDH5qRN/aBF8gf
-//aCeIiQbKKakNYwkuP2xOcovd4xeNv35QLnXmPl4QW9aP2AWT8konEp8vsIUZfI7Q
-//k6LZ/EbHUFXq3uW5lqjXkUY6JB2h3KzlOAixO9VnvsYzoi9APBbl0Z+ax+RhAsnh
-//K/6OxxWwTxf9aykWMqMrFBmWmpJdPCUWKmRqySBl8ieZULFdK/lE677DH3zOAf/D
-//1Nf6n10Wf7kB4e77eZog1I9M/Gg6y9qTnAb0SoL4nyS+8Uy90SnZZL11Oi8gxaVA
-//7oXpTCxstK+XIjpMX9EwICVMTG45oxZBl7SEMMJsLjvCQx6ccrqDucrtGreGHg6T
-//88Y6qumpxgqbDYsGQU+EfDTUo1zcqc/2mG6Nmapdrc3EDngWLwcOoewQtEST32Td
-//vZOb7fAugThyJHieCYSX6VL16WGHNHvYHxarpdBSh5BYt0om97EJP/WSw8dECYyO
-//oI9D4OnWCNcCw6RqWMgECW13IzYGhsokU42cZqsq8zPO8OMmrXcUfcm/O1lS7+n1
-//0tlJz1erDg/XL6B2lNYEuIoV9bTHyIqj34c4XH9Gq30+DWvv277ZsCLdkYH9X0Tk
-//wr0eD6pt8P8W6rqSav9idY8CAwEAAQ==
-//-----END PUBLIC KEY-----
+//-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoHXDivYXaI7zb9GG76QC\nzstH5PuvUhjCG/Y6cZKoF1+alhFuays5e+OxBfesYTy9QEDzo+sDH5qRN/aBF8gf\naCeIiQbKKakNYwkuP2xOcovd4xeNv35QLnXmPl4QW9aP2AWT8konEp8vsIUZfI7Q\nk6LZ/EbHUFXq3uW5lqjXkUY6JB2h3KzlOAixO9VnvsYzoi9APBbl0Z+ax+RhAsnh\nK/6OxxWwTxf9aykWMqMrFBmWmpJdPCUWKmRqySBl8ieZULFdK/lE677DH3zOAf/D\n1Nf6n10Wf7kB4e77eZog1I9M/Gg6y9qTnAb0SoL4nyS+8Uy90SnZZL11Oi8gxaVA\n7oXpTCxstK+XIjpMX9EwICVMTG45oxZBl7SEMMJsLjvCQx6ccrqDucrtGreGHg6T\n88Y6qumpxgqbDYsGQU+EfDTUo1zcqc/2mG6Nmapdrc3EDngWLwcOoewQtEST32Td\nvZOb7fAugThyJHieCYSX6VL16WGHNHvYHxarpdBSh5BYt0om97EJP/WSw8dECYyO\noI9D4OnWCNcCw6RqWMgECW13IzYGhsokU42cZqsq8zPO8OMmrXcUfcm/O1lS7+n1\n0tlJz1erDg/XL6B2lNYEuIoV9bTHyIqj34c4XH9Gq30+DWvv277ZsCLdkYH9X0Tk\nwr0eD6pt8P8W6rqSav9idY8CAwEAAQ==\n-----END PUBLIC KEY-----
 
 

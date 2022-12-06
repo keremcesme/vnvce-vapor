@@ -24,14 +24,16 @@ extension Application {
         self.logger.notice("Public Key: \(publicKey)")
         self.logger.notice("Private Key: \(privateKey)")
         
-        
-        
-//        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-//        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
-//
-//        self.jwt.signers.use(privateSigner, kid: .private)
-//        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
-        
+        do {
+            let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
+            let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
+
+            self.jwt.signers.use(privateSigner, kid: .private)
+            self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
         self.logger.notice("✅ JWT Configured")
     }
     
