@@ -26,11 +26,11 @@ extension Application {
         
         
         
-        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
-
-        self.jwt.signers.use(privateSigner, kid: .private)
-        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+//        let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
+//        let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
+//
+//        self.jwt.signers.use(privateSigner, kid: .private)
+//        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
         
         self.logger.notice("✅ JWT Configured")
     }
