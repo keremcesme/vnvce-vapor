@@ -10,28 +10,46 @@ import Fluent
 import FluentPostgresDriver
 
 extension Application {
-    public func configureDatabase() async throws {
-        self.logger.notice("[ 1/8 ] Configuring Database (PSQL)")
+    
+    private struct DBCredentialsModel: Decodable {
+        public static let schema = "DB_CREDENTIALS"
         
-        guard
-            let host = Environment.get("DB_HOST"),
-            let port = Environment.get("DB_PORT").flatMap(Int.init),
-            let username = Environment.get("DB_USERNAME"),
-            let password = Environment.get("DB_PASSWORD"),
-            let database = Environment.get("DB_NAME")
-        else {
-            let error = ConfigureError.missingDBEnvironments
-            self.logger.notice(error.rawValue)
-            throw error
+        let host: String
+        let port: Int
+        let username: String
+        let password: String
+        let name: String
+        
+        init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            self.host = try container.decode(String.self, forKey: CodingKeys.host)
+            self.port = Int(try container.decode(String.self, forKey: CodingKeys.port))!
+            self.username = try container.decode(String.self, forKey: CodingKeys.username)
+            self.password = try container.decode(String.self, forKey: CodingKeys.password)
+            self.name = try container.decode(String.self, forKey: CodingKeys.name)
         }
+        
+        enum CodingKeys: String, CodingKey {
+            case host = "HOST"
+            case port = "PORT"
+            case username = "USERNAME"
+            case password = "PASSWORD"
+            case name = "NAME"
+        }
+    }
+    
+    public func configureDatabase() async throws {
+        self.logger.notice("[ 2/8 ] Configuring Database (PSQL)")
+        
+        let credentials = try await self.aws.secrets.getSecret(DBCredentialsModel.schema, to: DBCredentialsModel.self)
         
         self.databases.use(
             .postgres(
-                hostname: host,
-                port: port,
-                username: username,
-                password: password,
-                database: database),
+                hostname: credentials.host,
+                port: credentials.port,
+                username: credentials.username,
+                password: credentials.password,
+                database: credentials.name),
             as: .psql
         )
         

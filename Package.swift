@@ -39,6 +39,7 @@ let package = Package(
                 .product(name: "VNVCECore", package: "vnvce-core"),
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "SotoSNS", package: "soto"),
+                .product(name: "SotoSecretsManager", package: "soto"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

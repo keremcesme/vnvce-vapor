@@ -67,4 +67,8 @@ extension String {
     var key: String {
         return self.replacingOccurrences(of: "\\n", with: "\n")
     }
+    
+    var convertToKey: String {
+        return self.replacingOccurrences(of: "\\n", with: "\n")
+    }
 }

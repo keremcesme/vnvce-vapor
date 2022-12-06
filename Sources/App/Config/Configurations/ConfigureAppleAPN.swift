@@ -13,37 +13,36 @@ import JWT
 fileprivate typealias AuthMethod = APNSwiftConfiguration.AuthenticationMethod
 
 extension Application {
-    func configureAppleAPN() async throws {
-        self.logger.notice("[ 3/8 ] Configuring Apple APNs")
+    
+    private struct AppleAPNSCredentialsModel: Decodable {
+        static let schema = "APPLE_APNS_CREDENTIALS"
         
-        let privateKey = """
------BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgr5fwKbqdYeGQN/GK
-bDuW1SAGXukW5juL6UVsVWLE1YugCgYIKoZIzj0DAQehRANCAASNAG97eVxBKSZr
-SvNE9jGrR+P9ThOBQQN+a1SWOEMHrjzbBLjLgQU8AEAt2onve10IEGqD7su/dIEt
-xJsDxiGt
------END PRIVATE KEY-----
-"""
+        let keyID: String
+        let key: String
+        let teamID: String
+        let iosAppBundleID: String
         
-        guard
-            let keyID = Environment.get("APPLE_APN_KEY_ID"),
-//            let privateKey = Environment.get("APPLE_APN_PRIVATE_KEY"),
-            let teamID = Environment.get("APPLE_TEAM_ID"),
-            let appBundleID = Environment.get("IOS_APP_BUNDLE_ID")
-        else {
-            let error = ConfigureError.missingAppleAPNSEnvironments
-            self.logger.notice(error.rawValue)
-            throw error
+        enum CodingKeys: String, CodingKey {
+            case keyID = "KEY_ID"
+            case key = "KEY"
+            case teamID = "TEAM_ID"
+            case iosAppBundleID = "IOS_APP_BUNDLE_ID"
         }
+    }
+    
+    func configureAppleAPN() async throws {
+        self.logger.notice("[ 5/8 ] Configuring Apple APNs")
+        
+        let credentials = try await self.aws.secrets.getSecret(AppleAPNSCredentialsModel.schema, to: AppleAPNSCredentialsModel.self)
         
         let authMethod: AuthMethod = try .jwt(
-            key: .private(pem: privateKey),
-            keyIdentifier: JWKIdentifier(string: keyID),
-            teamIdentifier: teamID)
+            key: .private(pem: credentials.key.convertToKey),
+            keyIdentifier: JWKIdentifier(string: credentials.keyID),
+            teamIdentifier: credentials.teamID)
         
         let apnConfiguration = APNSwiftConfiguration(
             authenticationMethod: authMethod,
-            topic: appBundleID,
+            topic: credentials.iosAppBundleID,
             environment: .sandbox)
         
         apns.configuration = apnConfiguration
@@ -60,3 +59,5 @@ xJsDxiGt
 //    topic: Environment.get("IOS_APP_BUNDLE_ID") ?? "",
 //    environment: .sandbox
 //)
+
+

@@ -9,24 +9,36 @@ import Vapor
 import Redis
 
 extension Application {
+    
+    private struct RedisCredentialsModel: Decodable {
+        static let schema = "REDIS_CREDENTIALS"
+        
+        let host: String
+        let port: Int
+        
+        init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            self.host = try container.decode(String.self, forKey: CodingKeys.host)
+            self.port = Int(try container.decode(String.self, forKey: CodingKeys.port))!
+        }
+        
+        enum CodingKeys: String, CodingKey {
+            case host = "HOST"
+            case port = "PORT"
+        }
+    }
+    
     func configureRedis() async throws {
-        self.logger.notice("[ 2/8 ] Configuring Redis")
+        self.logger.notice("[ 3/8 ] Configuring Redis")
         
         switch self.environment {
         case .production:
-            guard
-                let host = Environment.get("REDIS_HOST"),
-                let portRaw = Environment.get("REDIS_PORT"),
-                let port = Int(portRaw)
-            else {
-                let error = ConfigureError.missingRedisEnvironments
-                self.logger.notice(error.rawValue)
-                throw error
-            }
+            
+            let credentials = try await self.aws.secrets.getSecret(RedisCredentialsModel.schema, to: RedisCredentialsModel.self)
             
             self.redis.configuration = try RedisConfiguration(
-                hostname: host,
-                port: port)
+                hostname: credentials.host,
+                port: credentials.port)
             
             self.logger.notice("✅ Redis Configured")
             

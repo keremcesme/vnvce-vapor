@@ -46,58 +46,13 @@ WORKDIR /app
 
 COPY --from=build --chown=vapor:vapor /staging /app
 
-# ARS DB Environment ARG
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_USERNAME
-ARG DB_PASSWORD
-ARG DB_NAME
-
-# ARS APPLE Environment ARG
-ARG APPLE_APN_PRIVATE_KEY
-ARG APPLE_APN_KEY_ID
-ARG APPLE_TEAM_ID
-
-# JWT RSA Environment ARG
-ARG RSA_PUBLIC_KEY
-ARG RSA_PRIVATE_KEY
-
 # ARS AWS Environment ARG
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-ARG AWS_SNS_SENDER_ID
-ARG AWS_REGION
-
-# ARS Redis Environment ARG
-ARG REDIS_HOST
-ARG REDIS_PORT
-
-# ARS iOS Environment ARG
-ARG IOS_APP_BUNDLE_ID
+ARG AWS_KEY_ID
+ARG AWS_KEY
 
 # ===== SET ENVIRONMENTS =====
-RUN echo "DB_HOST=${DB_HOST}" >> .env.production
-RUN echo "DB_PORT=${DB_PORT}" >> .env.production
-RUN echo "DB_USERNAME=${DB_USERNAME}" >> .env.production
-RUN echo "DB_PASSWORD=${DB_PASSWORD}" >> .env.production
-RUN echo "DB_NAME=${DB_NAME}" >> .env.production
-
-RUN echo "APPLE_APN_PRIVATE_KEY=${APPLE_APN_PRIVATE_KEY}" >> .env.production
-RUN echo "APPLE_APN_KEY_ID=${APPLE_APN_KEY_ID}" >> .env.production
-RUN echo "APPLE_TEAM_ID=${APPLE_TEAM_ID}" >> .env.production
-
-RUN echo "RSA_PUBLIC_KEY=${RSA_PUBLIC_KEY}" >> .env.production
-RUN echo "RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY}" >> .env.production
-
-RUN echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env.production
-RUN echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env.production
-RUN echo "AWS_SNS_SENDER_ID=${AWS_SNS_SENDER_ID}" >> .env.production
-RUN echo "AWS_REGION=${AWS_REGION}" >> .env.production
-
-RUN echo "REDIS_HOST=${REDIS_HOST}" >> .env.production
-RUN echo "REDIS_PORT=${REDIS_PORT}" >> .env.production
-
-RUN echo "IOS_APP_BUNDLE_ID=${IOS_APP_BUNDLE_ID}" >> .env.production
+RUN echo "AWS_KEY_ID=${AWS_KEY_ID}" >> .env.production
+RUN echo "AWS_KEY=${AWS_KEY}" >> .env.production
 
 USER vapor:vapor
 

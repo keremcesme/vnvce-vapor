@@ -77,7 +77,7 @@ extension AuthController {
         
         try await req.redis.setex(key, toJSON: otp, expirationInSeconds: 60)
         
-        try await req.application.sms.send(to: phoneNumber, message: "Your code: \(code)")
+//        try await req.application.sms.send(to: phoneNumber, message: "Your code: \(code)")
         
         return .init(createdAt: otp.createdAt, expireAt: otp.expireAt)
     }

@@ -9,67 +9,36 @@ import Vapor
 import JWT
 
 extension Application {
-    public func configureJWT() async throws {
-        self.logger.notice("[ 5/8 ] Configuring JWT")
+    
+    private struct RSAKeysModel: Decodable {
+        public static let schema = "JWT_RSA_KEYS"
         
-//        print(Environment.get("RSA_PRIVATE_KEY"))
-//        print(Environment.get("RSA_PUBLIC_KEY"))
+        let publicKey: String
+        let privateKey: String
         
-        do {
-            let privKey = Environment.get("RSA_PRIVATE_KEY")?.key
-            let pubKey = Environment.get("RSA_PUBLIC_KEY")?.key
-            
-            let a = Logger.Message(stringLiteral: privKey ?? "nil")
-            let b = Logger.Message(stringLiteral: pubKey ?? "nil")
-            
-            
-            self.logger.notice(a)
-            
-            self.logger.notice(b)
-            
-            guard
-                let privateKey = Environment.get("RSA_PRIVATE_KEY")?.key,
-                let publicKey = Environment.get("RSA_PUBLIC_KEY")?.key
-            else {
-                let error = ConfigureError.missingRSAKeys
-                self.logger.notice(error.rawValue)
-                throw error
-            }
-            
-//            let privateKey = String(privateKeyRaw).key
-//            let publicKey = String(publicKeyRaw).key
-            
-//            self.logger.notice("Public Key: \(publicKey)")
-//            self.logger.notice("Private Key: \(privateKey)")
-            
-            let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
-            let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
-
-            self.jwt.signers.use(privateSigner, kid: .private)
-            self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
-        } catch {
-            print(error.localizedDescription)
-            return
+        init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            self.publicKey = try container.decode(String.self, forKey: CodingKeys.publicKey).convertToKey
+            self.privateKey = try container.decode(String.self, forKey: CodingKeys.privateKey).convertToKey
         }
+        
+        enum CodingKeys: String, CodingKey {
+            case publicKey = "PUBLIC_KEY"
+            case privateKey = "PRIVATE_KEY"
+        }
+    }
+    
+    public func configureJWT() async throws {
+        self.logger.notice("[ 4/8 ] Configuring JWT")
+        
+        let keys = try await self.aws.secrets.getSecret(RSAKeysModel.schema, to: RSAKeysModel.self)
+        
+        let publicSigner = try JWTSigner.rs256(key: .public(pem: keys.publicKey.bytes))
+        let privateSigner = try JWTSigner.rs256(key: .private(pem: keys.privateKey.bytes))
+        
+        self.jwt.signers.use(publicSigner, kid: .public, isDefault: true)
+        self.jwt.signers.use(privateSigner, kid: .private)
         
         self.logger.notice("✅ JWT Configured")
     }
-    
-    private func getPrivateKEY() throws -> String {
-        if let envKey = Environment.get("RSA_PRIVATE_KEY") {
-            return envKey
-        } else {
-            return try String(contentsOfFile: self.directory.workingDirectory + "Credentials/jwtRS256.key")
-        }
-    }
-    
-    private func getPublicKEY() throws -> String {
-        if let envKey = Environment.get("RSA_PUBLIC_KEY") {
-            return envKey
-        } else {
-            return try String(contentsOfFile: self.directory.workingDirectory + "Credentials/jwtRS256.key.pub")
-        }
-        
-    }
-    
 }
