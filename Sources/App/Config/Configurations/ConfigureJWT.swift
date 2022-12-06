@@ -16,9 +16,15 @@ extension Application {
 //        print(Environment.get("RSA_PUBLIC_KEY"))
         
         do {
+            let privKey = Environment.get("RSA_PRIVATE_KEY")?.key
+            let pubKey = Environment.get("RSA_PUBLIC_KEY")?.key
             
-            self.logger.notice("Public Key: \(Environment.get("RSA_PRIVATE_KEY"))")
-            self.logger.notice("Private Key: \(Environment.get("RSA_PUBLIC_KEY"))")
+            let a = Logger.Message(stringLiteral: privKey ?? "nil")
+            let b = Logger.Message(stringLiteral: pubKey ?? "nil")
+            
+            self.logger.notice(a)
+            
+            self.logger.notice(b)
             
             guard
                 let privateKey = Environment.get("RSA_PRIVATE_KEY")?.key,
@@ -32,8 +38,8 @@ extension Application {
 //            let privateKey = String(privateKeyRaw).key
 //            let publicKey = String(publicKeyRaw).key
             
-            self.logger.notice("Public Key: \(publicKey)")
-            self.logger.notice("Private Key: \(privateKey)")
+//            self.logger.notice("Public Key: \(publicKey)")
+//            self.logger.notice("Private Key: \(privateKey)")
             
             let privateSigner = try JWTSigner.rs256(key: .private(pem: privateKey.bytes))
             let publicSigner = try JWTSigner.rs256(key: .public(pem: publicKey.bytes))
