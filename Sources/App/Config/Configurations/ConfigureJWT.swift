@@ -16,6 +16,10 @@ extension Application {
 //        print(Environment.get("RSA_PUBLIC_KEY"))
         
         do {
+            
+            self.logger.notice("Public Key: \(Environment.get("RSA_PRIVATE_KEY"))")
+            self.logger.notice("Private Key: \(Environment.get("RSA_PUBLIC_KEY"))")
+            
             guard
                 let privateKey = Environment.get("RSA_PRIVATE_KEY")?.key,
                 let publicKey = Environment.get("RSA_PUBLIC_KEY")?.key
