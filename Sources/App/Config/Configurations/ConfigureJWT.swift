@@ -22,6 +22,7 @@ extension Application {
             let a = Logger.Message(stringLiteral: privKey ?? "nil")
             let b = Logger.Message(stringLiteral: pubKey ?? "nil")
             
+            
             self.logger.notice(a)
             
             self.logger.notice(b)
