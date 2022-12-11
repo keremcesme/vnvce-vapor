@@ -13,47 +13,38 @@ extension Application {
     func configureMigrations() async {
         self.logger.notice("[ 7/8 ] Configuring Migrations")
         
-        self.migrations.add([
-            // ENUMS - DATA TYPEs
-            EnablePostGISMigration(),
+        
+        
+        let types: [Migration] = [
             CreateProfilePictureAlignmentType(),
-//            CreateCoPostApprovalStatus(),
             CreateMediaType(),
-            CreateDeviceOS(),
-//            CreateMonth(),
-//            CreatePostType(),
-
-            // AUTHENTICATION
-//            CreateSMSVerificationAttempt(),
-
-            // USERNAME
-//            CreateReservedUsername(),
-            
-            // USER
+            CreateDeviceOS()
+        ]
+        
+        let users: [Migration] = [
             CreateUser(),
-            CreateProfilePicture(),
             CreatePhoneNumber(),
             CreateUsername(),
-            CreateNotificationToken(),
-            
-            // AUTH TOKENS
-//            CreateRefreshToken(),
-//            CreateAccessToken(),
-            
-            // RELATIONSHIP
+            CreateProfilePicture(),
+            CreateNotificationToken()
+        ]
+        
+        let relationships: [Migration] = [
             CreateFriendship(),
             CreateFriendRequest(),
-            CreateBlock(),
-            
-            // POST
-//            CreatePost(),
-//            CreateMoment(),
-            
-            // EXTENSIONS
-//            CreatePG_TRGMExtension(),
-//            CreateUserDisplayNameAndUsernameIndex()
-            
-        ])
+            CreateBlock()
+        ]
+        
+        let extensions: [Migration] = [
+            EnablePostGISMigration(),
+            CreatePG_TRGMExtension(),
+            CreateUserDisplayNameAndUsernameIndex()
+        ]
+        
+        self.migrations.add(types)
+        self.migrations.add(users)
+        self.migrations.add(relationships)
+        self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")
     }

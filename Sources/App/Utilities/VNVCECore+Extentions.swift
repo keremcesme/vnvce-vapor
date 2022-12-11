@@ -42,27 +42,7 @@ extension RoutesBuilder {
     }
 }
 
-extension HTTPHeaders.Name {
-    static let acceptVersion = HTTPHeaders.Name("Accept-version")
-}
 
-extension HTTPHeaders {
-    public var acceptVersion: String? {
-        get {
-            guard let string = self.first(name: .acceptVersion) else {
-                return nil
-            }
-            return string
-        }
-        set {
-            if let version = newValue {
-                replaceOrAdd(name: .acceptVersion, value: version)
-            } else {
-                remove(name: .acceptVersion)
-            }
-        }
-    }
-}
 
 extension VNVCECore.APIVersion {
     var toPathComponents: PathComponent {

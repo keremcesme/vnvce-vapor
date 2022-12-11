@@ -27,22 +27,6 @@ extension Application {
                 self.application.storage[ConfigurationKey.self] = newValue
             }
         }
-        
-        func getSecret() async throws -> String {
-            guard let config = configuration else {
-                throw Abort(.notFound)
-            }
-            
-            let secretsManager = config.secretsManager
-            
-            let value = try await secretsManager.getSecretValue(.init(secretId: "JWT_RSA_KEYS"))
-            
-            guard let secret = value.secretString else {
-                return ""
-            }
-            
-            return secret
-        }
     }
 }
 

@@ -22,6 +22,16 @@ extension JWTHelper.V1 {
         }
     }
     
+    func addTokensToBucket(tokens: FreshTokens.V1, clientID: String) async throws {
+        let refreshTokenID = tokens.refreshToken.jwtID
+        let accessTokenID = tokens.accessToken.jwtID
+        try await self.addTokenToBucket(jwtID: refreshTokenID, to: .refreshToken(clientID))
+        try await self.addTokenToBucket(jwtID: accessTokenID, to: .accessToken)
+    }
+    
+    func addTokenToBucket(jwtID: String, to bucket: RedisAddBucket.V1) async throws {
+        try await self.plugin.addTokenToBucket(jwtID: jwtID, to: bucket)
+    }
     
     func getRefreshTokenIdsForUser(_ userID: String) async throws -> Result<RedisUserPayload.V1, RedisError.V1>{
         return try await self.plugin.getRefreshTokensForUser(userID)

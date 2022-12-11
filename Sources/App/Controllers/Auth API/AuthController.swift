@@ -26,90 +26,70 @@ public struct AuthController: RouteCollection {
         
         api.post("create-account", use: createAccountHandler)
         
-        func generateTokens(_ req: Request) async throws {
-            let helper = TokenJWTHelper.shared
-            let date = Date()
-            
-            let userID = UUID().uuidString
-            
-            
-            let tokens = try helper.generateTokens(userID: userID, req)
-            
-            let refreshTokenKey = RedisKey("refresh_tokens:\(tokens.refreshToken.jwtID)")
-            let accessTokenKey = RedisKey("access_tokens:\(tokens.accessToken.jwtID)")
-            let userKey = RedisKey("users:\(userID)")
-            
-            let refreshTokenPayload = RedisTokenPayloadOLD(
-                isActive: true,
-                stored: date.timeIntervalSince1970,
-                ttl: 2_419_000)
-            
-            let accessTokenPayload = RedisTokenPayloadOLD(
-                isActive: true,
-                stored: date.timeIntervalSince1970,
-                ttl: 1800)
-            
-            let userPayload: Codable = [
-                "tokens": [tokens.refreshToken.jwtID]
-            ]
-            
-            try await req.redis.setex(refreshTokenKey, toJSON: refreshTokenPayload, expirationInSeconds: 2_419_000)
-            
-            try await req.redis.setex(accessTokenKey, toJSON: accessTokenPayload, expirationInSeconds: 1800)
-            
-            try await req.redis.setex(userKey, toJSON: userPayload, expirationInSeconds: 2_419_000)
-            
-            
-            
-        }
-        
         api
 //            .grouped(TokenJWTAuthenticator2())
 //            .grouped(User.guardMiddleware())
             .get("test") { req async throws -> String in
-                let helper = JWTHelper.V1(req)
-                let plugin = JWTPlugin.V1(req.redis)
+                let jwt = req.authService.jwt.v1
+                let redis = req.authService.redis.v1
                 
-                let tokens = try helper.generateTokens("kerem_cesme")
+                let clientID = UUID().uuidString
                 
-                let refreshToken = tokens.refreshToken
-                let accessToken = tokens.accessToken
+                let codeChallenge = "8sobtsfpB9Btr-Roflefznazfk6Tt2BQItpS5szCb9I"
                 
-                try await plugin.addTokenToBucket(jwtID: refreshToken.jwtID, to: .refreshToken)
-                try await plugin.addTokenToBucket(jwtID: accessToken.jwtID, to: .accessToken)
-                try await plugin.setLoggedInUserToBucket("kerem_cesme", refresh: refreshToken.jwtID)
+                let authCode = try jwt.generateAuthCode()
                 
+                try await redis.addAuthCodeToBucket(challenge: codeChallenge, clientID: clientID, authCode.jwtID)
+                
+                print(authCode.value)
+                print(clientID)
+                
+//                let userID = "kerem_cesme"
+//                let clientID = UUID().uuidString
+//                let sessionID = UUID().uuidString
+//
+//                let tokens = try jwt.generateTokens(userID)
+//                try await redis.addTokensToBucket(tokens: tokens, clientID: clientID)
+//                let refreshTokenID = tokens.refreshToken.jwtID
+//                try await redis.setLoggedInUserToBucket(userID, refresh: refreshTokenID)
+//                try await redis.addSessionToBucket(clientID, userID: userID, refreshTokenID: refreshTokenID)
+//                print(tokens.accessToken.value)
                 
                 return "WORKS"
             }
         
-        api.get("login") { req async throws -> String in
-            let helper = JWTHelper.V1(req)
-            let plugin = JWTPlugin.V1(req.redis)
-            
-            let userID = "kerem_cesme"
-            
-            let tokens = try helper.generateTokens(userID)
-            
-            let refreshToken = tokens.refreshToken
-            let accessToken = tokens.accessToken
-            
-            try await plugin.addTokenToBucket(jwtID: refreshToken.jwtID, to: .refreshToken)
-            try await plugin.addTokenToBucket(jwtID: accessToken.jwtID, to: .accessToken)
-            
-            let result = try await plugin.getRefreshTokensForUser(userID)
-            
-            switch result {
-            case let .success(result):
-                let tokenIDs = result.tokens
-                try await plugin.setLoggedInUserToBucket(userID, refresh: refreshToken.jwtID, currentTokens: tokenIDs)
-            case let .failure(failure):
-                print(failure)
+        api
+            .get("test-verify") {  req async throws -> String in
+                guard let token = req.headers.bearerAuthorization?.token else {
+                    print("Missing Header")
+                    return "Error"
+                }
+                
+                let jwt = try req.jwt.verify(token, as: AuthCodePayload.V1.self)
+                
+                let redis = req.authService.redis.v1
+                
+                let codeVerifier = "test"
+                
+                let payload = try await redis.getAuthCodeFromBucket(jwt.jti.value)
+                
+                switch payload {
+                case let .success(payload):
+                    print(payload.codeChallenge)
+                    print(payload.clientID)
+                    
+                    return "Verified"
+                case .notFound:
+                    return "Error"
+                }
             }
-            
-            
-            return "WORKS"
-        }
+        
+        api
+            .grouped(TokenAuthMiddleware())
+            .get("test-2") { req -> String in
+                
+                return "HEY"
+            }
         
         
         

@@ -125,36 +125,6 @@ extension Application {
             return signed
         }
         
-        self.post("token") { req async -> String in
-            
-            do {
-                let userID = try req.content.decode(UserIDPayload.self).id
-                let user = RedisUserIDModel(userID: userID).userID
-                
-                let key = RedisKey(UUID().uuidString)
-                
-                try await req.redis.setex(key, toJSON: user, expirationInSeconds: 60)
-                
-                print("Token is created: Token: \(key)")
-                
-                return "OK"
-            } catch {
-                return "ERROR [1]"
-            }
-        }
-        
-        self.group(TokenAuthMiddleware()) { m in
-            m.get("verify-token") { req async -> String in
-                do {
-                    let token = try req.auth.require(RedisUserIDModel.self)
-                    
-                    return "AUTHENTICATED"
-                } catch {
-                    
-                    return "NOT AUTHENTICATED"
-                }
-            }
-        }
         
         self.group("check_token") { check in
             check.group(AccessToken.authenticator(), User.guardMiddleware()) {

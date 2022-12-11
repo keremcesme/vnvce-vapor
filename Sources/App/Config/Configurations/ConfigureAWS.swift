@@ -9,8 +9,8 @@ extension Application {
             let keyID = Environment.get("AWS_KEY_ID"),
             let privateKey = Environment.get("AWS_KEY")
         else {
-            let error = ConfigureError.missingAWSEnvironments
-            self.logger.notice(error.rawValue)
+            let error = "❌ Missing AWS Environments"
+            self.logger.notice(.init(stringLiteral: error))
             throw error
         }
         

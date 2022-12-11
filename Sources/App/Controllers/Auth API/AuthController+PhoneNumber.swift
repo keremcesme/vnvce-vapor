@@ -41,7 +41,7 @@ extension AuthController {
             return .init(availability: .exist)
         }
         
-        let key = RedisKey("phone_number:\(p.phoneNumber)")
+        let key = RedisKey("phone_numbers:\(p.phoneNumber)")
         
         let otpAttemptQuery = try await req.redis.get(key, asJSON: RedisOTPModel.V1.self)
         
@@ -73,15 +73,18 @@ extension AuthController {
         
         let otp = RedisOTPModel.V1(encryptedCode: encryptedCode, encryptedClientID: encryptedClientID)
         
-        let key = RedisKey("phone_number:\(phoneNumber)")
+        let key = RedisKey("phone_numbers:\(phoneNumber)")
         
         try await req.redis.setex(key, toJSON: otp, expirationInSeconds: 60)
         
-//        try await req.application.sms.send(to: phoneNumber, message: "Your code: \(code)")
+        try await req.application.aws.sms.send(to: phoneNumber, message: "Your code: \(code)")
         
         return .init(createdAt: otp.createdAt, expireAt: otp.expireAt)
     }
     
+//    func tasdjukfhukasdfas() async throws -> Vapor.Response {
+//        
+//    }
 }
 
 extension SMSOTPModel.V1: Content {}

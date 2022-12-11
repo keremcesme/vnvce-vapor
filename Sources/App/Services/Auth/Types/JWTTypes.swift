@@ -9,7 +9,7 @@ final class FreshToken {
     }
 }
 
-final class FreshTokens {
+public final class FreshTokens {
     public struct V1: Codable {
         let accessToken: FreshToken.V1
         let refreshToken: FreshToken.V1
@@ -77,6 +77,22 @@ final class TokenPayload {
         }
         
     }
-    
-    
+}
+
+final class AuthCodePayload {
+    public struct V1: Content, JWTPayload {
+        let iss: IssuerClaim
+        let aud: AudienceClaim
+        let jti: IDClaim
+        
+        init(jwtID: String) {
+            self.iss = .init(value: "api.vnvce.com")
+            self.aud = .init(value: ["vnvce.com"])
+            self.jti = .init(value: jwtID)
+        }
+        
+        public func verify(using signer: JWTSigner) throws {
+            
+        }
+    }
 }

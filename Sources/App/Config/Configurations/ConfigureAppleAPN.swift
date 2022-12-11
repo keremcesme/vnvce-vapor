@@ -59,5 +59,3 @@ extension Application {
 //    topic: Environment.get("IOS_APP_BUNDLE_ID") ?? "",
 //    environment: .sandbox
 //)
-
-

@@ -33,7 +33,6 @@ extension Application {
         
         switch self.environment {
         case .production:
-            
             let credentials = try await self.aws.secrets.getSecret(RedisCredentialsModel.schema, to: RedisCredentialsModel.self)
             
             self.redis.configuration = try RedisConfiguration(

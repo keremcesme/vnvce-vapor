@@ -9,21 +9,18 @@ fileprivate typealias Bucket = RedisBucket.V1
 fileprivate typealias TTL = RedisTokenTTL.V1
 fileprivate typealias Error = RedisError.V1
 
-typealias AddBucket = RedisAddGetBucket.V1
-typealias GetBucket = RedisAddGetBucket.V1
-
 extension JWTPlugin.V1 {
     
-    func addTokenToBucket(jwtID: String, to bucket: AddBucket) async throws {
+    func addTokenToBucket(jwtID: String, to bucket: RedisAddBucket.V1) async throws {
         switch bucket {
         case .accessToken:
             try await addAccessTokenToBucket(jwtID)
-        case .refreshToken:
-            try await addRefreshTokenToBucket(jwtID)
+        case let .refreshToken(clientID):
+            try await addRefreshTokenToBucket(jwtID, clientID: clientID)
         }
     }
     
-    func getTokenFromBucket(jwtID: String, from bucket: GetBucket) async throws -> Result<RedisTokenPayload.V1, RedisError.V1>{
+    func getTokenFromBucket(jwtID: String, from bucket: RedisGetBucket.V1) async throws -> Result<RedisTokenPayload.V1, RedisError.V1>{
         switch bucket {
         case .accessToken:
             return try await getAccessTokenFromBucket(jwtID)
@@ -32,7 +29,7 @@ extension JWTPlugin.V1 {
         }
     }
     
-    func deleteTokenFromBucket(jwtID: String, from bucket: GetBucket) async throws {
+    func deleteTokenFromBucket(jwtID: String, from bucket: RedisGetBucket.V1) async throws {
         switch bucket {
         case .accessToken:
             try await deleteAccessTokenFromBucket(jwtID)
@@ -56,7 +53,7 @@ extension JWTPlugin.V1 {
         let key = usersRedisBucket(userID)
         var tokens = currentTokens
         tokens.append(jwtID)
-        let payload = RedisUserPayload.V1(tokens: tokens)
+        let payload = RedisUserPayload.V1(refreshTokens: tokens)
         let exp = TTL.refreshToken
         try await self.redis.setex(key, toJSON: payload, expirationInSeconds: exp)
     }
@@ -90,9 +87,9 @@ private extension JWTPlugin.V1 {
 
 // MARK: Refresh Token
 private extension JWTPlugin.V1 {
-    private func addRefreshTokenToBucket(_ jwtID: String) async throws {
+    private func addRefreshTokenToBucket(_ jwtID: String, clientID: String) async throws {
         let key = refreshTokenRedisBucket(jwtID)
-        let payload = RedisTokenPayload.V1()
+        let payload = RedisTokenPayload.V1(clientID: clientID)
         let exp = TTL.refreshToken
         try await self.redis.setex(key, toJSON: payload, expirationInSeconds: exp)
     }
@@ -102,7 +99,7 @@ private extension JWTPlugin.V1 {
         let payload = try await self.redis.get(key, asJSON: RedisTokenPayload.V1.self)
         
         guard let payload else {
-            return .failure(.accessTokenNotFound)
+            return .failure(.refreshTokenNotFound)
         }
         
         return .success(payload)
@@ -126,5 +123,9 @@ extension JWTPlugin.V1 {
     
     private func usersRedisBucket(_ userID: String) -> RedisKey {
         .init(Bucket.user + ":" + userID)
+    }
+    
+    private func phoneNumbersRedisBucket(_ phoneNumber: String) -> RedisKey {
+        .init(Bucket.phoneNumber + ":" + phoneNumber)
     }
 }

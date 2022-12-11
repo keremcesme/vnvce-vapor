@@ -1,0 +1,12 @@
+"redis-buckets": {
+    
+    "access_tokens:token_id": {
+        "isActive": "true"
+    },
+    
+    "refresh_tokens:token_id": {
+        "isActive": "true"
+    }
+    
+}
+
