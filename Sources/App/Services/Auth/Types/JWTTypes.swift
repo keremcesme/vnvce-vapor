@@ -46,7 +46,6 @@ final class TokenPayload {
     public struct V1: Content, JWTPayload, Authenticatable {
         let userID: String
         let tokenType: TokenType.V1
-        let refreshTokenID: String?
         
         let iss: IssuerClaim
         let aud: AudienceClaim
@@ -57,14 +56,12 @@ final class TokenPayload {
         init(
             userID: String,
             token type: TokenType.V1,
-            refreshTokenID: String? = nil,
             jwtID: String,
             expiresIn: TimeInterval
         ) {
             let date = Date()
             self.userID = userID
             self.tokenType = type
-            self.refreshTokenID = refreshTokenID
             self.iss = .init(value: "api.vnvce.com")
             self.aud = .init(value: ["vnvce.com"])
             self.jti = .init(value: jwtID)
@@ -81,18 +78,18 @@ final class TokenPayload {
 
 final class AuthCodePayload {
     public struct V1: Content, JWTPayload {
+        let userID: String
         let iss: IssuerClaim
         let aud: AudienceClaim
         let jti: IDClaim
         
-        init(jwtID: String) {
+        init(userID: String, jwtID: String) {
+            self.userID = userID
             self.iss = .init(value: "api.vnvce.com")
             self.aud = .init(value: ["vnvce.com"])
             self.jti = .init(value: jwtID)
         }
         
-        public func verify(using signer: JWTSigner) throws {
-            
-        }
+        public func verify(using signer: JWTSigner) throws {}
     }
 }

@@ -6,7 +6,6 @@ final class RedisBucket {
         static let user = "users"
         static let accessToken = "access_tokens"
         static let refreshToken = "refresh_tokens"
-        static let session = "sessions"
         static let phoneNumber = "phone_numbers"
         static let authCode = "auth_codes"
     }
@@ -21,8 +20,8 @@ public final class RedisGetBucket {
 
 public final class RedisAddBucket {
     public enum V1 {
-        case accessToken
-        case refreshToken(_ clientID: String)
+        case accessToken(_ refreshTokenID: String)
+        case refreshToken(_ authCodeID: String)
     }
 }
 
@@ -33,10 +32,11 @@ public final class RedisRevokeBucket {
     }
 }
 
-final class RedisTokenTTL {
+final class RedisTTL {
     public enum V1 {
         static let accessToken = 60 * 10 // 10 min
         static let refreshToken = 60 * 60 * 24 * 30 // 30 day
+        static let authCode = 60 * 60 * 24 * 45 // 45 day
     }
 }
 
@@ -45,7 +45,9 @@ final class RedisTokenTTL {
 public final class RedisAccessTokenPayload {
     public struct V1: Codable {
         public var isActive: Bool
-        public init(isActive: Bool = true) {
+        public var refreshTokenID: String
+        public init(_ refreshTokenID: String, isActive: Bool = true) {
+            self.refreshTokenID = refreshTokenID
             self.isActive = isActive
         }
     }
@@ -55,10 +57,10 @@ public final class RedisAccessTokenPayload {
 public final class RedisRefreshTokenPayload {
     public struct V1: Codable {
         public var isActive: Bool
-        public let sessionID: String
-        public init(isActive: Bool = true, sessionID: String) {
+        public var authCodeID: String
+        public init(_ authCodeID: String, isActive: Bool = true) {
+            self.authCodeID = authCodeID
             self.isActive = isActive
-            self.sessionID = sessionID
         }
     }
 }
@@ -66,46 +68,23 @@ public final class RedisRefreshTokenPayload {
 // Auth Code
 public final class RedisAuthCodePayload {
     public struct V1: Codable {
+        public let userID: String
         public let codeChallenge: String
         public let clientID: String
+        public let refreshTokenID: String
     }
 }
 
-// User Sessions
-public final class RedisUserSessionsPayload {
-    public struct V1: Codable {
-        public let sessions: [String]
-    }
-}
-
-public final class RedisTokenPayload {
-    public struct V1: Codable {
-        public var isActive: Bool
-        public let clientID: String?
-        
-        public init(isActive: Bool = true, clientID: String? = nil) {
-            self.isActive = isActive
-            self.clientID = clientID
-        }
-    }
-}
-
+// User
 public final class RedisUserPayload {
     public struct V1: Codable {
-        public var refreshTokens: [String]
+        public var authCodes: [String]
     }
 }
 
-public final class RedisGetTokenResult {
-    public enum V1: Codable {
-        case success(RedisTokenPayload.V1)
-        case notFound
-    }
-}
-
-public final class RedisGetUserRefreshTokensResult {
-    public enum V1: Codable {
-        case success(RedisUserPayload.V1)
+public final class RedisGetResult {
+    public enum V1 {
+        case success(any Codable)
         case notFound
     }
 }
@@ -116,6 +95,10 @@ public final class RedisGetAuthCodeResult {
         case notFound
     }
 }
+
+
+
+
 
 final class RedisError {
     public enum V1: String, Error {

@@ -2,6 +2,7 @@
 import Fluent
 import Vapor
 import VNVCECore
+import JWT
 import Redis
 
 // MARK: AuthController - AUTH API
@@ -26,6 +27,19 @@ public struct AuthController: RouteCollection {
         
         api.post("create-account", use: createAccountHandler)
         
+        api.post("authorize", use: authorizeHandler)
+        api.post("token", use: tokenHandler)
+        
+        api.post("refresh-access-token") {  req async throws -> String in
+            /// verify access refresh token JWT
+            ///
+            
+            
+            return ""
+        }
+        
+        
+        
         api
 //            .grouped(TokenJWTAuthenticator2())
 //            .grouped(User.guardMiddleware())
@@ -33,13 +47,14 @@ public struct AuthController: RouteCollection {
                 let jwt = req.authService.jwt.v1
                 let redis = req.authService.redis.v1
                 
+                let codeVerifier = "7lWRWldcct0utEg0JUO-map~yRe4WqpmLhJHKdF4uK8U8Nii0f7303YQQTIglAJHny7pLpQL0.geRihzGQCsiIM2hX1EmZVx7vFypIShx5Zb3B2qB8d3Cy2c_ySmWp1O"
                 let clientID = UUID().uuidString
                 
-                let codeChallenge = "8sobtsfpB9Btr-Roflefznazfk6Tt2BQItpS5szCb9I"
+                let codeChallenge = try await req.authService.code.generateCodeChallenge(fromVerifier: codeVerifier)
                 
-                let authCode = try jwt.generateAuthCode()
+                let authCode = try jwt.generateAuthCode("")
                 
-                try await redis.addAuthCodeToBucket(challenge: codeChallenge, clientID: clientID, authCode.jwtID)
+                try await redis.addAuthCodeToBucket(userID: "", challenge: codeChallenge, clientID: clientID, authCode.jwtID)
                 
                 print(authCode.value)
                 print(clientID)
@@ -65,20 +80,32 @@ public struct AuthController: RouteCollection {
                     return "Error"
                 }
                 
-                let jwt = try req.jwt.verify(token, as: AuthCodePayload.V1.self)
+                do {
+                    let asdasdasd = try req.jwt.verify(token, as: AuthCodePayload.V1.self).jti.value
+                } catch let error {
+                    
+                }
+                
+                let authCode = try req.jwt.verify(token, as: AuthCodePayload.V1.self).jti.value
                 
                 let redis = req.authService.redis.v1
                 
-                let codeVerifier = "test"
+                let codeVerifier = "7lWRWldcct0utEg0JUO-map~yRe4WqpmLhJHKdF4uK8U8Nii0f7303YQQTIglAJHny7pLpQL0.geRihzGQCsiIM2hX1EmZVx7vFypIShx5Zb3B2qB8d3Cy2c_ySmWp1O"
                 
-                let payload = try await redis.getAuthCodeFromBucket(jwt.jti.value)
+                let payload = try await redis.getAuthCodeFromBucket(authCode)
                 
                 switch payload {
                 case let .success(payload):
-                    print(payload.codeChallenge)
-                    print(payload.clientID)
+                    let codeChallenge = payload.codeChallenge
+                    let clientID = payload.clientID
                     
-                    return "Verified"
+                    let verifyResult = try await req.authService.code.verifyCodeChallenge(verifier: codeVerifier, challenge: codeChallenge)
+                    
+                    if verifyResult {
+                        return "Verified"
+                    }
+                    
+                    return "Not Verified"
                 case .notFound:
                     return "Error"
                 }

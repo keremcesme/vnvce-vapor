@@ -16,7 +16,6 @@ extension AuthController {
         switch version {
         case .v1:
             return try await createAccountV1(req)
-//            return try await reserveUsernameAndSendSMSOTPV1(req)
         default:
             throw Abort(.notFound)
         }
@@ -47,6 +46,11 @@ extension AuthController {
         let userID = try user.requireID()
         try await user.$username.create(.init(username: p.username, user: userID), on: req.db)
         try await user.$phoneNumber.create(.init(phoneNumber: p.phoneNumber, user: userID), on: req.db)
+        
+        // generate auth code and sign with JWT
+//        let authCode = try req.authService.jwt.v1.generateAuthCode()
+//        // add redis
+//        try await req.authService.redis.v1.addAuthCodeToBucket(challenge: "", clientID: "", authCode.jwtID)
         
         return .init("Account Is Created")
     }

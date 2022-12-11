@@ -1,5 +1,6 @@
 
 import Vapor
+import VNVCECore
 
 extension Application {
     public var authService: AuthService {
@@ -28,5 +29,9 @@ extension AuthService {
     
     public var redis: AuthService.Redis {
         .init(self.app)
+    }
+    
+    public var code: PKCEService {
+        .init()
     }
 }
