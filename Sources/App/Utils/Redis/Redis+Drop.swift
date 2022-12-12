@@ -22,3 +22,4 @@ extension Application.Redis {
         _ = try await self.delete(keys).get()
     }
 }
+

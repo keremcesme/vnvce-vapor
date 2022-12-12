@@ -4,7 +4,13 @@ import Vapor
 extension HTTPHeaders.Name {
     static let acceptVersion = HTTPHeaders.Name("Accept-version")
     static let refreshToken = HTTPHeaders.Name("X-Auth-Refresh-Token")
+    
     static let clientID = HTTPHeaders.Name("X-Client-ID")
+    static let clientOS = HTTPHeaders.Name("X-Client-OS")
+    
+    static let refreshTokenID = HTTPHeaders.Name("X-Refresh-Token-ID")
+    static let authID = HTTPHeaders.Name("X-Auth-ID")
+    
 }
 
 extension HTTPHeaders {
@@ -16,8 +22,8 @@ extension HTTPHeaders {
             return string
         }
         set {
-            if let version = newValue {
-                replaceOrAdd(name: .acceptVersion, value: version)
+            if let acceptVersion = newValue {
+                replaceOrAdd(name: .acceptVersion, value: acceptVersion)
             } else {
                 remove(name: .acceptVersion)
             }
@@ -32,8 +38,8 @@ extension HTTPHeaders {
             return string
         }
         set {
-            if let version = newValue {
-                replaceOrAdd(name: .refreshToken, value: version)
+            if let refreshToken = newValue {
+                replaceOrAdd(name: .refreshToken, value: refreshToken)
             } else {
                 remove(name: .refreshToken)
             }
@@ -48,10 +54,58 @@ extension HTTPHeaders {
             return string
         }
         set {
-            if let version = newValue {
-                replaceOrAdd(name: .clientID, value: version)
+            if let clientID = newValue {
+                replaceOrAdd(name: .clientID, value: clientID)
             } else {
                 remove(name: .clientID)
+            }
+        }
+    }
+    
+    public var clientOS: String? {
+        get {
+            guard let string = self.first(name: .clientOS) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let clientOS = newValue {
+                replaceOrAdd(name: .clientOS, value: clientOS)
+            } else {
+                remove(name: .clientOS)
+            }
+        }
+    }
+    
+    public var refreshTokenID: String? {
+        get {
+            guard let string = self.first(name: .refreshTokenID) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let refreshTokenID = newValue {
+                replaceOrAdd(name: .refreshTokenID, value: refreshTokenID)
+            } else {
+                remove(name: .refreshTokenID)
+            }
+        }
+    }
+    
+    public var authID: String? {
+        get {
+            guard let string = self.first(name: .authID) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let authID = newValue {
+                replaceOrAdd(name: .authID, value: authID)
+            } else {
+                remove(name: .authID)
             }
         }
     }

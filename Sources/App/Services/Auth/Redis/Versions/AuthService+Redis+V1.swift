@@ -3,215 +3,232 @@ import Vapor
 import Redis
 import RediStack
 
-fileprivate typealias Bucket = RedisBucket.V1
-fileprivate typealias TTL = RedisTTL.V1
-fileprivate typealias Error = RedisError.V1
+fileprivate typealias TTL = Redis.TTL.V1
 
 extension AuthService.Redis {
     public struct V1 {
         public let app: Application
-        
         init(_ app: Application) {
             self.app = app
         }
     }
 }
 
-// MARK: Tokens
 public extension AuthService.Redis.V1 {
-    func addTokensToBucket(tokens: FreshTokens.V1, clientID: String, authCodeID: String) async throws {
-        let refreshTokenID = tokens.refreshToken.jwtID
-        let accessTokenID = tokens.accessToken.jwtID
-        try await self.addTokenToBucket(tokenID: refreshTokenID, to: .refreshToken(authCodeID))
-        try await self.addTokenToBucket(tokenID: accessTokenID, to: .accessToken(refreshTokenID))
-    }
     
-    func addTokenToBucket(tokenID: String, to bucket: RedisAddBucket.V1) async throws {
-        switch bucket {
-        case let .accessToken(refreshTokenID):
-            try await addAccessTokenToBucket(tokenID, refreshTokenID)
-        case let .refreshToken(authCodeID):
-            try await addRefreshTokenToBucket(tokenID, authCodeID)
-        }
-    }
+    // MARK: - REFRESH TOKEN -
+    typealias RefreshToken = Redis.RefreshToken.V1
+    typealias RefreshTokenGetResult = Redis.GetResult.V1<RefreshToken>
     
-    func getTokenFromBucket(jwtID: String, from bucket: RedisGetBucket.V1) async throws -> RedisGetResult.V1 {
-        switch bucket {
-        case .accessToken:
-            return try await getAccessTokenFromBucket(jwtID)
-        case .refreshToken:
-            return try await getRefreshTokenFromBucket(jwtID)
-        }
-    }
-    
-    func deleteTokenFromBucket(jwtID: String, from bucket: RedisGetBucket.V1) async throws {
-        switch bucket {
-        case .accessToken:
-            try await deleteAccessTokenFromBucket(jwtID)
-        case .refreshToken:
-            try await deleteRefreshTokenFromBucket(jwtID)
-        }
-    }
-    
-//    func getRefreshTokensForUser(_ userID: String) async throws -> RedisGetUserRefreshTokensResult.V1 {
-//        let key = userRedisBucket(userID)
-//        let payload = try await self.app.redis.get(key, asJSON: RedisUserPayload.V1.self)
-//
-//        guard let payload else {
-//            return .notFound
-//        }
-//
-//        return .success(payload)
-//    }
-    
-//    func revokeTokenFromBucket(_ jwtID: String, payload: RedisTokenPayload.V1, from bucket: RedisRevokeBucket.V1) async throws {
-//        switch bucket {
-//        case .accessToken:
-//            try await revokeAccessTokenFromBucket(jwtID, payload: payload)
-//        case let .refreshToken(user):
-//            try await revokeRefreshTokenFromBucket(jwtID, payload: payload)
-//        }
-//    }
-}
-
-// MARK: User
-public extension AuthService.Redis.V1 {
-    func setLoggedInUserToBucket(_ userID: String, refresh jwtID: String, currentTokens: [String] = []) async throws {
-        let key = userRedisBucket(userID)
-        var tokens = currentTokens
-        tokens.append(jwtID)
-        let payload = RedisUserPayload.V1(authCodes: tokens)
-        let exp = TTL.refreshToken
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: exp)
-    }
-    
-    func deleteRefreshTokenFromUserBucket(_ token: String, userID: String, payload: RedisUserPayload.V1) async throws {
-        let key = userRedisBucket(userID)
-        var payload = payload
-        guard let inx = payload.authCodes.firstIndex(where: {$0 == token}) else {
-            return
-        }
-        payload.authCodes.remove(at: inx)
-        
-        let duration = try await self.app.redis.ttl(key).get().timeAmount?.nanoseconds
-        
-        guard let duration else {return}
-        
-        let second = duration / 1_000_000_000
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: Int(second))
-    }
-}
-
-// MARK: Auth Code
-public extension AuthService.Redis.V1 {
-    func addAuthCodeToBucket(userID: String, challenge: String, clientID: String, _ jwtID: String) async throws {
-        let key = authCodeRedisBucket(jwtID)
-        let payload = RedisAuthCodePayload.V1(userID: userID, codeChallenge: challenge, clientID: clientID)
-        try await self.app.redis.set(key, toJSON: payload)
-    }
-    
-    func getAuthCodeFromBucket(_ jwtID: String) async throws -> RedisGetAuthCodeResult.V1 {
-        let key = authCodeRedisBucket(jwtID)
-        let payload = try await self.app.redis.get(key, asJSON: RedisAuthCodePayload.V1.self)
-        guard let payload else {
-            return .notFound
-        }
-        
-        return .success(payload)
-    }
-}
-
-// MARK: Access Token
-private extension AuthService.Redis.V1 {
-    private func addAccessTokenToBucket(_ accessTokenID: String, _ refreshTokenID: String) async throws {
-        let key = accessTokenRedisBucket(accessTokenID)
-        let exp = TTL.accessToken
-        let payload = RedisAccessTokenPayload.V1(refreshTokenID)
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: exp)
-    }
-    
-    private func getAccessTokenFromBucket(_ accessTokenID: String) async throws -> RedisGetResult.V1 {
-        let key = accessTokenRedisBucket(accessTokenID)
-        let payload = try await self.app.redis.get(key, asJSON: RedisAccessTokenPayload.V1.self)
-        
-        guard let payload else {
-            return .notFound
-        }
-        
-        return .success(payload)
-    }
-    
-    
-    private func deleteAccessTokenFromBucket(_ accessTokenID: String) async throws {
-        let key = accessTokenRedisBucket(accessTokenID)
-        try await self.app.redis.drop(key)
-    }
-    
-//    private func revokeAccessTokenFromBucket(_ accessTokenID: String, payload: RedisAccessTokenPayload.V1) async throws {
-//        let key = accessTokenRedisBucket(accessTokenID)
-//
-//        var payload = payload
-//        payload.isActive = false
-//
-//
-//        let duration = try await self.app.redis.ttl(key).get().timeAmount?.nanoseconds
-//
-//        guard let duration else {return}
-//
-//        let second = duration / 1_000_000_000
-//        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: Int(second))
-//    }
-}
-
-// MARK: Refresh Token
-private extension AuthService.Redis.V1 {
-    private func addRefreshTokenToBucket(_ refreshTokenID: String, _ authCodeID: String) async throws {
+    /// Store `Refresh Token` to Redis database.
+    func addRefreshToken(_ refreshTokenID: String) async throws {
         let key = refreshTokenRedisBucket(refreshTokenID)
-        let exp = TTL.refreshToken
-        let payload = RedisRefreshTokenPayload.V1(authCodeID)
-        
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: exp)
+        let payload = RefreshToken()
+        let ttl = TTL.refreshToken
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: ttl)
     }
     
-    private func getRefreshTokenFromBucket(_ jwtID: String) async throws -> RedisGetResult.V1 {
-        let key = refreshTokenRedisBucket(jwtID)
-        let payload = try await self.app.redis.get(key, asJSON: RedisRefreshTokenPayload.V1.self)
-        
-        guard let payload else {
-            return .notFound
-        }
-        
-        return .success(payload)
+    /// Get `Refresh Token` from Redis database.
+    func getRefreshToken(_ refreshTokenID: String) async throws -> RefreshTokenGetResult {
+        let key = refreshTokenRedisBucket(refreshTokenID)
+        let payload = try await self.app.redis.get(key, asJSON: RefreshToken.self)
+        guard let payload else { return .notFound(.refreshTokenNotFound) }
+        let ttl = try await self.app.redis.getTTL(key)
+        return .success(.init(payload, ttl: ttl))
     }
     
-    private func deleteRefreshTokenFromBucket(_ refreshTokenID: String) async throws {
+    /// Revokes the `Refresh Token` from the Redis database.
+    /// If the `TTL` value cannot be supplied, this method will automatically
+    /// get the `TTL` value from the database. Performs extra task.
+    func revokeRefreshToken(_ refreshTokenID: String) async throws {
+        let key = refreshTokenRedisBucket(refreshTokenID)
+        var result = try await self.app.redis.getWithTTL(key, asJSON: RefreshToken.self)
+        result.payload.is_active = false
+        try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+    }
+    
+    /// Revokes the `Refresh Token` from the Redis database.
+    func revokeRefreshToken(_ refreshTokenID: String, _ result: RedisGetResult<RefreshToken>) async throws {
+        let key = refreshTokenRedisBucket(refreshTokenID)
+        var payload = result.payload
+        payload.is_active = false
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
+    }
+    
+    /// Deletes the `Refresh Token` in the Redis database.
+    func deleteRefreshToken(_ refreshTokenID: String) async throws {
         let key = refreshTokenRedisBucket(refreshTokenID)
         try await self.app.redis.drop(key)
     }
     
-//    private func revokeRefreshTokenFromBucket(_ refreshTokenID: String, payload: RedisRefreshTokenPayload.V1) async throws {
-//        let key = refreshTokenRedisBucket(refreshTokenID)
-//
-//        var payload = payload
-//        payload.isActive = false
-//
-//        let duration = try await self.app.redis.ttl(key).get().timeAmount?.nanoseconds
-//
-//        guard let duration else {return}
-//
-//        let second = duration / 1_000_000_000
-//        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: Int(second))
-//
-//    }
+    /// Updates the `Refresh Token Inactivity Expiration` from the Redis database.
+    /// If the `TTL` value cannot be supplied, this method will automatically
+    /// get the `TTL` value from the database. Performs extra task.
+    func updateRefreshTokenInactivity(_ refreshTokenID: String) async throws {
+        let key = refreshTokenRedisBucket(refreshTokenID)
+        var result = try await self.app.redis.getWithTTL(key, asJSON: RefreshToken.self)
+        let day = TimeInterval(TTL.inactivity)
+        let date = Date().addingTimeInterval(day)
+        let timeinterval = date.timeIntervalSince1970
+        let inactivityEXP = Int(timeinterval)
+        result.payload.inactivity_exp = inactivityEXP
+        try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+    }
+    
+    /// Updates the `Refresh Token Inactivity Expiration` from the Redis database.
+    func updateRefreshTokenInactivity(_ refreshTokenID: String, _ result: RedisGetResult<RefreshToken>) async throws {
+        let key = refreshTokenRedisBucket(refreshTokenID)
+        var payload = result.payload
+        let day = TimeInterval(TTL.inactivity)
+        let date = Date().addingTimeInterval(day)
+        let timeinterval = date.timeIntervalSince1970
+        let inactivityEXP = Int(timeinterval)
+        payload.inactivity_exp = inactivityEXP
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
+    }
+    
+    // MARK: - ACCESS TOKEN -
+    typealias AccessToken = Redis.AccessToken.V1
+    typealias AccessTokenGetResult = Redis.GetResult.V1<AccessToken>
+    
+    /// Store `Access Token` to Redis database.
+    func addAccessToken(_ accessTokenID: String) async throws {
+        let key = refreshTokenRedisBucket(accessTokenID)
+        let payload = AccessToken()
+        let ttl = TTL.refreshToken
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: ttl)
+    }
+    
+    /// Get `Access Token` from Redis database.
+    func getAccessToken(_ accessTokenID: String) async throws -> AccessTokenGetResult {
+        let key = accessTokenRedisBucket(accessTokenID)
+        let payload = try await self.app.redis.get(key, asJSON: AccessToken.self)
+        guard let payload else { return .notFound(.accessTokenNotFound) }
+        let ttl = try await self.app.redis.getTTL(key)
+        return .success(.init(payload, ttl: ttl))
+    }
+    
+    /// Revokes the `Access Token` from the Redis database.
+    /// If the `TTL` value cannot be supplied, this method will automatically
+    /// get the `TTL` value from the database. Performs extra task.
+    func revokeAccessToken(_ accessTokenID: String) async throws {
+        let key = accessTokenRedisBucket(accessTokenID)
+        var result = try await self.app.redis.getWithTTL(key, asJSON: AccessToken.self)
+        
+        result.payload.is_active = false
+        try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+    }
+    
+    /// Revokes the `Access Token` from the Redis database.
+    func revokeAccessToken(_ accessTokenID: String, _ result: RedisGetResult<AccessToken>) async throws {
+        let key = accessTokenRedisBucket(accessTokenID)
+        var payload = result.payload
+        payload.is_active = false
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
+    }
+    
+    /// Deletes the `Access Token` in the Redis database.
+    func deleteAccessToken(_ accessTokenID: String) async throws {
+        let key = accessTokenRedisBucket(accessTokenID)
+        try await self.app.redis.drop(key)
+    }
+    
+    // MARK: - AUTH TOKEN -
+    typealias AuthToken = Redis.AuthToken.V1
+    typealias AuthTokenGetResult = Redis.GetResult.V1<AuthToken>
+    
+    /// Store `Auth Token` to Redis database.
+    func addAuthToken(_ userID: String, _ clientID: String, _ clientOS: String, _ codeChallenge: String, _ refreshTokenID: String, _ authTokenID: String) async throws {
+        let key = authTokenRedisBucket(authTokenID)
+        let payload = AuthToken(userID, clientID, clientOS, codeChallenge, [refreshTokenID])
+        let ttl = TTL.authToken
+        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: ttl)
+    }
+    
+    func addRefreshTokenIDtoAuthToken(_ authTokenID: String, _ refreshTokenID: String) async throws {
+        let key = authTokenRedisBucket(authTokenID)
+        let authTokenResult = try await getAuthToken(authTokenID)
+        switch authTokenResult {
+        case var .success(result):
+            result.payload.refresh_token_ids.append(refreshTokenID)
+            try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+        case let .notFound(error):
+            throw error
+        }
+    }
+    
+    /// Get `Auth Token` from Redis database.
+    func getAuthToken(_ authTokenID: String) async throws -> AuthTokenGetResult {
+        let key = authTokenRedisBucket(authTokenID)
+        let payload = try await self.app.redis.get(key, asJSON: AuthToken.self)
+        guard let payload else { return .notFound(.authTokenNotFound) }
+        let ttl = try await self.app.redis.getTTL(key)
+        return .success(.init(payload, ttl: ttl))
+    }
+    
+    // MARK: - USER -
+    typealias User = Redis.User.V1
+    typealias UserAuthTokenIDsGetResult = Redis.UserAuthTokenIDsGetResult.V1
+    
+    /// Adds a new `authTokenID` to the user's key `auth_token_ids` in the Redis database.
+    func setLoggedIn(_ userID: String, _ authTokenID: String) async throws {
+        let key = userRedisBucket(userID)
+        let authTokenIDsResult = try await getAuthTokenIDsFromUser(userID)
+        switch authTokenIDsResult {
+        case var .success(authTokenIDs):
+            authTokenIDs.append(authTokenID)
+            let payload = User(authTokenIDs)
+            try await self.app.redis.set(key, toJSON: payload)
+        case .notFound:
+            let payload = User([authTokenID])
+            try await self.app.redis.set(key, toJSON: payload)
+        }
+    }
+    
+    /// Deletes a `authTokenID` in the `auth_token_ids` key in the user's Redis database.
+    /// This method also acts as a logout.
+    func removeAuthTokenIDFromUser(_ userID: String, _ authTokenID: String) async throws {
+        let key = userRedisBucket(userID)
+        let authTokenIDsResult = try await getAuthTokenIDsFromUser(userID)
+        switch authTokenIDsResult {
+        case var .success(authTokenIDs):
+            if let index = authTokenIDs.firstIndex(where: {$0 == authTokenID}) {
+                authTokenIDs.remove(at: index)
+                let payload = User(authTokenIDs)
+                try await self.app.redis.set(key, toJSON: payload)
+            }
+        case .notFound: ()
+        }
+    }
+    
+    /// Returns all `authTokenID`s of a user from the Redis database.
+    func getAuthTokenIDsFromUser(_ userID: String) async throws -> UserAuthTokenIDsGetResult {
+        let key = userRedisBucket(userID)
+        let payload = try await self.app.redis.get(key, asJSON: User.self)
+        guard let payload else { return .notFound }
+        return .success(.init(payload.auth_token_ids))
+    }
+    
+    /// Deletes all `authTokenID`s of the user.
+    /// This method terminates all user sessions.
+    func deleteAllAuthTokenIDsFromUser(_ userID: String) async throws {
+        let key = userRedisBucket(userID)
+        try await self.app.redis.drop(key)
+    }
 }
 
+fileprivate typealias Bucket = Redis.Bucket.V1
 extension AuthService.Redis.V1 {
-    private func accessTokenRedisBucket(_ jwtID: String) -> RedisKey {
-        .init(Bucket.accessToken + ":" + jwtID)
+    private func accessTokenRedisBucket(_ accessTokenID: String) -> RedisKey {
+        .init(Bucket.accessToken + ":" + accessTokenID)
     }
     
-    private func refreshTokenRedisBucket(_ jwtID: String) -> RedisKey {
-        .init(Bucket.refreshToken + ":" + jwtID)
+    private func refreshTokenRedisBucket(_ refreshTokenID: String) -> RedisKey {
+        .init(Bucket.refreshToken + ":" + refreshTokenID)
+    }
+    
+    private func authTokenRedisBucket(_ authTokenID: String) -> RedisKey {
+        .init(Bucket.authToken + ":" + authTokenID)
     }
     
     private func userRedisBucket(_ userID: String) -> RedisKey {
@@ -222,7 +239,5 @@ extension AuthService.Redis.V1 {
         .init(Bucket.phoneNumber + ":" + phoneNumber)
     }
     
-    private func authCodeRedisBucket(_ jwtID: String) -> RedisKey {
-        .init(Bucket.authCode + ":" + jwtID)
-    }
+    
 }

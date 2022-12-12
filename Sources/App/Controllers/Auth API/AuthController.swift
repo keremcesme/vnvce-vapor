@@ -27,37 +27,36 @@ public struct AuthController: RouteCollection {
         
         api.post("create-account", use: createAccountHandler)
         
+        
+        
         api.post("authorize", use: authorizeHandler)
         api.post("token", use: tokenHandler)
         
-        api.post("refresh-access-token") {  req async throws -> String in
-            /// verify access refresh token JWT
-            ///
-            
-            
-            return ""
-        }
+        // Refresh: vnvce.com/api/auth/refresh/
+        let refresh = api.grouped("refresh")
+        /// refresh/ `access-token`
+        /// refresh/ `auth-code`
         
-        
+        refresh.post("access-token", use: refreshAccessTokenHandler)
         
         api
 //            .grouped(TokenJWTAuthenticator2())
 //            .grouped(User.guardMiddleware())
             .get("test") { req async throws -> String in
-                let jwt = req.authService.jwt.v1
-                let redis = req.authService.redis.v1
+//                let jwt = req.authService.jwt.v1
+//                let redis = req.authService.redis.v1
+//
+//                let codeVerifier = "7lWRWldcct0utEg0JUO-map~yRe4WqpmLhJHKdF4uK8U8Nii0f7303YQQTIglAJHny7pLpQL0.geRihzGQCsiIM2hX1EmZVx7vFypIShx5Zb3B2qB8d3Cy2c_ySmWp1O"
+//                let clientID = UUID().uuidString
+//
+//                let codeChallenge = try await req.authService.code.generateCodeChallenge(fromVerifier: codeVerifier)
+//
+//                let authCode = try jwt.generateAuthCode("")
                 
-                let codeVerifier = "7lWRWldcct0utEg0JUO-map~yRe4WqpmLhJHKdF4uK8U8Nii0f7303YQQTIglAJHny7pLpQL0.geRihzGQCsiIM2hX1EmZVx7vFypIShx5Zb3B2qB8d3Cy2c_ySmWp1O"
-                let clientID = UUID().uuidString
+//                try await redis.addAuthCodeToBucket(userID: "", challenge: codeChallenge, clientID: clientID, authCode.jwtID)
                 
-                let codeChallenge = try await req.authService.code.generateCodeChallenge(fromVerifier: codeVerifier)
-                
-                let authCode = try jwt.generateAuthCode("")
-                
-                try await redis.addAuthCodeToBucket(userID: "", challenge: codeChallenge, clientID: clientID, authCode.jwtID)
-                
-                print(authCode.value)
-                print(clientID)
+//                print(authCode.value)
+//                print(clientID)
                 
 //                let userID = "kerem_cesme"
 //                let clientID = UUID().uuidString
@@ -80,35 +79,15 @@ public struct AuthController: RouteCollection {
                     return "Error"
                 }
                 
-                do {
-                    let asdasdasd = try req.jwt.verify(token, as: AuthCodePayload.V1.self).jti.value
-                } catch let error {
-                    
-                }
+                let key = RedisKey("refresh_tokens:827D62EC-C6C8-47BC-BBA1-ADA2439AAC77")
                 
-                let authCode = try req.jwt.verify(token, as: AuthCodePayload.V1.self).jti.value
+                let ttl = try await req.redis.ttl(key).get().timeAmount?.nanoseconds
                 
-                let redis = req.authService.redis.v1
+                print(ttl! / 1_000_000_000)
                 
-                let codeVerifier = "7lWRWldcct0utEg0JUO-map~yRe4WqpmLhJHKdF4uK8U8Nii0f7303YQQTIglAJHny7pLpQL0.geRihzGQCsiIM2hX1EmZVx7vFypIShx5Zb3B2qB8d3Cy2c_ySmWp1O"
                 
-                let payload = try await redis.getAuthCodeFromBucket(authCode)
                 
-                switch payload {
-                case let .success(payload):
-                    let codeChallenge = payload.codeChallenge
-                    let clientID = payload.clientID
-                    
-                    let verifyResult = try await req.authService.code.verifyCodeChallenge(verifier: codeVerifier, challenge: codeChallenge)
-                    
-                    if verifyResult {
-                        return "Verified"
-                    }
-                    
-                    return "Not Verified"
-                case .notFound:
-                    return "Error"
-                }
+                return ""
             }
         
         api
@@ -117,8 +96,6 @@ public struct AuthController: RouteCollection {
                 
                 return "HEY"
             }
-        
-        
         
         // Create: vnvce.com/api/auth/create/
         try api.grouped("create").register(collection: CreateAccountController())

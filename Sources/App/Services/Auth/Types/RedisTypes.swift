@@ -1,109 +1,122 @@
 
 import Foundation
+import Vapor
 
-final class RedisBucket {
-    public enum V1 {
-        static let user = "users"
-        static let accessToken = "access_tokens"
-        static let refreshToken = "refresh_tokens"
-        static let phoneNumber = "phone_numbers"
-        static let authCode = "auth_codes"
-    }
-}
+public protocol RedisModel: Codable {}
 
-public final class RedisGetBucket {
-    public enum V1 {
-        case accessToken
-        case refreshToken
-    }
-}
-
-public final class RedisAddBucket {
-    public enum V1 {
-        case accessToken(_ refreshTokenID: String)
-        case refreshToken(_ authCodeID: String)
-    }
-}
-
-public final class RedisRevokeBucket {
-    public enum V1 {
-        case accessToken
-        case refreshToken(_ user: RedisUserPayload.V1?)
-    }
-}
-
-final class RedisTTL {
-    public enum V1 {
-        static let accessToken = 60 * 10 // 10 min
-        static let refreshToken = 60 * 60 * 24 * 30 // 30 day
-        static let authCode = 60 * 60 * 24 * 45 // 45 day
-    }
-}
-
-// MARK: Redis Payloads
-// Access Token
-public final class RedisAccessTokenPayload {
-    public struct V1: Codable {
-        public var isActive: Bool
-        public var refreshTokenID: String
-        public init(_ refreshTokenID: String, isActive: Bool = true) {
-            self.refreshTokenID = refreshTokenID
-            self.isActive = isActive
+public final class Redis {
+    
+    // MARK: TTL
+    public final class TTL {
+        public enum V1 {
+            static let accessToken = 60 * 10 // 10 min
+            static let inactivity = 60 * 60 * 24 * 7 // 7 day
+            static let refreshToken = 60 * 60 * 24 * 30 // 30 day
+            static let authToken = 60 * 60 * 24 * 45 // 45 day
         }
     }
-}
-
-// Refresh Token
-public final class RedisRefreshTokenPayload {
-    public struct V1: Codable {
-        public var isActive: Bool
-        public var authCodeID: String
-        public init(_ authCodeID: String, isActive: Bool = true) {
-            self.authCodeID = authCodeID
-            self.isActive = isActive
+    
+    // MARK: Access Token
+    public final class AccessToken {
+        public struct V1: RedisModel {
+            public var is_active: Bool
+            public init(_ isActive: Bool = true) {
+                self.is_active = isActive
+            }
+            public func verify() -> Bool {
+                return is_active
+            }
         }
     }
-}
-
-// Auth Code
-public final class RedisAuthCodePayload {
-    public struct V1: Codable {
-        public let userID: String
-        public let codeChallenge: String
-        public let clientID: String
-        public let refreshTokenID: String
+    
+    // MARK: Refresh Token
+    public final class RefreshToken {
+        public struct V1: RedisModel {
+            public var is_active: Bool
+            public var inactivity_exp: Int
+            public init(_ isActive: Bool = true, inactivityEXP: Int? = nil) {
+                self.is_active = isActive
+                if let inactivityEXP {
+                    self.inactivity_exp = inactivityEXP
+                } else {
+                    let day = TimeInterval(TTL.V1.inactivity)
+                    let date = Date().addingTimeInterval(day)
+                    let timeinterval = date.timeIntervalSince1970
+                    let inactivityEXP = Int(timeinterval)
+                    self.inactivity_exp = inactivityEXP
+                }
+            }
+            public func verify() -> Bool {
+                return is_active
+            }
+        }
     }
-}
-
-// User
-public final class RedisUserPayload {
-    public struct V1: Codable {
-        public var authCodes: [String]
+    
+    // MARK: Auth Token
+    public final class AuthToken {
+        public struct V1: RedisModel {
+            public var user_id: String
+            public var client_id: String
+            public var client_os: String
+            public var code_challenge: String
+            public var refresh_token_ids: [String]
+            public init(_ userID: String, _ clientID: String, _ clientOS: String, _ codeChallenge: String, _ refreshTokenIDs: [String] = []) {
+                self.user_id = userID
+                self.client_id = clientID
+                self.client_os = clientOS
+                self.code_challenge = codeChallenge
+                self.refresh_token_ids = refreshTokenIDs
+            }
+        }
     }
-}
-
-public final class RedisGetResult {
-    public enum V1 {
-        case success(any Codable)
-        case notFound
+    
+    // MARK: User
+    public final class User {
+        public struct V1: RedisModel {
+            public var auth_token_ids: [String]
+            public init(_ authTokenIDs: [String]) {
+                self.auth_token_ids = authTokenIDs
+            }
+        }
     }
-}
-
-public final class RedisGetAuthCodeResult {
-    public enum V1: Codable {
-        case success(RedisAuthCodePayload.V1)
-        case notFound
+    
+    // MARK: GET Result
+    public final class GetResult {
+        public enum V1<R: RedisModel> {
+            case success(RedisGetResult<R>)
+            case notFound(Error)
+        }
     }
+    public final class UserAuthTokenIDsGetResult {
+        public enum V1 {
+            case success([String])
+            case notFound
+        }
+    }
+    
+    // MARK: Buckets
+    public final class Bucket {
+        public enum V1 {
+            static let accessToken = "access_tokens"
+            static let refreshToken = "refresh_tokens"
+            static let authToken = "auth_tokens"
+            static let user = "users"
+            static let phoneNumber = "phone_numbers"
+            
+        }
+    }
+
+    // MARK: Error
+    public typealias Error = RedisError.V1
 }
 
-
-
-
-
-final class RedisError {
+public final class RedisError {
     public enum V1: String, Error {
         case accessTokenNotFound
         case refreshTokenNotFound
+        case authTokenNotFound
         case userNotFound
+        case noTTL
+        case keyNotFound
     }
 }

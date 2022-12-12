@@ -2,6 +2,7 @@
 import Vapor
 import JWT
 import JWTDecode
+import VNVCECore
 
 extension AuthService.JWT {
     public struct V1 {
@@ -16,41 +17,95 @@ extension AuthService.JWT {
     }
 }
 
-extension AuthService.JWT.V1 {
-    func generateTokens(_ userID: String) throws -> FreshTokens.V1 {
-        let refreshToken = try generateToken(userID, type: .refresh)
-        let accessToken = try generateToken(userID, type: .access)
-        
+public extension AuthService.JWT.V1 {
+    typealias AccessToken = JWT.AccessToken.V1
+    typealias RefreshToken = JWT.RefreshToken.V1
+    typealias AuthToken = JWT.AuthToken.V1
+    /// This method generates a `Refresh Token` and an `Access Token`.
+    /// This method is only used for `login`, `sign up` operations.
+    /// As an exception, it can be used after the RT has expired
+    /// and the `PKCE Flow` has been successfully completed.
+    func generateTokens(_ userID: String, _ authID: String) throws -> JWT.Tokens.V1 {
+        let refreshToken = try generateRefreshToken(userID, authID)
+        let accessToken = try generateAccessToken(userID, refreshToken.tokenID)
         return .init(refreshToken, accessToken)
     }
     
-    func generateToken(_ userID: String, type: TokenType.V1) throws -> FreshToken.V1 {
-        switch type {
-        case .access:
-            return try generateAccessToken(userID)
-        case .refresh:
-            return try generateRefreshToken(userID)
-        }
+    /// An `Access Token` will be generated.
+    func generateAccessToken(_ userID: String, _ refreshTokenID: String ) throws -> JWT.Token.V1 {
+        let accessTokenID = UUID().uuidString
+        let payload = AccessToken(userID, accessTokenID, refreshTokenID)
+        let accessToken = try payload.sign(self.app)
+        return .init(accessToken, accessTokenID)
     }
     
-    func generateAuthCode(_ userID: String) throws -> FreshToken.V1 {
-        let tokenID = UUID().uuidString
-        let authCodePayload = AuthCodePayload.V1(userID: userID, jwtID: tokenID)
-        let authCodeToken = try self.app.jwt.signers.sign(authCodePayload, kid: .private)
-        return .init(value: authCodeToken, jwtID: tokenID)
+    /// An `Refresh Token` will be generated.
+    func generateRefreshToken(_ userID: String, _ authID: String) throws -> JWT.Token.V1 {
+        let refreshTokenID = UUID().uuidString
+        let payload = RefreshToken(userID, refreshTokenID, authID)
+        let refreshToken = try payload.sign(self.app)
+        return .init(refreshToken, refreshTokenID)
     }
     
-    func verify(_ token: String) async throws {
+    /// An `Auth Token` will be generated.
+    func generateAuthToken(_ userID: String, _ clientID: String, _ clientOS: DeviceOS) throws -> JWT.Token.V1 {
+        let authID = UUID().uuidString
+        let payload = AuthToken(userID, clientID, clientOS, authID)
+        let authToken = try payload.sign(self.app)
+        return .init(authToken, authID)
+    }
+    
+    typealias ValidationResult<P: JWTSignable> = JWT.ValidationResult.V1<P>
+    func validate<P: JWTSignable>(_ token: String, as payload: P.Type) -> ValidationResult<P> {
         do {
-            let payload = try self.app.jwt.signers.verify(token, as: TokenPayload.V1.self)
-            switch payload.tokenType {
-            case .access: break // Access Token
-            case .refresh: break // Refresh Token
-            }
+            let verifiedPayload = try self.app.jwt.signers.verify(token, as: payload)
+            return .success(.init(isVerified: true, payload: verifiedPayload))
         } catch {
-            // Token Not verified
+            do {
+                let unverifiedPayload = try self.app.jwt.decode(token, as: payload)
+                return .success(.init(isVerified: false, payload: unverifiedPayload))
+            } catch {
+                return .failure
+            }
         }
     }
+}
+
+extension AuthService.JWT.V1 {
+//    func generateTokens(_ userID: String) throws -> FreshTokens.V1 {
+//        let refreshToken = try generateToken(userID, type: .refresh)
+//        let accessToken = try generateToken(userID, type: .access)
+//
+//        return .init(refreshToken, accessToken)
+//    }
+    
+//    func generateToken(_ userID: String, type: TokenType.V1) throws -> FreshToken.V1 {
+//        switch type {
+//        case .access:
+//            return try generateAccessToken(userID)
+//        case .refresh:
+//            return try generateRefreshToken(userID)
+//        }
+//    }
+//
+//    func generateAuthCode(_ userID: String) throws -> FreshToken.V1 {
+//        let tokenID = UUID().uuidString
+//        let authCodePayload = AuthCodePayload.V1(userID: userID, jwtID: tokenID)
+//        let authCodeToken = try self.app.jwt.signers.sign(authCodePayload, kid: .private)
+//        return .init(value: authCodeToken, jwtID: tokenID)
+//    }
+//
+//    func verify(_ token: String) async throws {
+//        do {
+//            let payload = try self.app.jwt.signers.verify(token, as: TokenPayload.V1.self)
+//            switch payload.tokenType {
+//            case .access: break // Access Token
+//            case .refresh: break // Refresh Token
+//            }
+//        } catch {
+//            // Token Not verified
+//        }
+//    }
     
 //    func verifyAccessToken(_ payload: TokenPayload.V1) async throws {
 //        guard let refreshTokenID = payload.refreshTokenID else {
@@ -147,43 +202,43 @@ extension AuthService.JWT.V1 {
 //
 //    }
     
-    func decode(_ jwt: String) throws -> TokenPayload.V1 {
-        let dictionary = try JWTDecode.decode(jwt: jwt).body
-        let json = try JSONSerialization.data(withJSONObject: dictionary)
-        
-        return try decoder.decode(TokenPayload.V1.self, from: json)
-    }
+//    func decode(_ jwt: String) throws -> TokenPayload.V1 {
+//        let dictionary = try JWTDecode.decode(jwt: jwt).body
+//        let json = try JSONSerialization.data(withJSONObject: dictionary)
+//
+//        return try decoder.decode(TokenPayload.V1.self, from: json)
+//    }
 }
 
 // MARK: Access Token
-private extension AuthService.JWT.V1 {
-    private func generateAccessToken(_ userID: String) throws -> FreshToken.V1 {
-        let tokenID = UUID().uuidString
-        let expiresIn = JWTTokenTTL.V1.accessToken
-        let accessTokenPayload = TokenPayload.V1(
-            userID: userID,
-            token: .access,
-            jwtID: tokenID,
-            expiresIn: expiresIn)
-        
-        let accessToken = try self.app.jwt.signers.sign(accessTokenPayload, kid: .private)
-        return .init(value: accessToken, jwtID: tokenID)
-    }
-}
+//private extension AuthService.JWT.V1 {
+//    private func generateAccessToken(_ userID: String) throws -> FreshToken.V1 {
+//        let tokenID = UUID().uuidString
+//        let expiresIn = JWTTokenTTL.V1.accessToken
+//        let accessTokenPayload = TokenPayload.V1(
+//            userID: userID,
+//            token: .access,
+//            jwtID: tokenID,
+//            expiresIn: expiresIn)
+//
+//        let accessToken = try self.app.jwt.signers.sign(accessTokenPayload, kid: .private)
+//        return .init(value: accessToken, jwtID: tokenID)
+//    }
+//}
 
 // MARK: Refresh Token
-private extension AuthService.JWT.V1 {
-    private func generateRefreshToken(_ userID: String) throws -> FreshToken.V1 {
-        let tokenID = UUID().uuidString
-        let expiresIn = JWTTokenTTL.V1.refreshToken
-        let refreshTokenPayload = TokenPayload.V1(
-            userID: userID,
-            token: .refresh,
-            jwtID: tokenID,
-            expiresIn: expiresIn)
-        
-        let refreshToken = try self.app.jwt.signers.sign(refreshTokenPayload, kid: .private)
-        
-        return .init(value: refreshToken, jwtID: tokenID)
-    }
-}
+//private extension AuthService.JWT.V1 {
+//    private func generateRefreshToken(_ userID: String) throws -> FreshToken.V1 {
+//        let tokenID = UUID().uuidString
+//        let expiresIn = JWTTokenTTL.V1.refreshToken
+//        let refreshTokenPayload = TokenPayload.V1(
+//            userID: userID,
+//            token: .refresh,
+//            jwtID: tokenID,
+//            expiresIn: expiresIn)
+//
+//        let refreshToken = try self.app.jwt.signers.sign(refreshTokenPayload, kid: .private)
+//
+//        return .init(value: refreshToken, jwtID: tokenID)
+//    }
+//}
