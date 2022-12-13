@@ -18,7 +18,7 @@ extension Application {
         let types: [Migration] = [
             CreateProfilePictureAlignmentType(),
             CreateMediaType(),
-            CreateDeviceOS()
+            CreateClientOS()
         ]
         
         let users: [Migration] = [

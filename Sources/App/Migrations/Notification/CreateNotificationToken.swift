@@ -10,13 +10,13 @@ import VNVCECore
 
 struct CreateNotificationToken: AsyncMigration {
     func prepare(on database: Database) async throws {
-        let deviceOS = try await database.enum(DeviceOS.schema).read()
+        let clientOS = try await database.enum(ClientOS.schema).read()
         
         try await database
             .schema(NotificationToken.schema)
             .id()
             .field("user_id", .uuid, .required, .references(User.schema, .id, onDelete: .cascade))
-            .field("device_os", deviceOS, .required)
+            .field("client_os", clientOS, .required)
             .field("token", .string, .required)
             .unique(on: "token", name: "uk_notification_token")
             .create()

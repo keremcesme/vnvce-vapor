@@ -18,17 +18,17 @@ final class NotificationToken: Model, Content {
     @Parent(key: "user_id")
     var user: User
     
-    @Enum(key: "device_os")
-    var deviceOS: DeviceOS
+    @Enum(key: "client_os")
+    var clientOS: ClientOS
     
     @Field(key: "token")
     var token: String
     
     init() { }
     
-    init(token: String, userID: User.IDValue, deviceOS: DeviceOS) {
+    init(token: String, userID: User.IDValue, clientOS: ClientOS) {
         self.token = token
         self.$user.id = userID
-        self.deviceOS = deviceOS
+        self.clientOS = clientOS
     }
 }

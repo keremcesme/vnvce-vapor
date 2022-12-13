@@ -8,16 +8,16 @@
 import Fluent
 import VNVCECore
 
-struct CreateDeviceOS: AsyncMigration {
+struct CreateClientOS: AsyncMigration {
     func prepare(on database: Database) async throws {
         _ = try await database
-            .enum(DeviceOS.schema)
+            .enum(ClientOS.schema)
             .case("ios")
             .case("android")
             .create()
     }
     
     func revert(on database: Database) async throws {
-        try await database.enum(DeviceOS.schema).delete()
+        try await database.enum(ClientOS.schema).delete()
     }
 }

@@ -52,19 +52,28 @@ public final class Redis {
         }
     }
     
-    // MARK: Auth Token
-    public final class AuthToken {
+    // MARK: Auth
+    public final class Auth {
         public struct V1: RedisModel {
             public var user_id: String
             public var client_id: String
             public var client_os: String
             public var code_challenge: String
+            public var is_verified: Bool
             public var refresh_token_ids: [String]
-            public init(_ userID: String, _ clientID: String, _ clientOS: String, _ codeChallenge: String, _ refreshTokenIDs: [String] = []) {
+            public init(
+                _ userID: String,
+                _ clientID: String,
+                _ clientOS: String,
+                _ codeChallenge: String,
+                _ isVerified: Bool = false,
+                _ refreshTokenIDs: [String] = []
+            ) {
                 self.user_id = userID
                 self.client_id = clientID
                 self.client_os = clientOS
                 self.code_challenge = codeChallenge
+                self.is_verified = isVerified
                 self.refresh_token_ids = refreshTokenIDs
             }
         }
@@ -87,19 +96,13 @@ public final class Redis {
             case notFound(Error)
         }
     }
-    public final class UserAuthTokenIDsGetResult {
-        public enum V1 {
-            case success([String])
-            case notFound
-        }
-    }
     
     // MARK: Buckets
     public final class Bucket {
         public enum V1 {
             static let accessToken = "access_tokens"
             static let refreshToken = "refresh_tokens"
-            static let authToken = "auth_tokens"
+            static let auth = "auths"
             static let user = "users"
             static let phoneNumber = "phone_numbers"
             
@@ -114,7 +117,7 @@ public final class RedisError {
     public enum V1: String, Error {
         case accessTokenNotFound
         case refreshTokenNotFound
-        case authTokenNotFound
+        case authNotFound
         case userNotFound
         case noTTL
         case keyNotFound

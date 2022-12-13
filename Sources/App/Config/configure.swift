@@ -1,5 +1,8 @@
+
 import Vapor
 import VNVCECore
+
+
 
 public func configure(_ app: Application) async throws {
     
@@ -27,7 +30,9 @@ public func configure(_ app: Application) async throws {
     await app.configureMigrations()
     await app.configureViews()
     
-    try await app.autoRevert()
+    
+    
+//    try await app.autoRevert()
 //    try await app.autoMigrate()
     
     app.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")

@@ -12,32 +12,35 @@ extension AuthController {
         
         switch version {
         case .v1:
-//            let result = try await authorizeV1(req)
-//            return .init(result)
-            throw Abort(.notFound)
+            let result = try await authorizeV1(req)
+            return .init(result)
         default:
             throw Abort(.notFound)
         }
     }
     
-//    private func authorizeV1(_ req: Request) async throws -> AuthorizeResponse.V1 {
-//        let p = try req.content.decode(AuthorizePayload.V1.self)
-//        let jwtService = req.authService.jwt.v1
-//        let redis = req.authService.redis.v1
-//        let code = req.authService.code
-//
-//        let authCode = try jwtService.generateAuthCode(p.userID)
-//
-//        try await redis.addAuthCodeToBucket(
-//            p.userID,
-//            p.codeChallenge,
-//            p.clientID,
-//            authCode.jwtID)
-//
-//        let jwt = authCode.value
-//
-//        return .init(jwt)
-//    }
+    private func authorizeV1(_ req: Request) async throws -> AuthorizeResponse.V1 {
+        guard
+            let clientID = req.headers.clientID,
+            let clientOS = req.headers.clientOS,
+            let os = clientOS.convertClientOS,
+            let userID = req.headers.userID
+        else {
+            throw Abort(.badRequest, reason: "Missing headers.")
+        }
+        
+        let codeChallenge = try req.query.decode(AuthorizeParams.V1.self).codeChallenge
+        let jwt = req.authService.jwt.v1
+        let redis = req.authService.redis.v1
+        
+        let authToken = try jwt.generateAuthToken(userID, clientID, os)
+        
+        try await redis.addAuth(userID, clientID, clientOS, codeChallenge, nil, authToken.tokenID)
+        
+        let authCode = authToken.token
+        
+        return .init(authToken.token, authToken.tokenID)
+    }
 }
 
 extension AuthorizeResponse.V1: Content {}

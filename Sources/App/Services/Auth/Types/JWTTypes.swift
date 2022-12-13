@@ -58,7 +58,7 @@ public final class JWT {
     
     public final class TTL {
         public enum V1 {
-            static let accessToken = TimeInterval(60 * 1) // 10 min
+            static let accessToken = TimeInterval(60 * 10) // 10 min
             static let refreshToken = TimeInterval(60 * 60 * 24 * 30) // 30 day
             static let authToken = TimeInterval(60 * 60 * 24 * 45) // 45 day
         }
@@ -198,7 +198,7 @@ public final class JWT {
             init(
                 _ userID: String,
                 _ clientID: String,
-                _ clientOS: DeviceOS,
+                _ clientOS: ClientOS,
                 _ authID: String
             ) {
                 let date = Date()

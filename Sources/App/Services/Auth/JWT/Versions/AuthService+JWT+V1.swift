@@ -48,7 +48,7 @@ public extension AuthService.JWT.V1 {
     }
     
     /// An `Auth Token` will be generated.
-    func generateAuthToken(_ userID: String, _ clientID: String, _ clientOS: DeviceOS) throws -> JWT.Token.V1 {
+    func generateAuthToken(_ userID: String, _ clientID: String, _ clientOS: ClientOS) throws -> JWT.Token.V1 {
         let authID = UUID().uuidString
         let payload = AuthToken(userID, clientID, clientOS, authID)
         let authToken = try payload.sign(self.app)

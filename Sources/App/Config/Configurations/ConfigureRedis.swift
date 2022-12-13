@@ -1,12 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 21.11.2022.
-//
 
 import Vapor
 import Redis
+import Queues
+import QueuesRedisDriver
 
 extension Application {
     
@@ -42,8 +38,14 @@ extension Application {
             self.logger.notice("✅ Redis Configured")
             
         default:
-            self.redis.configuration = try RedisConfiguration(
-                hostname: "localhost")
+            let configuration = try RedisConfiguration(hostname: "localhost")
+            self.redis.configuration = configuration
+            
+//            self.queues.use(.redis(configuration))
+//
+//            try self.queues.startInProcessJobs()
+//            try self.queues.startScheduledJobs()
+            
             
             self.logger.notice("✅ Redis Configured")
         }

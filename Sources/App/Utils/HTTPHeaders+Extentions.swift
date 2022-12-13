@@ -11,6 +11,8 @@ extension HTTPHeaders.Name {
     static let refreshTokenID = HTTPHeaders.Name("X-Refresh-Token-ID")
     static let authID = HTTPHeaders.Name("X-Auth-ID")
     
+    static let userID = HTTPHeaders.Name("X-User-ID")
+    
 }
 
 extension HTTPHeaders {
@@ -106,6 +108,22 @@ extension HTTPHeaders {
                 replaceOrAdd(name: .authID, value: authID)
             } else {
                 remove(name: .authID)
+            }
+        }
+    }
+    
+    public var userID: String? {
+        get {
+            guard let string = self.first(name: .userID) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let userID = newValue {
+                replaceOrAdd(name: .userID, value: userID)
+            } else {
+                remove(name: .userID)
             }
         }
     }
