@@ -20,7 +20,7 @@ extension AuthMiddleware {
         /// Verifying `Access Token` JWT.
         ///
         guard let jwt = try? req.jwt.verify(accessToken, as: JWT.AccessToken.V1.self) else {
-            throw Abort(.unauthorized, reason: "1")
+            throw Abort(.unauthorized)
         }
         
         let userID = jwt.userID
@@ -29,17 +29,23 @@ extension AuthMiddleware {
         
         /// [STEP 2]
         /// Verifying `Access Token` from Redis database.
-        guard let at = try await redis.getAccessTokenWithTTL(atID), at.payload.is_active else {
+        guard let at = try await redis.getAccessTokenWithTTL(atID) else {
             ///
             /// The `Access Token` has expired or been revoked.
             ///
-            throw Abort(.unauthorized, reason: "2")
+            throw Abort(.unauthorized)
+        }
+        
+        guard at.payload.is_active else {
+            ///
+            /// `Access Token` reuse detected.
+            ///
+            throw Abort(.forbidden)
         }
         
         /// [STEP 3]
         /// Verifying `Refresh Token` from Redis database.
         guard let rt = try await redis.getRefreshTokenWithTTL(rtID),
-                  rt.payload.is_active,
                   rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970)
         else {
             ///
@@ -51,7 +57,15 @@ extension AuthMiddleware {
             ///     4 - The `Refresh Token` has expired or been revoked.
             ///
             try await redis.revokeAccessToken(atID, at)
-            throw Abort(.unauthorized, reason: "3")
+            throw Abort(.unauthorized)
+        }
+        
+        guard rt.payload.is_active else {
+            ///
+            /// `Refresh Token` reuse detected.
+            ///
+            try await redis.revokeAccessToken(atID, at)
+            throw Abort(.forbidden)
         }
         
         /// [STEP 4]
@@ -74,7 +88,7 @@ extension AuthMiddleware {
             ///
             try await redis.revokeAccessToken(atID, at)
             try await redis.revokeRefreshToken(rtID, rt)
-            throw Abort(.forbidden, reason: "4")
+            throw Abort(.forbidden)
         }
         
         /// [STEP 5]
@@ -91,7 +105,7 @@ extension AuthMiddleware {
             await redis.deleteAccessToken(atID)
             await redis.deleteAllRefreshTokens(auth)
             await redis.deleteAuth(authID)
-            throw Abort(.forbidden, reason: "5")
+            throw Abort(.forbidden)
         }
         
         /// [STEP 6]

@@ -68,8 +68,6 @@ extension AuthController {
         try await redis.addRefreshTokenIDtoAuth(authID, refreshTokenID)
         try await redis.setLoggedIn(userID, authID)
         
-        
-        
         return .init(accessToken, refreshToken)
     }
 }
