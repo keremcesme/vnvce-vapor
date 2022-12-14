@@ -5,10 +5,8 @@ import VNVCECore
 
 extension AuthController {
     public func refreshAccessTokenHandler(_ req: Request) async throws -> AnyAsyncResponse {
-        guard
-            
-            let headerVersion = req.headers.acceptVersion,
-            let version = VNVCECore.APIVersion(rawValue: headerVersion) else {
+        guard let headerVersion = req.headers.acceptVersion,
+              let version = VNVCECore.APIVersion(rawValue: headerVersion) else {
             throw Abort(.notFound)
         }
         
@@ -74,12 +72,12 @@ extension AuthController {
             throw Abort(.forbidden)
         }
         
-//        guard let usrID = try await User.find(userID.uuid(), on: req.db)?.requireID() else {
-//            await redis.deleteAllRefreshTokens(auth)
-//            await redis.deleteAllAuths(userID)
-//            await redis.deleteUser(userID)
-//            throw Abort(.forbidden)
-//        }
+        guard try await User.find(userID.uuid(), on: req.db)?.requireID() != nil else {
+            await redis.deleteAllRefreshTokens(auth)
+            await redis.deleteAllAuths(userID)
+            await redis.deleteUser(userID)
+            throw Abort(.forbidden)
+        }
         
         if let atID = jwtService.validate(accessToken, as: JWT.AccessToken.V1.self)?.payload.id() {
             await redis.revokeAccessToken(atID)
