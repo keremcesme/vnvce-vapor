@@ -4,10 +4,12 @@ import Vapor
 extension HTTPHeaders.Name {
     static let acceptVersion = HTTPHeaders.Name("Accept-version")
     static let refreshToken = HTTPHeaders.Name("X-Auth-Refresh-Token")
+    static let accessToken = HTTPHeaders.Name("X-Auth-Access-Token")
     
     static let clientID = HTTPHeaders.Name("X-Client-ID")
     static let clientOS = HTTPHeaders.Name("X-Client-OS")
     
+    static let accessTokenID = HTTPHeaders.Name("X-Access-Token-ID")
     static let refreshTokenID = HTTPHeaders.Name("X-Refresh-Token-ID")
     static let authID = HTTPHeaders.Name("X-Auth-ID")
     
@@ -48,6 +50,22 @@ extension HTTPHeaders {
         }
     }
     
+    public var accessToken: String? {
+        get {
+            guard let string = self.first(name: .accessToken) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let accessToken = newValue {
+                replaceOrAdd(name: .accessToken, value: accessToken)
+            } else {
+                remove(name: .accessToken)
+            }
+        }
+    }
+    
     public var clientID: String? {
         get {
             guard let string = self.first(name: .clientID) else {
@@ -76,6 +94,22 @@ extension HTTPHeaders {
                 replaceOrAdd(name: .clientOS, value: clientOS)
             } else {
                 remove(name: .clientOS)
+            }
+        }
+    }
+    
+    public var accessTokenID: String? {
+        get {
+            guard let string = self.first(name: .accessTokenID) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let accessTokenID = newValue {
+                replaceOrAdd(name: .accessTokenID, value: accessTokenID)
+            } else {
+                remove(name: .accessTokenID)
             }
         }
     }

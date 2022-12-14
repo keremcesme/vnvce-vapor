@@ -56,18 +56,27 @@ public extension AuthService.JWT.V1 {
     }
     
     typealias ValidationResult<P: JWTSignable> = JWT.ValidationResult.V1<P>
-    func validate<P: JWTSignable>(_ token: String, as payload: P.Type) -> ValidationResult<P> {
-        do {
-            let verifiedPayload = try self.app.jwt.signers.verify(token, as: payload)
-            return .success(.init(isVerified: true, payload: verifiedPayload))
-        } catch {
-            do {
-                let unverifiedPayload = try self.app.jwt.decode(token, as: payload)
-                return .success(.init(isVerified: false, payload: unverifiedPayload))
-            } catch {
-                return .failure
-            }
+    func validate<P: JWTSignable>(_ token: String, as payload: P.Type) -> ValidationResult<P>? {
+        
+        if let verifiedPayload = try? self.app.jwt.signers.verify(token, as: payload) {
+            return .init(isVerified: true, payload: verifiedPayload)
+        } else if let unverifiedPayload = try? self.app.jwt.signers.decode(token, as: payload) {
+            return .init(isVerified: false, payload: unverifiedPayload)
+        } else {
+            return nil
         }
+        
+//        do {
+//            let verifiedPayload = try self.app.jwt.signers.verify(token, as: payload)
+//            return .success(.init(isVerified: true, payload: verifiedPayload))
+//        } catch {
+//            do {
+//                let unverifiedPayload = try self.app.jwt.decode(token, as: payload)
+//                return .success(.init(isVerified: false, payload: unverifiedPayload))
+//            } catch {
+//                return .failure
+//            }
+//        }
     }
 }
 

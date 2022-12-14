@@ -22,8 +22,8 @@ extension Application.Redis {
         }
     }
     
-    public func drop(_ keys: RedisKey) async {
-        _ = try? await self.delete(keys).get()
+    public func drop(_ key: RedisKey) async {
+        _ = try? await self.delete(key).get()
     }
 }
 

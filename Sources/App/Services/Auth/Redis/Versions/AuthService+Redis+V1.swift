@@ -29,38 +29,45 @@ public extension AuthService.Redis.V1 {
     }
     
     /// Get `Refresh Token` from Redis database.
-    func getRefreshToken(_ refreshTokenID: String) async throws -> RefreshToken? {
+    func getRefreshToken(_ refreshTokenID: String) async -> RefreshToken? {
         let key = refreshTokenRedisBucket(refreshTokenID)
-        let payload = try await self.app.redis.get(key, asJSON: RefreshToken.self)
-        guard let payload else { return nil }
+        let payload = try? await self.app.redis.get(key, asJSON: RefreshToken.self)
         return payload
     }
     
     /// Get `Refresh Token` with TTL from Redis database.
-    func getRefreshTokenWithTTL(_ refreshTokenID: String) async throws -> RefreshTokenGetResult? {
+    func getRefreshTokenWithTTL(_ refreshTokenID: String) async -> RefreshTokenGetResult? {
         let key = refreshTokenRedisBucket(refreshTokenID)
-        let payload = try await self.app.redis.get(key, asJSON: RefreshToken.self)
-        guard let payload else { return nil }
-        let ttl = try await self.app.redis.getTTL(key)
-        return .init(payload, ttl: ttl)
+        let payload = try? await self.app.redis.get(key, asJSON: RefreshToken.self)
+        let ttl = try? await self.app.redis.getTTL(key)
+        if let payload, let ttl {
+            return .init(payload, ttl: ttl)
+        } else {
+            return nil
+        }
+        
     }
     
     /// Revokes the `Refresh Token` from the Redis database.
     /// If the `TTL` value cannot be supplied, this method will automatically
     /// get the `TTL` value from the database. Performs extra task.
-    func revokeRefreshToken(_ refreshTokenID: String) async throws {
+    func revokeRefreshToken(_ refreshTokenID: String) async {
         let key = refreshTokenRedisBucket(refreshTokenID)
-        var result = try await self.app.redis.getWithTTL(key, asJSON: RefreshToken.self)
-        result.payload.is_active = false
-        try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+        if var result = try? await self.app.redis.getWithTTL(key, asJSON: RefreshToken.self) {
+            if result.payload.is_active {
+                result.payload.is_active = false
+                try? await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+            }
+        }
+        
     }
     
     /// Revokes the `Refresh Token` from the Redis database.
-    func revokeRefreshToken(_ refreshTokenID: String, _ result: RefreshTokenGetResult) async throws {
+    func revokeRefreshToken(_ refreshTokenID: String, _ result: RefreshTokenGetResult) async {
         let key = refreshTokenRedisBucket(refreshTokenID)
         var payload = result.payload
         payload.is_active = false
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
+        try? await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
     }
     
     /// Revoke all `Refresh Token`s from user's the Redis database.
@@ -69,8 +76,18 @@ public extension AuthService.Redis.V1 {
         for authID in authIDs {
             let refreshTokenIDs = try await getAllRefreshTokenIDsFromAuth(authID)
             for refreshTokenID in refreshTokenIDs {
-                if let refreshToken = try await getRefreshTokenWithTTL(refreshTokenID) {
+                if let refreshToken = await getRefreshTokenWithTTL(refreshTokenID) {
                     try await revokeRefreshToken(refreshTokenID, refreshToken)
+                }
+            }
+        }
+    }
+    
+    func revokeAllRefreshTokens(_ authID: String) async {
+        if let auth = await getAuthWithTTL(authID) {
+            for refreshTokenID in auth.payload.refresh_token_ids {
+                if let refreshToken = await getRefreshTokenWithTTL(refreshTokenID), refreshToken.payload.is_active {
+                    await revokeRefreshToken(refreshTokenID, refreshToken)
                 }
             }
         }
@@ -84,7 +101,23 @@ public extension AuthService.Redis.V1 {
     
     /// Delete all `Refresh Token`s in the Redis database.
     func deleteAllRefreshTokens(_ auth: Auth) async {
-        await self.app.redis.drop(auth.refresh_token_ids.convertRedisKey)
+        var keys = [RedisKey]()
+        for refreshTokenID in auth.refresh_token_ids {
+            let key = refreshTokenRedisBucket(refreshTokenID)
+            keys.append(key)
+        }
+        await self.app.redis.drop(keys)
+    }
+    
+    func deleteAllRefreshTokens(_ authID: String) async {
+        if let auth = await getAuth(authID) {
+            var keys = [RedisKey]()
+            for refreshTokenID in auth.refresh_token_ids {
+                let key = refreshTokenRedisBucket(refreshTokenID)
+                keys.append(key)
+            }
+            await self.app.redis.drop(keys)
+        }
     }
     
     /// Updates the `Refresh Token Inactivity Expiration` from the Redis database.
@@ -154,12 +187,14 @@ public extension AuthService.Redis.V1 {
     /// Revokes the `Access Token` from the Redis database.
     /// If the `TTL` value cannot be supplied, this method will automatically
     /// get the `TTL` value from the database. Performs extra task.
-    func revokeAccessToken(_ accessTokenID: String) async throws {
+    func revokeAccessToken(_ accessTokenID: String) async {
         let key = accessTokenRedisBucket(accessTokenID)
-        var result = try await self.app.redis.getWithTTL(key, asJSON: AccessToken.self)
-        
-        result.payload.is_active = false
-        try await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+        if var result = try? await self.app.redis.getWithTTL(key, asJSON: AccessToken.self) {
+            if result.payload.is_active {
+                result.payload.is_active = false
+                try? await self.app.redis.setex(key, toJSON: result.payload, expirationInSeconds: result.ttl)
+            }
+        }
     }
     
     /// Revokes the `Access Token` from the Redis database.
@@ -207,34 +242,40 @@ public extension AuthService.Redis.V1 {
     }
     
     /// Get `Auth` from Redis database.
-    func getAuth(_ authID: String) async throws -> Auth? {
+    func getAuth(_ authID: String) async -> Auth? {
         let key = authRedisBucket(authID)
-        let payload = try await self.app.redis.get(key, asJSON: Auth.self)
+        let payload = try? await self.app.redis.get(key, asJSON: Auth.self)
         return payload
     }
     
     /// Get `Auth` with TTL from Redis database.
-    func getAuthWithTTL(_ authID: String) async throws -> AuthGetResult? {
+    func getAuthWithTTL(_ authID: String) async -> AuthGetResult? {
         let key = authRedisBucket(authID)
-        let payload = try await self.app.redis.get(key, asJSON: Auth.self)
-        guard let payload else { return nil }
-        let ttl = try await self.app.redis.getTTL(key)
-        return .init(payload, ttl: ttl)
-    }
-    
-    func revokeAllRefreshTokensFromAuth(_ authID: String) async throws {
-        if let auth = try await getAuthWithTTL(authID) {
-            for refreshTokenID in auth.payload.refresh_token_ids {
-                if let refreshToken = try await getRefreshTokenWithTTL(refreshTokenID), refreshToken.payload.is_active {
-                    try await revokeRefreshToken(refreshTokenID, refreshToken)
-                }
-            }
+        let payload = try? await self.app.redis.get(key, asJSON: Auth.self)
+        let ttl = try? await self.app.redis.getTTL(key)
+        if let payload, let ttl {
+            return .init(payload, ttl: ttl)
+        } else {
+            return nil
         }
     }
+    
+    
     
     func deleteAuth(_ authID: String) async {
         let key = authRedisBucket(authID)
         await self.app.redis.drop(key)
+    }
+    
+    func deleteAllAuths(_ userID: String) async {
+        if let user = await getUser(userID) {
+            var keys = [RedisKey]()
+            for authIDs in user.auth_token_ids {
+                let key = authRedisBucket(authIDs)
+                keys.append(key)
+            }
+            await self.app.redis.drop(keys)
+        }
     }
     
     // MARK: - USER -
@@ -249,9 +290,9 @@ public extension AuthService.Redis.V1 {
         try await self.app.redis.set(key, toJSON: payload)
     }
     
-    func getUser(_ userID: String) async throws -> User? {
+    func getUser(_ userID: String) async -> User? {
         let key = userRedisBucket(userID)
-        let user = try await self.app.redis.get(key, asJSON: User.self)
+        let user = try? await self.app.redis.get(key, asJSON: User.self)
         return user
     }
     
@@ -308,22 +349,5 @@ extension AuthService.Redis.V1 {
     
     private func phoneNumbersRedisBucket(_ phoneNumber: String) -> RedisKey {
         .init(Bucket.phoneNumber + ":" + phoneNumber)
-    }
-}
-
-extension String {
-    var convertRedisKey: RedisKey {
-        .init(self)
-    }
-}
-
-extension Array where Element == String {
-    var convertRedisKey: [RedisKey] {
-        var keys = [RedisKey]()
-        for item in self {
-            let key = item.convertRedisKey
-            keys.append(key)
-        }
-        return keys
     }
 }

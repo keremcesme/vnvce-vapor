@@ -39,7 +39,7 @@ extension AuthController {
         
         let authCode = authToken.token
         
-        return .init(authToken.token, authToken.tokenID)
+        return .init(authCode, authToken.tokenID)
     }
 }
 

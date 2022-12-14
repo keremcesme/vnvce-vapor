@@ -65,13 +65,9 @@ public final class JWT {
     }
     
     public final class ValidationResult {
-        public enum V1 <P: JWTSignable> {
-            case success(Result)
-            case failure
-            public struct Result {
-                let isVerified: Bool
-                let payload: P
-            }
+        public struct V1 <P: JWTSignable> {
+            let isVerified: Bool
+            let payload: P
         }
     }
     
