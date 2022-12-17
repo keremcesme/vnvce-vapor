@@ -198,11 +198,11 @@ public extension AuthService.Redis.V1 {
     }
     
     /// Revokes the `Access Token` from the Redis database.
-    func revokeAccessToken(_ accessTokenID: String, _ result: AccessTokenGetResult) async throws {
+    func revokeAccessToken(_ accessTokenID: String, _ result: AccessTokenGetResult) async {
         let key = accessTokenRedisBucket(accessTokenID)
         var payload = result.payload
         payload.is_active = false
-        try await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
+        try? await self.app.redis.setex(key, toJSON: payload, expirationInSeconds: result.ttl)
     }
     
     /// Deletes the `Access Token` in the Redis database.
@@ -260,11 +260,28 @@ public extension AuthService.Redis.V1 {
         }
     }
     
-    
-    
     func deleteAuth(_ authID: String) async {
         let key = authRedisBucket(authID)
         await self.app.redis.drop(key)
+    }
+    
+    func deleteAuthFromUser(_ authID: String, _ userID: String) async {
+        if var user = await getUser(userID) {
+            if let inx = user.auth_token_ids.firstIndex(where: {$0 == authID}) {
+                user.auth_token_ids.remove(at: inx)
+                let key = userRedisBucket(userID)
+                try? await self.app.redis.set(key, toJSON: user)
+            }
+        }
+    }
+    
+    func deleteAuthFromUser(_ authID: String, _ userID: String, _ user: User) async{
+        var user = user
+        if let inx = user.auth_token_ids.firstIndex(where: {$0 == authID}) {
+            user.auth_token_ids.remove(at: inx)
+            let key = userRedisBucket(userID)
+            try? await self.app.redis.set(key, toJSON: user)
+        }
     }
     
     func deleteAllAuths(_ userID: String) async {

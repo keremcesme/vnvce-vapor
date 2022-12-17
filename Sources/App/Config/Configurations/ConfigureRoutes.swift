@@ -16,6 +16,10 @@ extension Application {
     public func configureRoutes() async throws {
         self.logger.notice("[ 6/8 ] Configuring Routes")
         
+        self.get("health") { req in
+            return HTTPStatus(statusCode: 200)
+        }
+        
         let endpoint = Endpoint.shared
         
         let api = self.grouped("api")
@@ -93,9 +97,7 @@ extension Application {
                 return jwt
             }
             
-            self.get("health") { req  in
-                return "OK"
-            }
+           
             
             self.get("version-test") { req -> String in
 //                print(req.headers.acceptVersion)

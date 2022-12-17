@@ -14,57 +14,74 @@ extension AuthMiddleware {
         }
         
         let redis = req.authService.redis.v1
+        let jwtService = req.authService.jwt.v1
         
         /// [STEP 1]
         /// Verifying `Access Token` JWT.
         ///
-        guard let jwt = try? req.jwt.verify(accessToken, as: JWT.AccessToken.V1.self) else {
+        guard let decodedJWT = jwtService.validate(accessToken, as: JWT.AccessToken.V1.self) else {
+            throw Abort(.forbidden)
+        }
+        
+        guard decodedJWT.isVerified else {
             throw Abort(.unauthorized)
         }
         
-        let userID = jwt.userID
-        let atID = jwt.id()
-        let rtID = jwt.refreshTokenID
+        let jwtPayload = decodedJWT.payload
+        
+        let userID = jwtPayload.userID
+        let atID = jwtPayload.id()
+        let rtID = jwtPayload.refreshTokenID
         
         /// [STEP 2]
         /// Verifying `Access Token` from Redis database.
         guard let at = try await redis.getAccessTokenWithTTL(atID) else {
             ///
-            /// The `Access Token` has expired or been revoked.
+            /// The `Access Token` has expired or removed manually.
             ///
             throw Abort(.unauthorized)
         }
         
         guard at.payload.is_active else {
             ///
-            /// `Access Token` reuse detected.
+            /// [ REUSE DETECTED ][1]
+            /// The `Access Token` has been revoked. But it was tried to be used again.
             ///
             throw Abort(.forbidden)
         }
         
         /// [STEP 3]
         /// Verifying `Refresh Token` from Redis database.
-        guard let rt = await redis.getRefreshTokenWithTTL(rtID),
-                  rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970)
+        guard let rt = await redis.getRefreshTokenWithTTL(rtID)
         else {
             ///
             /// [ REVOKE ][1]
             /// The `Access Token` will be revoked because (possible causes):
             ///     1 - The `Refresh Token` could not be found in the Redis database.
-            ///     2 - The `Refresh Token` has been revoked.
-            ///     3 - The `Refresh Token` inactivity time has expired.
-            ///     4 - The `Refresh Token` has expired or been revoked.
+            ///     2 - The `Refresh Token` has expired.
             ///
-            try await redis.revokeAccessToken(atID, at)
+            await redis.revokeAccessToken(atID, at)
             throw Abort(.unauthorized)
         }
         
         guard rt.payload.is_active else {
             ///
-            /// `Refresh Token` reuse detected.
+            /// [ REVOKE ][2]
+            /// The `Access Token` will be revoked because the
+            /// `Refresh Token` has been revoked.
             ///
-            try await redis.revokeAccessToken(atID, at)
+            await redis.revokeAccessToken(atID, at)
             throw Abort(.forbidden)
+        }
+        
+        guard rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970) else {
+            ///
+            /// [ REVOKE ][3]
+            /// The `Access Token` will be revoked because the
+            /// `Refresh Token` inactivity time has expired.
+            ///
+            await redis.revokeAccessToken(atID, at)
+            throw Abort(.unauthorized)
         }
         
         /// [STEP 4]
@@ -77,7 +94,7 @@ extension AuthMiddleware {
                   auth.is_verified
         else {
             ///
-            /// [ REVOKE ][2]
+            /// [ REVOKE ][4]
             /// `Access Token` and `Refresh Token` will be revoked because (possible causes):
             ///     1 -  The `Auth` could not be found in the Redis database.
             ///     2 -  The `Auth` has expired.
@@ -85,7 +102,7 @@ extension AuthMiddleware {
             ///     4 - `Refresh Token` not found in Auth.
             ///     5 - `Auth Code` (code_challenge) is not verified.
             ///
-            try await redis.revokeAccessToken(atID, at)
+            await redis.revokeAccessToken(atID, at)
             await redis.revokeRefreshToken(rtID, rt)
             throw Abort(.forbidden)
         }
@@ -96,14 +113,14 @@ extension AuthMiddleware {
                   usr.auth_token_ids.contains(authID)
         else {
             ///
-            /// [ DELETE ][1]
+            /// [ REVOKE / DELETE ][1]
             /// `Access Token`, all `Refresh Token`s and `Auth` will be deleted because (possible causes):
             ///     1 -  The `User` could not be found in the Redis database.
             ///     2 - `Auth ID` not found in User.
             ///
-            await redis.deleteAccessToken(atID)
+            await redis.revokeAccessToken(atID, at)
+            await redis.deleteRefreshToken(rtID)
             await redis.deleteAllRefreshTokens(auth)
-            await redis.deleteAllAuths(userID)
             await redis.deleteAuth(authID)
             throw Abort(.forbidden)
         }
@@ -116,7 +133,7 @@ extension AuthMiddleware {
             /// `User`, `Access Token`, all `Refresh Token`s and `Auth` will be deleted because:
             ///     1 - There is no such user.
             ///
-            await redis.deleteAccessToken(atID)
+            await redis.revokeAccessToken(atID)
             await redis.deleteAllRefreshTokens(auth)
             await redis.deleteAuth(authID)
             await redis.deleteUser(userID)

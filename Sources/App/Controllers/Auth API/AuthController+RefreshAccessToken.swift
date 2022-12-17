@@ -65,6 +65,7 @@ extension AuthController {
         guard let authTokenIDs = await redis.getUser(userID)?.auth_token_ids,
                   authTokenIDs.contains(authID)
         else {
+            await redis.deleteRefreshToken(rtID)
             await redis.deleteAllRefreshTokens(auth)
             await redis.deleteAllAuths(userID)
             await redis.deleteAuth(authID)
@@ -73,7 +74,9 @@ extension AuthController {
         }
         
         guard try await User.find(userID.uuid(), on: req.db)?.requireID() != nil else {
+            await redis.deleteRefreshToken(rtID)
             await redis.deleteAllRefreshTokens(auth)
+            await redis.deleteAuth(authID)
             await redis.deleteAllAuths(userID)
             await redis.deleteUser(userID)
             throw Abort(.forbidden)
@@ -91,4 +94,5 @@ extension AuthController {
 
         return .init("Access Token: \(token.token)")
     }
+    
 }
