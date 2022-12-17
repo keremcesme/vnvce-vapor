@@ -1,7 +1,7 @@
 
 import Vapor
 import VNVCECore
-
+import Leaf
 
 
 public func configure(_ app: Application) async throws {
@@ -19,7 +19,7 @@ public func configure(_ app: Application) async throws {
     }
     
     app.logger.notice("[ INFO ] Total Configurations: 8")
-    
+    app.views.use(.leaf)
     try await app.configureAWS()
     try await app.configureDatabase()
     try await app.configureRedis()

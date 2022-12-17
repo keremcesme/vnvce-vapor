@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>File upload example</title>
+    <title>vnvce</title>
+    <link rel="shortcut icon" type="image/png" href="/images/icon.png">
   </head>
   <body>
-    <h1>html view</h1>
+    <h1>vnvce</h1>
     </form>
   </body>
 </html>
