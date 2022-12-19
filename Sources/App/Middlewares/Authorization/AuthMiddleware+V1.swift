@@ -134,8 +134,10 @@ extension AuthMiddleware {
             ///     1 - There is no such user.
             ///
             await redis.revokeAccessToken(atID)
+            await redis.deleteRefreshToken(rtID)
             await redis.deleteAllRefreshTokens(auth)
             await redis.deleteAuth(authID)
+            await redis.deleteAllAuths(usr)
             await redis.deleteUser(userID)
             throw Abort(.forbidden)
         }

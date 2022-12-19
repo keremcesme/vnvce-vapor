@@ -295,6 +295,15 @@ public extension AuthService.Redis.V1 {
         }
     }
     
+    func deleteAllAuths(_ user: User) async {
+        var keys = [RedisKey]()
+        for authIDs in user.auth_token_ids {
+            let key = authRedisBucket(authIDs)
+            keys.append(key)
+        }
+        await self.app.redis.drop(keys)
+    }
+    
     // MARK: - USER -
     typealias User = Redis.User.V1
     

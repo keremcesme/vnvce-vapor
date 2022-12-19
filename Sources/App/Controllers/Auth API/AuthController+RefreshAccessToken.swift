@@ -88,10 +88,10 @@ extension AuthController {
         
         let token = try jwtService.generateAccessToken(userID, rtID)
         let accessTokenID = token.tokenID
-
+        
         try await redis.addAccessToken(accessTokenID)
         try await redis.updateRefreshTokenInactivity(rtID, rt)
-
+        
         return .init("Access Token: \(token.token)")
     }
     
