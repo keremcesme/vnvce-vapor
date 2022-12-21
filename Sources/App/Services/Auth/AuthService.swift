@@ -31,7 +31,7 @@ extension AuthService {
         .init(self.app)
     }
     
-    public var code: PKCEService {
+    public var pkce: PKCEService {
         .init()
     }
 }

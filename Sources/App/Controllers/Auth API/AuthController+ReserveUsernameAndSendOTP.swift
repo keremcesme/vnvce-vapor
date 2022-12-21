@@ -12,43 +12,42 @@ extension AuthController {
         
         switch version {
         case .v1:
-            return try await reserveUsernameAndSendSMSOTPV1(req)
+//            return try await reserveUsernameAndSendSMSOTPV1(req)
+            throw Abort(.notFound)
         default:
             throw Abort(.notFound)
         }
     }
     
     
-    private func reserveUsernameAndSendSMSOTPV1(_ req: Request) async throws -> AnyAsyncResponse {
-        let p = try req.content.decode(VNVCECore.ReserveUsernameAndSendSMSOTPPayload.V1.self)
-
-        let usernamePayload = CheckUsernamePayload.V1(clientID: p.clientID, username: p.username)
-        let usernameAvailability = try await checkUsernameV1(payload: usernamePayload, req)
-        
-        try await reserveUsernameV1(
-            username: p.username,
-            clientID: p.clientID,
-            availabiltiy: usernameAvailability,
-            req)
-        
-        
-        
-        let phonePayload = CheckPhoneNumberPayload.V1(clientID: p.clientID, phoneNumber: p.phoneNumber)
-        let result = try await checkPhoneNumberV1(payload: phonePayload, req)
-        let phoneAvailability = result.availability
-        
-        if phoneAvailability == .notUsed {
-            let otp = try await sendSMSOTPV1(
-                phoneNumber: p.phoneNumber,
-                clientID: p.clientID,
-                req)
-            return .init(otp)
-        } else if phoneAvailability == .otpExpectedBySameUser, let otp = result.otp {
-            return .init(otp)
-        } else {
-            return .init(ResultResponse.V1(error: true, description: phoneAvailability.description))
-        }
-    }
+//    private func reserveUsernameAndSendSMSOTPV1(_ req: Request) async throws -> AnyAsyncResponse {
+//        let p = try req.content.decode(VNVCECore.ReserveUsernameAndSendSMSOTPPayload.V1.self)
+//
+//        let usernamePayload = CheckUsernamePayload.V1(clientID: p.clientID, username: p.username)
+//        let usernameAvailability = try await checkUsernameV1(payload: usernamePayload, req)
+//
+//        try await reserveUsernameV1(
+//            username: p.username,
+//            clientID: p.clientID,
+//            availabiltiy: usernameAvailability,
+//            req)
+//
+//        let phonePayload = CheckPhoneNumberPayload.V1(clientID: p.clientID, phoneNumber: p.phoneNumber)
+//        let result = try await checkPhoneNumberV1(payload: phonePayload, req)
+//        let phoneAvailability = result.availability
+//
+//        if phoneAvailability == .notUsed {
+//            let otp = try await sendSMSOTPV1(
+//                phoneNumber: p.phoneNumber,
+//                clientID: p.clientID,
+//                req)
+//            return .init(otp)
+//        } else if phoneAvailability == .otpExpectedBySameUser, let otp = result.otp {
+//            return .init(otp)
+//        } else {
+//            return .init(ResultResponse.V1(error: true, description: phoneAvailability.description))
+//        }
+//    }
     
 }
 

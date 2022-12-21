@@ -18,7 +18,6 @@ public struct AuthController: RouteCollection {
         let versionMiddleware = VersionMiddleware()
         let api = routes.grouped("auth").grouped(versionMiddleware)
         
-        // Create: vnvce.com/api/auth/check/
         let check = api.grouped("check")
         check.post("phone-number", use: checkPhoneNumberHandler)
         check.post("username", use: checkUsernameHandler)
@@ -27,17 +26,27 @@ public struct AuthController: RouteCollection {
         
         api.post("create-account", use: createAccountHandler)
         
-        
+        api.get("create-user-test") { req async throws -> String in
+            let user = User()
+            try await user.create(on: req.db)
+            let userID = try user.requireID()
+            
+            return userID.uuidString
+        }
         
         api.post("authorize", use: authorizeHandler)
-        api.post("token", use: tokenHandler)
+        api.post("reauthorize", use: reAuthorizeHandler)
         
-        // Refresh: vnvce.com/api/auth/refresh/
-        let refresh = api.grouped("refresh")
-        /// refresh/ `access-token`
-        /// refresh/ `auth-code`
+        let pkce = api.grouped("pkce")
         
-        refresh.post("access-token", use: refreshAccessTokenHandler)
+        pkce.post("generate-tokens", use: generateTokensHandler)
+        
+        let refreshToken = api.grouped("refresh-token")
+        refreshToken.post("generate-access-token", use: generateAccessTokenHandler)
+        
+        api.post("send-sms") { req async throws -> SMSOTPModel.V1 in
+            return try await sendSMSOTPV1(phoneNumber: "+905533352131", clientID: "as", clientOS: .ios, req)
+        }
         
         api
             .grouped(AuthMiddleware())
@@ -46,35 +55,6 @@ public struct AuthController: RouteCollection {
                 
                 return "WORKS"
             }
-        
-        
-        // Create: vnvce.com/api/auth/create/
-        try api.grouped("create").register(collection: CreateAccountController())
-        
-        // Login: vnvce.com/api/auth/login/
-        try api.grouped("login").register(collection: LoginAccountController())
-        
-        // Token: vnvce.com/api/auth/token/
-        
-        
-        // MARK: OLD Codes
-        
-//        try routes
-//            .grouped(Endpoint.Auth.Login.root.toPathComponents)
-//            .register(collection: loginController)
-        
-//        let auth = routes.grouped("auth")
-//
-//
-//        let create = auth.grouped("create")
-//        try create.register(collection: createController)
-//
-//        let loginController = LoginAccountController()
-//        let login = auth.grouped("login")
-//        try login.register(collection: loginController)
-        
-        
-//        v1.routes(routes)
         
     }
 }

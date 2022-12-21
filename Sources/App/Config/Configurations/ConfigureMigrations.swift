@@ -25,6 +25,7 @@ extension Application {
             CreateUser(),
             CreatePhoneNumber(),
             CreateUsername(),
+            CreateSession(),
             CreateProfilePicture(),
             CreateNotificationToken()
         ]
@@ -41,10 +42,10 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-        self.migrations.add(types)
+//        self.migrations.add(types)
         self.migrations.add(users)
-        self.migrations.add(relationships)
-        self.migrations.add(extensions)
+//        self.migrations.add(relationships)
+//        self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")
     }

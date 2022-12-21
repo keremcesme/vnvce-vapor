@@ -13,78 +13,107 @@ extension AuthController {
             throw Abort(.notFound)
         }
         
-        
         switch version {
         case .v1:
-            let p = try req.content.decode(CheckPhoneNumberPayload.V1.self)
-            let result = try await checkPhoneNumberV1(payload: p, req)
+            let p = try req.query.decode(CheckPhoneNumberParams.V1.self)
+            let result = try await checkPhoneNumberV1(phoneNumber: p.phoneNumber, req)
             let availability = result.availability
             let description = availability.description
-            if availability == .notUsed || availability == .otpExpectedBySameUser {
-                return .init(ResultResponse.V1(error: false, description: description))
-            } else {
-                return .init(ResultResponse.V1(error: true, description: description))
+            
+            switch p.reason {
+            case .create:
+                if availability == .notUsed || availability == .otpExpectedBySameUser {
+                    return .init(ResultResponse.V1(error: false, description: description))
+                } else {
+                    return .init(ResultResponse.V1(error: true, description: description))
+                }
+            case .login:
+                if availability == .exist || availability == .otpExpectedBySameUser {
+                    return .init(ResultResponse.V1(error: false, description: description))
+                } else {
+                    return .init(ResultResponse.V1(error: true, description: description))
+                }
             }
         default:
             throw Abort(.notFound)
         }
     }
     
-    public func checkPhoneNumberV1(payload: CheckPhoneNumberPayload.V1, _ req: Request) async throws -> PhoneNumberAvailability.V1 {
-        let p = payload
+    public func checkPhoneNumberV1(phoneNumber: String, _ req: Request) async throws -> PhoneNumberAvailability.V1 {
+        guard let clientID = req.headers.clientID,
+              let clientOS = req.headers.clientOS
+        else {
+            throw Abort(.badRequest, reason: "Missing headers.")
+        }
+        
+        let phoneNumber = "+" + phoneNumber
         
         let phoneQuery = try await PhoneNumber.query(on: req.db)
-            .filter(\.$phoneNumber == p.phoneNumber)
+            .filter(\.$phoneNumber == phoneNumber)
             .first()
         
         guard phoneQuery == nil else {
             return .init(availability: .exist)
         }
         
-        let key = RedisKey("phone_numbers:\(p.phoneNumber)")
+        let redis = req.authService.redis.v1
         
-        let otpAttemptQuery = try await req.redis.get(key, asJSON: RedisOTPModel.V1.self)
-        
-        if let otpAttempt = otpAttemptQuery {
-            if try Bcrypt.verify(p.clientID, created: otpAttempt.encryptedClientID) {
-                let otp = SMSOTPModel.V1(createdAt: otpAttempt.createdAt, expireAt: otpAttempt.expireAt)
-                
-                return .init(otp: otp, availability: .otpExpectedBySameUser)
-            } else {
-                return .init(availability: .otpExpected)
-            }
+        guard let otp = await redis.getOTPWithTTL(phoneNumber) else {
+            return .init(availability: .notUsed)
         }
-        return .init(availability: .notUsed)
+        
+        let otpID = req.headers.otpID
+        guard let otpID, otpID == otp.payload.otpID,
+                  otp.payload.clientID == clientID,
+                  otp.payload.clientOS == clientOS
+        else {
+            return .init(availability: .otpExpected)
+        }
+        
+        let date = Date().timeIntervalSince1970
+        let createdAt = date - TimeInterval(Redis.TTL.V1.otp - otp.ttl)
+        let expireAt = date + TimeInterval(otp.ttl)
+        
+        let otpModel = SMSOTPModel.V1(otpID: otpID, createdAt: createdAt, expireAt: expireAt)
+        
+        return .init(otp: otpModel, availability: .otpExpectedBySameUser)
     }
     
     public func sendSMSOTPV1(
         phoneNumber: String,
         clientID: String,
+        clientOS: ClientOS,
+        userID: String? = nil,
         _ req: Request
     ) async throws -> SMSOTPModel.V1 {
+        let jwt = req.authService.jwt.v1
+        let redis = req.authService.redis.v1
+        let sms = req.application.aws.sms
         let currentDate = Date()
         
+        let duration = 60
+        
         let symmetricKey = SymmetricKey(size: .bits128)
-        let totp = TOTP(key: symmetricKey, digest: .sha256, digits: .six, interval: 60)
+        let totp = TOTP(key: symmetricKey, digest: .sha256, digits: .six, interval: duration)
         let code = totp.generate(time: currentDate)
         
         let encryptedCode = try Bcrypt.hash(code)
-        let encryptedClientID = try Bcrypt.hash(clientID)
         
-        let otp = RedisOTPModel.V1(encryptedCode: encryptedCode, encryptedClientID: encryptedClientID)
+        let otpToken = try jwt.generateOTPToken(userID, clientID, clientOS)
+        await redis.addOTP(
+            phoneNumber: phoneNumber,
+            encryptedCode: encryptedCode,
+            otpID: otpToken.tokenID,
+            clientID: clientID,
+            clientOS: clientOS.rawValue)
         
-        let key = RedisKey("phone_numbers:\(phoneNumber)")
+        try await sms.send(to: phoneNumber, message: "Your code: \(code)")
         
-        try await req.redis.setex(key, toJSON: otp, expirationInSeconds: 60)
+        let createdAt = currentDate.timeIntervalSince1970
+        let expireAt = currentDate.addingTimeInterval(TimeInterval(duration)).timeIntervalSince1970
         
-        try await req.application.aws.sms.send(to: phoneNumber, message: "Your code: \(code)")
-        
-        return .init(createdAt: otp.createdAt, expireAt: otp.expireAt)
+        return .init(otpID: otpToken.tokenID, otpToken: otpToken.token, createdAt: createdAt, expireAt: expireAt)
     }
-    
-//    func tasdjukfhukasdfas() async throws -> Vapor.Response {
-//        
-//    }
 }
 
 extension SMSOTPModel.V1: Content {}

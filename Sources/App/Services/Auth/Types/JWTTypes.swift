@@ -53,11 +53,13 @@ public final class JWT {
             case access = "access"
             case refresh = "refresh"
             case auth = "auth"
+            case otp = "otp"
         }
     }
     
     public final class TTL {
         public enum V1 {
+            static let otp = TimeInterval(60) // 1 min
             static let accessToken = TimeInterval(60 * 10) // 10 min
             static let refreshToken = TimeInterval(60 * 60 * 24 * 30) // 30 day
             static let authToken = TimeInterval(60 * 60 * 24 * 45) // 45 day
@@ -68,6 +70,62 @@ public final class JWT {
         public struct V1 <P: JWTSignable> {
             let isVerified: Bool
             let payload: P
+        }
+    }
+    
+    public final class OTP {
+        public struct V1: JWTSignable {
+            let userID: String?
+            let clientID: String
+            let clientOS: String
+            let tokenType: TokenType.V1
+            
+            let iss: IssuerClaim
+            let aud: AudienceClaim
+            let jti: IDClaim
+            let iad: IssuedAtClaim
+            let exp: ExpirationClaim
+            init(
+                _ userID: String? = nil,
+                _ clientID: String,
+                _ clientOS: ClientOS,
+                _ otpID: String
+            ) {
+                let date = Date()
+                self.userID = userID
+                self.clientID = clientID
+                self.clientOS = clientOS.rawValue
+                self.tokenType = .otp
+                self.iss = .init(value: "api.vnvce.com")
+                self.aud = .init(value: ["vnvce.com"])
+                self.jti = .init(value: otpID)
+                self.iad = .init(value: date)
+                self.exp = .init(value: date.addingTimeInterval(TTL.V1.otp))
+            }
+            
+            public func verify(using signer: JWTKit.JWTSigner) throws {
+                try self.exp.verifyNotExpired()
+            }
+            
+            public func sign(_ app: Application) throws -> String {
+                return try app.jwt.signers.sign(self, kid: .private)
+            }
+            
+            public func id() -> String {
+                return self.jti.value
+            }
+            
+            enum CodingKeys: String, CodingKey {
+                case userID = "user_id"
+                case clientID = "client_id"
+                case clientOS = "client_os"
+                case tokenType = "token_type"
+                case iss
+                case aud
+                case jti
+                case iad
+                case exp
+            }
         }
     }
     
@@ -178,6 +236,7 @@ public final class JWT {
             }
         }
     }
+    
     public final class AuthToken {
         public struct V1: JWTSignable, JWTAuthToken {
             let userID: String

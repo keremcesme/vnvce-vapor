@@ -40,6 +40,9 @@ final class User: Model, Content, Authenticatable {
     @OptionalChild(for: \.$user)
     var profilePicture: ProfilePicture?
     
+    @Children(for: \.$user)
+    var sessions: [Session]
+    
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     

@@ -15,6 +15,8 @@ extension HTTPHeaders.Name {
     
     static let userID = HTTPHeaders.Name("X-User-ID")
     
+    static let otpID = HTTPHeaders.Name("X-OTP-ID")
+    
 }
 
 extension HTTPHeaders {
@@ -158,6 +160,22 @@ extension HTTPHeaders {
                 replaceOrAdd(name: .userID, value: userID)
             } else {
                 remove(name: .userID)
+            }
+        }
+    }
+    
+    public var otpID: String? {
+        get {
+            guard let string = self.first(name: .otpID) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let otpID = newValue {
+                replaceOrAdd(name: .otpID, value: otpID)
+            } else {
+                remove(name: .otpID)
             }
         }
     }

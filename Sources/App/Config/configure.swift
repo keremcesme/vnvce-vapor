@@ -30,8 +30,6 @@ public func configure(_ app: Application) async throws {
     await app.configureMigrations()
     await app.configureViews()
     
-    
-    
 //    try await app.autoRevert()
 //    try await app.autoMigrate()
     

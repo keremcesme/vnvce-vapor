@@ -9,10 +9,29 @@ public final class Redis {
     // MARK: TTL
     public final class TTL {
         public enum V1 {
-            static let accessToken = 60 * 10 // 10 min
-            static let inactivity = 60 * 60 * 24 * 7 // 7 day
+            static let otp = 60                         // 1 min
+            static let accessToken = 60 * 10            // 10 min
+            static let inactivity = 60 * 60 * 24 * 7    // 7 day
             static let refreshToken = 60 * 60 * 24 * 30 // 30 day
-            static let authToken = 60 * 60 * 24 * 45 // 45 day
+            static let authToken = 60 * 60 * 24 * 45    // 45 day
+        }
+    }
+    
+    // MARK: OTP
+    public final class OTP {
+        public struct V1: RedisModel {
+            public let encryptedCode: String
+            public let otpID: String
+            public let clientID: String
+            public let clientOS: String
+            public let userID: String?
+            public init(encryptedCode: String, otpID: String, clientID: String, clientOS: String, userID: String? = nil) {
+                self.encryptedCode = encryptedCode
+                self.otpID = otpID
+                self.clientID = clientID
+                self.clientOS = clientOS
+                self.userID = userID
+            }
         }
     }
     
@@ -55,36 +74,17 @@ public final class Redis {
     // MARK: Auth
     public final class Auth {
         public struct V1: RedisModel {
-            public var user_id: String
-            public var client_id: String
-            public var client_os: String
             public var code_challenge: String
             public var is_verified: Bool
             public var refresh_token_ids: [String]
             public init(
-                _ userID: String,
-                _ clientID: String,
-                _ clientOS: String,
-                _ codeChallenge: String,
-                _ isVerified: Bool = false,
-                _ refreshTokenIDs: [String] = []
+                challenge codeChallenge: String,
+                isVerified: Bool = false,
+                rtIDs refreshTokenIDs: [String] = []
             ) {
-                self.user_id = userID
-                self.client_id = clientID
-                self.client_os = clientOS
                 self.code_challenge = codeChallenge
                 self.is_verified = isVerified
                 self.refresh_token_ids = refreshTokenIDs
-            }
-        }
-    }
-    
-    // MARK: User
-    public final class User {
-        public struct V1: RedisModel {
-            public var auth_token_ids: [String]
-            public init(_ authTokenIDs: [String]) {
-                self.auth_token_ids = authTokenIDs
             }
         }
     }
@@ -103,9 +103,9 @@ public final class Redis {
             static let accessToken = "access_tokens"
             static let refreshToken = "refresh_tokens"
             static let auth = "auths"
-            static let user = "users"
-            static let phoneNumber = "phone_numbers"
             
+            static let otp = "otps"
+            static let reservedUsername = "reserved_usernames"
         }
     }
 
