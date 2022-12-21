@@ -53,17 +53,17 @@ extension AuthController {
             throw Abort(.forbidden)
         }
         
-//        if rtJWT.isVerified {
-//            guard let rt = await redis.getRefreshTokenWithTTL(rtID),
-//                      rt.payload.is_active else {
-//                throw Abort(.forbidden)
-//            }
-//            
-//            if rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970) {
-//                await redis.revokeRefreshToken(rtID)
-//                throw Abort(.forbidden)
-//            }
-//        }
+        if rtJWT.isVerified {
+            guard let rt = await redis.getRefreshTokenWithTTL(rtID),
+                      rt.payload.is_active else {
+                throw Abort(.forbidden)
+            }
+            
+            if rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970) {
+                await redis.revokeRefreshToken(rtID)
+                throw Abort(.forbidden)
+            }
+        }
         
         guard let authToken = try? req.jwt.verify(oldAuthCode, as: JWT.AuthToken.V1.self),
               let auth = await redis.getAuth(authID),

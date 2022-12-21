@@ -34,4 +34,12 @@ extension AuthService {
     public var pkce: PKCEService {
         .init()
     }
+    
+    public var otp: AuthService.OTP {
+        .init(self.app)
+    }
+    
+    public var reservedUsername: AuthService.ReservedUsername {
+        .init(self.app)
+    }
 }

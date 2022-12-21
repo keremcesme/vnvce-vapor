@@ -22,8 +22,7 @@ extension AuthController {
     private func authorizeV1(_ req: Request) async throws -> AuthorizeResponse.V1 {
         guard
             let clientID = req.headers.clientID,
-            let clientOS = req.headers.clientOS,
-            let os = clientOS.convertClientOS,
+            let clientOS = req.headers.clientOS?.convertClientOS,
             let userID = req.headers.userID
         else {
             throw Abort(.badRequest, reason: "Missing headers.")
@@ -33,14 +32,12 @@ extension AuthController {
         let jwt = req.authService.jwt.v1
         let redis = req.authService.redis.v1
         
-        let authToken = try jwt.generateAuthToken(userID, clientID, os)
+        let authToken = try jwt.generateAuthToken(userID, clientID, clientOS)
         let authID = authToken.tokenID
         
         await redis.addAuth(authID: authID, challenge: codeChallenge)
         
-        let authCode = authToken.token
-        
-        return .init(authCode, authToken.tokenID)
+        return .init(authToken.token, authToken.tokenID)
     }
 }
 

@@ -10,6 +10,7 @@ public final class Redis {
     public final class TTL {
         public enum V1 {
             static let otp = 60                         // 1 min
+            static let username = 60 * 5                // 5 min
             static let accessToken = 60 * 10            // 10 min
             static let inactivity = 60 * 60 * 24 * 7    // 7 day
             static let refreshToken = 60 * 60 * 24 * 30 // 30 day
@@ -32,6 +33,14 @@ public final class Redis {
                 self.clientOS = clientOS
                 self.userID = userID
             }
+        }
+    }
+    
+    // MARK: Reserved Username
+    public final class ReservedUsername {
+        public struct V1: RedisModel {
+            public let clientID: String
+            public let clientOS: String
         }
     }
     

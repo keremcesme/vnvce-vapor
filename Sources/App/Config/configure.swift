@@ -3,7 +3,6 @@ import Vapor
 import VNVCECore
 import Leaf
 
-
 public func configure(_ app: Application) async throws {
     
     app.http.server.configuration.supportPipelining = true
@@ -30,10 +29,13 @@ public func configure(_ app: Application) async throws {
     await app.configureMigrations()
     await app.configureViews()
     
+    
+//    try app.configureAppleDeviceCheck()
+    
 //    try await app.autoRevert()
 //    try await app.autoMigrate()
     
     app.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
     
-//    try app.configureAppleDeviceCheck()
+
 }

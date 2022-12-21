@@ -1,6 +1,7 @@
 
 import Vapor
 import Fluent
+import JWT
 import VNVCECore
 
 extension AuthController {
@@ -20,11 +21,10 @@ extension AuthController {
         }
     }
     
-    private func generateTokensV1(_ req: Request) async throws -> VNVCECore.TokenResponse.V1 {
+    private func generateTokensV1(_ req: Request) async throws -> TokensResponse.V1 {
         guard let clientID = req.headers.clientID,
               let clientOS = req.headers.clientOS?.convertClientOS,
-              let authID = req.headers.authID,
-              let userID = req.headers.userID
+              let authID = req.headers.authID
         else {
             throw Abort(.badRequest, reason: "Missing headers.")
         }
@@ -41,12 +41,11 @@ extension AuthController {
               let auth = await redis.getAuthWithTTL(authID),
                  !auth.payload.is_verified,
                   authID   == authToken.id(),
-                  userID   == authToken.userID,
                   clientID == authToken.clientID,
                   clientOS.rawValue == authToken.clientOS,
               try await pkce.verifyCodeChallenge(codeVerifier, auth.payload.code_challenge),
-              let user = try await User.find(userID.uuid(), on: req.db),
-              let tokens = try? jwt.generateTokens(userID, authID)
+              let user = try await User.find(authToken.userID.uuid(), on: req.db),
+              let tokens = try? jwt.generateTokens(authToken.userID, authID)
         else {
             await redis.deleteAuth(authID)
             try await Session.query(on: req.db).filter(\.$authID == authID).delete()
@@ -71,4 +70,4 @@ extension AuthController {
     }
 }
 
-extension VNVCECore.TokenResponse.V1: Content {}
+extension TokensResponse.V1: Content {}

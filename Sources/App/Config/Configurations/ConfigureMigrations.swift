@@ -13,8 +13,6 @@ extension Application {
     func configureMigrations() async {
         self.logger.notice("[ 7/8 ] Configuring Migrations")
         
-        
-        
         let types: [Migration] = [
             CreateProfilePictureAlignmentType(),
             CreateMediaType(),
@@ -42,10 +40,10 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-//        self.migrations.add(types)
+        self.migrations.add(types)
         self.migrations.add(users)
-//        self.migrations.add(relationships)
-//        self.migrations.add(extensions)
+        self.migrations.add(relationships)
+        self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")
     }

@@ -18,13 +18,27 @@ public struct AuthController: RouteCollection {
         let versionMiddleware = VersionMiddleware()
         let api = routes.grouped("auth").grouped(versionMiddleware)
         
+        // Check
         let check = api.grouped("check")
         check.post("phone-number", use: checkPhoneNumberHandler)
         check.post("username", use: checkUsernameHandler)
         
-        api.post("reserve-username-and-send-sms-otp", use: reserveUsernameAndSendSMSOTPHandler)
+        // Create
+        let create = api.grouped("create")
+        create.post("reserve-username-and-send-sms-otp", use: reserveUsernameAndSendSMSOTPHandler)
+        create.post("account", use: createAccountHandler)
         
-        api.post("create-account", use: createAccountHandler)
+        // Login
+        let login = api.grouped("login")
+        login.post("check-phone-number-and-send-otp", use: checkPhoneNumberAndSendOTPHandler)
+        login.post("verify-otp-and-generate-tokens", use: verifyOTPAndLoginHandler)
+        
+        // Authorization
+        let token = api.grouped("token")
+        token.post("authorize", use: authorizeHandler)
+        token.post("reauthorize", use: reAuthorizeHandler)
+        token.post("generate-tokens", use: generateTokensHandler)
+        token.post("generate-access-token", use: generateAccessTokenHandler)
         
         api.get("create-user-test") { req async throws -> String in
             let user = User()
@@ -32,20 +46,6 @@ public struct AuthController: RouteCollection {
             let userID = try user.requireID()
             
             return userID.uuidString
-        }
-        
-        api.post("authorize", use: authorizeHandler)
-        api.post("reauthorize", use: reAuthorizeHandler)
-        
-        let pkce = api.grouped("pkce")
-        
-        pkce.post("generate-tokens", use: generateTokensHandler)
-        
-        let refreshToken = api.grouped("refresh-token")
-        refreshToken.post("generate-access-token", use: generateAccessTokenHandler)
-        
-        api.post("send-sms") { req async throws -> SMSOTPModel.V1 in
-            return try await sendSMSOTPV1(phoneNumber: "+905533352131", clientID: "as", clientOS: .ios, req)
         }
         
         api

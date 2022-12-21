@@ -27,4 +27,9 @@ public extension AuthService.Redis.V1 {
         guard let payload, let ttl else { return nil }
         return .init(payload, ttl: ttl)
     }
+    
+    func deleteOTP(_ phoneNumber: String) async {
+        let key = otpRedisBucket(phoneNumber)
+        await self.app.redis.drop(key)
+    }
 }

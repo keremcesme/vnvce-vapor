@@ -99,7 +99,5 @@ extension AuthMiddleware {
         }
 
         req.auth.login(user)
-        
-        
     }
 }

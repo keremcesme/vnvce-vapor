@@ -32,7 +32,7 @@ public extension AuthService.Redis.V1 {
         .init(Bucket.otp + ":" + phoneNumber)
     }
     
-    func reservedUsernameBucket(_ username: String) -> RedisKey {
+    func reservedUsernameRedisBucket(_ username: String) -> RedisKey {
         .init(Bucket.reservedUsername + ":" + username)
     }
 }

@@ -85,6 +85,20 @@ public extension AuthService.Redis.V1 {
         }
     }
     
+    func deleteAuthWithRefreshTokens(_ authID: String) async {
+        let key = authRedisBucket(authID)
+        if let auth = await getAuth(authID) {
+            var keys = [RedisKey]()
+            for rtID in auth.refresh_token_ids {
+                let key = refreshTokenRedisBucket(rtID)
+                keys.append(key)
+            }
+            await self.app.redis.drop(keys)
+            await self.app.redis.drop(key)
+        }
+        
+    }
+    
     func deleteAuthWithRefreshTokens(_ authID: String, auth: Auth) async {
         let key = authRedisBucket(authID)
         var keys = [RedisKey]()
