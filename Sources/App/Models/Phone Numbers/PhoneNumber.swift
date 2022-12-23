@@ -14,6 +14,9 @@ final class PhoneNumber: Model, Content {
     @Parent(key: "user_id")
     var user: User
     
+    @Parent(key: "country_id")
+    var country: Country
+    
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -24,10 +27,12 @@ final class PhoneNumber: Model, Content {
     
     init(
         phoneNumber: String,
-        user: User.IDValue
+        userID: User.IDValue,
+        countryID: Country.IDValue
     ) {
         self.phoneNumber  = phoneNumber
-        self.$user.id = user
+        self.$user.id = userID
+        self.$country.id = countryID
     }
 }
 

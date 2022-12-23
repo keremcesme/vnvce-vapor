@@ -21,11 +21,15 @@ extension Application {
         
         let users: [Migration] = [
             CreateUser(),
-            CreatePhoneNumber(),
             CreateUsername(),
             CreateSession(),
             CreateProfilePicture(),
             CreateNotificationToken()
+        ]
+        
+        let phoneNumbers: [Migration] = [
+            CreateCountries(),
+            CreatePhoneNumber()
         ]
         
         let relationships: [Migration] = [
@@ -42,6 +46,7 @@ extension Application {
         
         self.migrations.add(types)
         self.migrations.add(users)
+        self.migrations.add(phoneNumbers)
         self.migrations.add(relationships)
         self.migrations.add(extensions)
         

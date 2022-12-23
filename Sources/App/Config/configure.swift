@@ -1,5 +1,6 @@
 
 import Vapor
+import Fluent
 import VNVCECore
 import Leaf
 
@@ -36,6 +37,4 @@ public func configure(_ app: Application) async throws {
 //    try await app.autoMigrate()
     
     app.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
-    
-
 }

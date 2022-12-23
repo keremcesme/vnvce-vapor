@@ -6,6 +6,7 @@
 //
 
 import Fluent
+import FluentSQL
 
 struct CreatePhoneNumber: AsyncMigration {
     
@@ -15,9 +16,10 @@ struct CreatePhoneNumber: AsyncMigration {
             .id()
             .field("phone_number", .string, .required)
             .field("user_id", .uuid, .references(User.schema, .id, onDelete: .cascade))
+            .field("country_id", .sql(raw: "int"), .references(Country.schema, .id))
             .field("created_at", .datetime, .required)
             .field("modified_at", .datetime, .required)
-            .unique(on: "phone_number", name: "uk_phone_number")
+            .unique(on: "phone_number", name: "phone_numbers_phone_number_ukey")
             .create()
     }
     
