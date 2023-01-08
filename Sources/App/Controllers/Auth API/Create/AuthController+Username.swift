@@ -18,16 +18,16 @@ extension AuthController {
         }
     }
     
-    public func checkUsernameV1(_ req: Request) async throws -> HTTPStatus {
+    public func checkUsernameV1(_ req: Request) async throws -> RequestResponse.V1 {
         let p = try req.query.decode(CheckUsernameParams.V1.self)
         let username = req.authService.reservedUsername.v1
         let availability =  try await username.checkUsername(p.username, on: req)
         
         switch availability {
         case .notUsed, .reservedBySameUser:
-            return .ok
+            return .init(error: false)
         default:
-            return .notFound
+            return .init(error: true, message: "This username cannot be used.")
         }
     }
     

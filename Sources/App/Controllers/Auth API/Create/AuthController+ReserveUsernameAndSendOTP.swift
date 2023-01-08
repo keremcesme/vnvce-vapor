@@ -1,5 +1,6 @@
 
 import Vapor
+import JWT
 import VNVCECore
 
 extension AuthController {
@@ -37,9 +38,37 @@ extension AuthController {
         
         try await usernameService.reserveUsername(p.username, on: req)
         
-        let otp = try await otpService.sendOTP(p.phoneNumber, reason: .create, on: req)
+        if phoneAvailability == .otpExpectedBySameUser {
+            var phone: String {
+                let plus = "+"
+                if p.phoneNumber[0] == plus {
+                    return p.phoneNumber
+                } else {
+                    return plus + p.phoneNumber
+                }
+            }
+            guard let otp = await req.authService.redis.v1.getOTPWithTTL(phone),
+                  let otpToken = req.headers.bearerAuthorization?.token,
+                  let otpID = req.headers.otpID,
+                  let otpJWT = try? req.jwt.verify(otpToken, as: JWT.OTP.V1.self),
+                  otpJWT.id() == otpID
+            else {
+                throw Abort(.notFound)
+            }
+            
+            let currentDate = Date().timeIntervalSince1970
+            let secAgo = 60 - otp.ttl
+            let createdAt = currentDate - TimeInterval(secAgo)
+            let expiredAt = currentDate + 60 - TimeInterval(secAgo)
+            
+            return .init(otp: .init(id: otpID, token: otpToken), createdAt: createdAt, expireAt: expiredAt)
+        } else {
+            let otp = try await otpService.sendOTP(p.phoneNumber, reason: .create, on: req)
+            
+            return otp
+        }
         
-        return otp
+        
     }
     
 }

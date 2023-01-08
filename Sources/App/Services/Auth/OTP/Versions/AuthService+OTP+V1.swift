@@ -72,7 +72,7 @@ public extension AuthService.OTP.V1 {
     /// Params:
     ///  1 - Phone Number
     ///
-    func sendOTP(_ phoneNumber: String, reason: CheckPhoneNumberParams.V1.Reason, on req: Request) async throws -> OTPResponse.V1 {
+    func sendOTP(_ phoneNumber: String, reason: OTPType.V1, on req: Request) async throws -> OTPResponse.V1 {
         guard let clientID = req.headers.clientID else {
             throw Abort(.badRequest, reason: "The `X-Client-ID` header is missing.")
         }
@@ -124,9 +124,9 @@ public extension AuthService.OTP.V1 {
         }
         
         let message = """
-Verification code for \(reasonMessage) vnvce account: \(code).
-If you did not request this, disregard this message.
-"""
+        Verification code for \(reasonMessage) vnvce account: \(code).
+        If you did not request this, disregard this message.
+        """
         
         try await sms.send(to: phone, message: message)
         

@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/async-kit.git",
       "state" : {
-        "revision" : "3be4b6418d1e8b835b0b1a1bee06b249faa4da5f",
-        "version" : "1.14.0"
+        "revision" : "929808e51fea04f01de0e911ce826ef70c4db4ea",
+        "version" : "1.15.0"
       }
     },
     {
@@ -212,8 +212,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soto-project/soto.git",
       "state" : {
-        "revision" : "ad93b6bfb76696324bc0c9f0354f59b5060d4317",
-        "version" : "6.3.0"
+        "revision" : "258094b83797fb9ad4fe3882b1a6a46a92d2c2ae",
+        "version" : "6.4.0"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soto-project/soto-core.git",
       "state" : {
-        "revision" : "84a53eaef17c29ec8eb14dfcee1e44d5880b85b7",
-        "version" : "6.3.0"
+        "revision" : "02d3054ed054a587ce1778bd946a783abd8f62e3",
+        "version" : "6.4.0"
       }
     },
     {
@@ -275,8 +275,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "92a04c10fc5ce0504f8396aac7392126033e547c",
-        "version" : "2.2.2"
+        "revision" : "9cc89f0170308b813af05dadcd26f9a2dee47713",
+        "version" : "2.2.3"
       }
     },
     {
@@ -356,8 +356,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/vapor.git",
       "state" : {
-        "revision" : "eb2da0d749e185789970c32f7fd9c114a339fa13",
-        "version" : "4.67.5"
+        "revision" : "888c8b68642c1d340b6b3e9b2b8445fb0f6148c9",
+        "version" : "4.68.0"
       }
     },
     {
@@ -366,7 +366,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "af6921f88cd5cc90e4f8e616e73dcde828682c17"
+        "revision" : "f2d6f0d5f9fa103d0fb6a52823ad6d6888d19362"
       }
     },
     {

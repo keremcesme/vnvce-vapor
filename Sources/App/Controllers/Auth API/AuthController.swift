@@ -9,7 +9,6 @@ import Redis
 // Here are all the routes for authorization.
 
 public struct AuthController: RouteCollection {
-    private let endpoint = Endpoint.shared.routes.auth
     
 //    private let v1 = V1.shared
     

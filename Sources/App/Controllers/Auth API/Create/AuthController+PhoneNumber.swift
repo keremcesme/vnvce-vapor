@@ -18,23 +18,16 @@ extension AuthController {
         }
     }
     
-    public func checkPhoneNumberV1(_ req: Request) async throws -> HTTPStatus {
-        let p = try req.query.decode(CheckPhoneNumberParams.V1.self)
+    public func checkPhoneNumberV1(_ req: Request) async throws -> RequestResponse.V1 {
+        let phoneNumber = try req.query.decode(CheckPhoneNumberParams.V1.self).phoneNumber
         let otp = req.authService.otp.v1
-        let availability =  try await otp.checkPhoneNumber(phoneNumber: p.phoneNumber, on: req)
+        let availability =  try await otp.checkPhoneNumber(phoneNumber: phoneNumber, on: req)
         
-        switch p.reason {
-        case .create:
-            if availability == .notUsed || availability == .otpExpectedBySameUser {
-                return .ok
-            }
-        case .login:
-            if availability == .exist || availability == .otpExpectedBySameUser {
-                return .ok
-            }
+        if availability == .notUsed || availability == .otpExpectedBySameUser {
+            return .init(error: false)
+        } else {
+            return .init(error: true, message: "Phone number cannot be used.")
         }
-        
-        return .notFound
     }
     
 }

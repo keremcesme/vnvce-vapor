@@ -1,22 +1,18 @@
 
 import Vapor
+import VNVCECore
 
 extension HTTPHeaders.Name {
-    static let acceptVersion = HTTPHeaders.Name("Accept-version")
-    static let refreshToken = HTTPHeaders.Name("X-Auth-Refresh-Token")
-    static let accessToken = HTTPHeaders.Name("X-Auth-Access-Token")
-    
-    static let clientID = HTTPHeaders.Name("X-Client-ID")
-    static let clientOS = HTTPHeaders.Name("X-Client-OS")
-    
-    static let accessTokenID = HTTPHeaders.Name("X-Access-Token-ID")
-    static let refreshTokenID = HTTPHeaders.Name("X-Refresh-Token-ID")
-    static let authID = HTTPHeaders.Name("X-Auth-ID")
-    
-    static let userID = HTTPHeaders.Name("X-User-ID")
-    
-    static let otpID = HTTPHeaders.Name("X-OTP-ID")
-    
+    static let acceptVersion = HTTPHeaders.Name(VNVCEHeaders.acceptVersion)
+    static let refreshToken = HTTPHeaders.Name(VNVCEHeaders.refreshToken)
+    static let accessToken = HTTPHeaders.Name(VNVCEHeaders.accessToken)
+    static let clientID = HTTPHeaders.Name(VNVCEHeaders.clientID)
+    static let clientOS = HTTPHeaders.Name(VNVCEHeaders.clientOS)
+    static let accessTokenID = HTTPHeaders.Name(VNVCEHeaders.accessTokenID)
+    static let refreshTokenID = HTTPHeaders.Name(VNVCEHeaders.refreshTokenID)
+    static let authID = HTTPHeaders.Name(VNVCEHeaders.authID)
+    static let userID = HTTPHeaders.Name(VNVCEHeaders.userID)
+    static let otpID = HTTPHeaders.Name(VNVCEHeaders.otpID)
 }
 
 extension HTTPHeaders {
