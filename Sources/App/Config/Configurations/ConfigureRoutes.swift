@@ -31,6 +31,24 @@ extension Application {
         
 //        try api.register(collection: authController)
         
+        try api.get("redis-test", use: { req async -> String in
+            
+            let key = RedisKey("test-key")
+            
+            do {
+                try await req.redis.setex(key, toJSON: "Test Redis Value", expirationInSeconds: 60)
+                
+                guard let value = try await req.redis.get(key, asJSON: String.self) else {
+                    return "Not Work [1]"
+                }
+                
+                return "WORK! [\(value)]"
+                
+            } catch {
+                return "Not Work [2]"
+            }
+        })
+        
         try routesPlayground()
         
         self.logger.notice("✅ Routes Configured")
