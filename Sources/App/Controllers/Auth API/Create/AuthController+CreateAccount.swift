@@ -52,7 +52,7 @@ extension AuthController {
             try await user.create(on: $0)
             let userID = try user.requireID()
             try await user.$username.create(.init(username: p.username, user: userID), on: $0)
-            try await user.$phoneNumber.create(.init(phoneNumber: phoneNumber, userID: userID, countryID: countryID ), on: $0)
+            try await user.$phoneNumber.create(.init(phoneNumber: "+\(phoneNumber)", userID: userID, countryID: countryID ), on: $0)
             return userID.uuidString
         }
         
