@@ -48,7 +48,7 @@ extension AuthController {
                 }
             }
             guard let otp = await req.authService.redis.v1.getOTPWithTTL(phone),
-                  let otpToken = req.headers.bearerAuthorization?.token,
+                  let otpToken = req.headers.otpToken,
                   let otpID = req.headers.otpID,
                   let otpJWT = try? req.jwt.verify(otpToken, as: JWT.OTP.V1.self),
                   otpJWT.id() == otpID

@@ -5,7 +5,7 @@ import Vapor
 final class Country: Model, Content {
     static let schema = "countries"
     
-    @ID(key: .id)
+    @ID(custom: "id")
     var id: Int?
     
     @Field(key: "iso")
@@ -21,10 +21,10 @@ final class Country: Model, Content {
     var iso3: String
     
     @Field(key: "numcode")
-    var numcode: String
+    var numcode: Int
     
     @Field(key: "phonecode")
-    var phonecode: String
+    var phonecode: Int
     
     @Children(for: \.$country)
     var phoneNumbers: [PhoneNumber]

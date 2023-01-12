@@ -46,7 +46,6 @@ extension Application {
 //            try self.queues.startInProcessJobs()
 //            try self.queues.startScheduledJobs()
             
-            
             self.logger.notice("✅ Redis Configured")
         }
     }

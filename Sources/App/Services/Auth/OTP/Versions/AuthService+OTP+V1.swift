@@ -103,6 +103,15 @@ public extension AuthService.OTP.V1 {
         let totp = TOTP(key: symmetricKey, digest: .sha256, digits: .six, interval: duration)
         let code = totp.generate(time: currentDate)
         
+//        let encryptedCode: String = try {
+//            switch req.application.environment {
+//            case .production:
+//                return try Bcrypt.hash(code)
+//            default:
+//                return "111111"
+//            }
+//        }()
+        
         let encryptedCode = try Bcrypt.hash(code)
         
         let otpToken = try jwt.generateOTPToken(userID, clientID, clientOS)
@@ -128,7 +137,10 @@ public extension AuthService.OTP.V1 {
         If you did not request this, disregard this message.
         """
         
-        try await sms.send(to: phone, message: message)
+//        if req.application.environment == .production {
+            try await sms.send(to: phone, message: message)
+//        }
+
         
         let createdAt = currentDate.timeIntervalSince1970
         let expireAt = currentDate.addingTimeInterval(TimeInterval(duration)).timeIntervalSince1970
@@ -141,9 +153,7 @@ public extension AuthService.OTP.V1 {
     ///  1 - X-Client-ID
     ///  2 - X-Client-OS
     ///  3 - X-User-ID (Optional)
-    ///
-    /// Authorization (Bearer):
-    ///     OTP Token
+    ///  4 - X-OTP-Token
     ///
     /// Params:
     ///  1 - Phone Number
@@ -157,7 +167,7 @@ public extension AuthService.OTP.V1 {
             throw Abort(.badRequest, reason: "The `X-Client-OS` header is missing.")
         }
         
-        guard let otpToken = req.headers.bearerAuthorization?.token else {
+        guard let otpToken = req.headers.otpToken else {
             throw Abort(.badRequest, reason: "The `OTP Token` header is missing.")
         }
         

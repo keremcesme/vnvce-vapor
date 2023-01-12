@@ -4,8 +4,11 @@ import VNVCECore
 
 extension HTTPHeaders.Name {
     static let acceptVersion = HTTPHeaders.Name(VNVCEHeaders.acceptVersion)
+    
     static let refreshToken = HTTPHeaders.Name(VNVCEHeaders.refreshToken)
     static let accessToken = HTTPHeaders.Name(VNVCEHeaders.accessToken)
+    static let otpToken = HTTPHeaders.Name(VNVCEHeaders.otpToken)
+    
     static let clientID = HTTPHeaders.Name(VNVCEHeaders.clientID)
     static let clientOS = HTTPHeaders.Name(VNVCEHeaders.clientOS)
     static let accessTokenID = HTTPHeaders.Name(VNVCEHeaders.accessTokenID)
@@ -60,6 +63,22 @@ extension HTTPHeaders {
                 replaceOrAdd(name: .accessToken, value: accessToken)
             } else {
                 remove(name: .accessToken)
+            }
+        }
+    }
+    
+    public var otpToken: String? {
+        get {
+            guard let string = self.first(name: .otpToken) else {
+                return nil
+            }
+            return string
+        }
+        set {
+            if let otpToken = newValue {
+                replaceOrAdd(name: .otpToken, value: otpToken)
+            } else {
+                remove(name: .otpToken)
             }
         }
     }

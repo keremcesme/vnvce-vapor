@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/async-kit.git",
       "state" : {
-        "revision" : "929808e51fea04f01de0e911ce826ef70c4db4ea",
-        "version" : "1.15.0"
+        "revision" : "9acea4c92f51a5885c149904f0d11db4712dda80",
+        "version" : "1.16.0"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soto-project/soto-core.git",
       "state" : {
-        "revision" : "02d3054ed054a587ce1778bd946a783abd8f62e3",
-        "version" : "6.4.0"
+        "revision" : "cf1c872126e4874144ed2f91aa2124e72388abe0",
+        "version" : "6.4.1"
       }
     },
     {
@@ -366,7 +366,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "f2d6f0d5f9fa103d0fb6a52823ad6d6888d19362"
+        "revision" : "b2783feaca9ea1bc07051fb9148ccb2eca42f8f1"
       }
     },
     {

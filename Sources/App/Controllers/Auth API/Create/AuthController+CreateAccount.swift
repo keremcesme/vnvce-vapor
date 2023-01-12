@@ -26,22 +26,33 @@ extension AuthController {
             throw Abort(.badRequest, reason: "Missing headers.")
         }
         
-        let p = try req.query.decode(CreateAccountParams.V1.self)
+        let p = try req.content.decode(CreateAccountPayload.V1.self)
         
         let otpService = req.authService.otp.v1
         let usernameService = req.authService.reservedUsername.v1
         let jwtService = req.authService.jwt.v1
         let redisService = req.authService.redis.v1
         
+        let phoneNumber = String(p.phoneNumber.countryCode) + String(p.phoneNumber.nationalNumber)
+        
         try await usernameService.verifyUsername(p.username, on: req)
-        try await otpService.verifyOTP(phoneNumber: p.phoneNumber, code: p.code, on: req)
+        
+        try await otpService.verifyOTP(phoneNumber: phoneNumber, code: p.code, on: req)
+        
+        guard let countryID = try await Country.query(on: req.db)
+            .filter(\.$iso == p.phoneNumber.country)
+            .filter(\.$phonecode == p.phoneNumber.countryCode)
+            .first()?.requireID()
+        else {
+            throw Abort(.badRequest, reason: "Missing country.")
+        }
         
         let userID: String = try await req.db.transaction {
             let user = User()
             try await user.create(on: $0)
             let userID = try user.requireID()
             try await user.$username.create(.init(username: p.username, user: userID), on: $0)
-//            try await user.$phoneNumber.create(.init(phoneNumber: p.phoneNumber, userID: userID, countryID: ), on: $0)
+            try await user.$phoneNumber.create(.init(phoneNumber: phoneNumber, userID: userID, countryID: countryID ), on: $0)
             return userID.uuidString
         }
         

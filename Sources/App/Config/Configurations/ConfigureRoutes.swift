@@ -31,7 +31,7 @@ extension Application {
         
 //        try api.register(collection: authController)
         
-        try api.get("redis-test", use: { req async -> String in
+        api.get("redis-test", use: { req async -> String in
             
             let key = RedisKey("test-key")
             
@@ -44,8 +44,8 @@ extension Application {
                 
                 return "WORK! [\(value)]"
                 
-            } catch {
-                return "Not Work [2]"
+            } catch let error {
+                return "Not Work [2] \(error.localizedDescription)"
             }
         })
         
