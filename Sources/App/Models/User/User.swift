@@ -38,6 +38,9 @@ final class User: Model, Content, Authenticatable {
     var phoneNumber: PhoneNumber?
     
     @OptionalChild(for: \.$user)
+    var dateOfBirth: DateOfBirth?
+    
+    @OptionalChild(for: \.$user)
     var profilePicture: ProfilePicture?
     
     @Children(for: \.$user)

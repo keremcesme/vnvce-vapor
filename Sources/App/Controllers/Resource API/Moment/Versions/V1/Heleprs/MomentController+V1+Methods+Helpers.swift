@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import VNVCECore
 
 extension MomentController.V1 {
     typealias CurrentDate = (day: Int, month: Month, year: Int, lastDay: Int)

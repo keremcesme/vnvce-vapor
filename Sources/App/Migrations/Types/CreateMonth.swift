@@ -1,13 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 11.10.2022.
-//
 
 import Fluent
 import FluentPostgresDriver
 import Foundation
+import VNVCECore
 
 struct CreateMonth: AsyncMigration {
     func prepare(on database: Database) async throws {

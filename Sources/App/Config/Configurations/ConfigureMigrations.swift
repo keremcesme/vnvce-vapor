@@ -16,12 +16,14 @@ extension Application {
         let types: [Migration] = [
             CreateProfilePictureAlignmentType(),
             CreateMediaType(),
-            CreateClientOS()
+            CreateClientOS(),
+            CreateMonth()
         ]
         
         let users: [Migration] = [
             CreateUser(),
             CreateUsername(),
+            CreateDateOfBirth(),
             CreateSession(),
             CreateProfilePicture(),
             CreateNotificationToken()
