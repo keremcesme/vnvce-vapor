@@ -59,7 +59,4 @@ extension AuthController {
         
         return .init(otp, authorize)
     }
-    
 }
-
-extension AuthorizeAndOTPResponse.V1: Content {}

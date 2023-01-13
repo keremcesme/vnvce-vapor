@@ -12,13 +12,14 @@ extension AuthController {
         
         switch version {
         case .v1:
-            return try await generateAccessTokenV1(req)
+            let result = try await generateAccessTokenV1(req)
+            return .init(result)
         default:
             throw Abort(.notFound, reason: "Version `\(headerVersion)` is not available for this request.")
         }
     }
     
-    private func generateAccessTokenV1(_ req: Request) async throws -> AnyAsyncResponse {
+    private func generateAccessTokenV1(_ req: Request) async throws -> String {
         guard let refreshToken = req.headers.bearerAuthorization?.token,
               let accessToken = req.headers.accessToken,
               let clientID = req.headers.clientID,
@@ -106,7 +107,6 @@ extension AuthController {
         await redis.addAccessToken(accessTokenID)
         await redis.updateRefreshTokenInactivity(rtID, rt)
 
-        return .init("Access Token: \(token.token)")
+        return token.token
     }
-    
 }

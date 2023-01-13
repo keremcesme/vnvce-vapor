@@ -74,5 +74,3 @@ extension AuthController {
         return .init(userID, authToken.token, authToken.tokenID)
     }
 }
-
-extension CreateAccountResponse.V1: Content {}

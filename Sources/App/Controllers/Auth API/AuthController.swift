@@ -10,8 +10,6 @@ import Redis
 
 public struct AuthController: RouteCollection {
     
-//    private let v1 = V1.shared
-    
     // MARK: Auth: vnvce.com/api/auth/
     public func boot(routes: RoutesBuilder) throws {
         let versionMiddleware = VersionMiddleware()
@@ -21,7 +19,6 @@ public struct AuthController: RouteCollection {
         let check = api.grouped("check")
         check.post("phone-number", use: checkPhoneNumberHandler)
         check.post("username", use: checkUsernameHandler)
-        
         // Create
         let create = api.grouped("create")
         create.post("reserve-username-and-send-sms-otp", use: reserveUsernameAndSendSMSOTPHandler)
@@ -38,22 +35,5 @@ public struct AuthController: RouteCollection {
         token.post("reauthorize", use: reAuthorizeHandler)
         token.post("generate-tokens", use: generateTokensHandler)
         token.post("generate-access-token", use: generateAccessTokenHandler)
-        
-        api.get("create-user-test") { req async throws -> String in
-            let user = User()
-            try await user.create(on: req.db)
-            let userID = try user.requireID()
-            
-            return userID.uuidString
-        }
-        
-        api
-            .grouped(AuthMiddleware())
-//            .grouped(User.guardMiddleware())
-            .get("test") { req async throws -> String in
-                
-                return "WORKS"
-            }
-        
     }
 }

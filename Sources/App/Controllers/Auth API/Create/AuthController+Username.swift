@@ -30,5 +30,4 @@ extension AuthController {
             return .init(error: true, message: "This username cannot be used.")
         }
     }
-    
 }

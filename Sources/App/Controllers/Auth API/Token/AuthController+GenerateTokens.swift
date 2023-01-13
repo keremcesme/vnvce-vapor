@@ -69,5 +69,3 @@ extension AuthController {
         return .init(accessToken, refreshToken)
     }
 }
-
-extension TokensResponse.V1: Content {}

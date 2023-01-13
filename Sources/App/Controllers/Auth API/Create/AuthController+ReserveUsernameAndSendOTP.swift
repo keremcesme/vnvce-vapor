@@ -67,8 +67,5 @@ extension AuthController {
             
             return otp
         }
-        
-        
     }
-    
 }

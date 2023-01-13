@@ -16,22 +16,59 @@ extension Application {
     public func configureRoutes() async throws {
         self.logger.notice("[ 6/8 ] Configuring Routes")
         
-        self.get("health") { req in
+        // MARK: AWS Health Check
+        self.get("health") { _ in
             return HTTPStatus(statusCode: 200)
         }
         
+        // MARK: Controllers
+        let authController = AuthController()
+        let resourceController = ResourceController()
+        
+        // MARK: APIs
         let api = self.grouped("api")
         
-        // MARK: AUTH API
-        let authController = AuthController()
+        try api.register(collection: authController)
+        try api.register(collection: resourceController)
         
-        try api
-//            .grouped(endpoint.routes.auth.path.toPathComponents)
-            .register(collection: authController)
+        // MARK: ONLY DEVELOPMENT
+        try routesPlayground()
         
-//        try api.register(collection: authController)
-        
-        api.get("redis-test", use: { req async -> String in
+        self.logger.notice("✅ Routes Configured")
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: TRASH
+extension Application {
+    
+    private func routesPlayground() throws {
+        self.get("redis-test", use: { req async -> String in
             
             let key = RedisKey("test-key")
             
@@ -49,39 +86,6 @@ extension Application {
             }
         })
         
-        try routesPlayground()
-        
-        self.logger.notice("✅ Routes Configured")
-        
-        // MARK: RESOURCE APIs
-//        let tokenController = TokenController()
-//        try api.register(collection: tokenController)
-//
-//        let meController = MeController()
-//        try api.register(collection: meController)
-//
-//        let relationshipController = RelationshipController()
-//        try api.register(collection: relationshipController)
-//
-//        let searchController = SearchController()
-//        try api.register(collection: searchController)
-//
-//        let postController = PostController()
-//        try api.register(collection: postController)
-//
-//        let momentController = MomentController()
-//        try api.register(collection: momentController)
-//
-//        let userController = UserController()
-//        try api.register(collection: userController)
-    }
-}
-
-
-// MARK: TRASH
-extension Application {
-    
-    private func routesPlayground() throws {
         if let teamID = Environment.get("APPLE_TEAM_ID")
         {
             
@@ -160,19 +164,6 @@ extension Application {
     //        "It works!"
     //    }
         
-        self.get("redis-test") { req async -> String in
-            let key = RedisKey("redis-test-key")
-            let freshDog = Dog(height: 10, width: 100, url: "url", id: "idexample")
-            
-            do {
-                try await req.redis.setex(key, toJSON: freshDog, expirationInSeconds: 10)
-                print("Dog was cached.")
-                
-                return "REDIS IS WORKED ✅"
-            } catch {
-                return "REDIS IS NOT WORKED ❌"
-            }
-        }
         
         self.get("read") { req async throws -> View in
             let dog = try await req.redis.get(RedisKey("cuteDog"), asJSON: Dog.self)

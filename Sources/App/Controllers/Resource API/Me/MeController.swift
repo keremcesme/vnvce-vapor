@@ -10,11 +10,13 @@ import Vapor
 
 // MARK: MeController - Version Routes -
 struct MeController: RouteCollection {
-    
-    private let v1 = V1.shared
-    
     func boot(routes: RoutesBuilder) throws {
-        v1.routes(routes)
+        let api = routes.grouped("me")
+        
+        let edit = api.grouped("edit")
+        edit.patch("display-name", use: editDisplayNameHandler)
+        edit.patch("biography", use: editBiographyHandler)
+        
     }
 }
 

@@ -14,7 +14,6 @@ extension Application {
         self.logger.notice("[ 7/8 ] Configuring Migrations")
         
         let types: [Migration] = [
-            CreateProfilePictureAlignmentType(),
             CreateMediaType(),
             CreateClientOS(),
             CreateMonth()

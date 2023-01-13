@@ -40,5 +40,3 @@ extension AuthController {
         return .init(authToken.token, authToken.tokenID)
     }
 }
-
-extension AuthorizeResponse.V1: Content {}

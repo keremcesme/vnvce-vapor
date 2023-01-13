@@ -17,8 +17,6 @@ final class ProfilePicture: Model, Content, Authenticatable {
     @Parent(key: "user_id")
     var user: User
     
-    @Enum(key: "alignment")
-    var alignment: ProfilePictureAlignmentType
     
     @Field(key: "url")
     var url: String
@@ -30,18 +28,15 @@ final class ProfilePicture: Model, Content, Authenticatable {
     
     init(
         userID: User.IDValue,
-        alignment: ProfilePictureAlignmentType,
         url: String,
         name: String
     ) {
         self.$user.id = userID
-        self.alignment = alignment
         self.url = url
         self.name = name
     }
     
     struct Details: Content {
-        let alignment: ProfilePictureAlignmentType
         let url: String
         let name: String
     }
@@ -50,6 +45,6 @@ final class ProfilePicture: Model, Content, Authenticatable {
 
 extension ProfilePicture {
     func convert() -> ProfilePicture.Details {
-        return ProfilePicture.Details(alignment: self.alignment, url: self.url, name: self.name)
+        return ProfilePicture.Details(url: self.url, name: self.name)
     }
 }
