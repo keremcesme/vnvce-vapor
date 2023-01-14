@@ -19,7 +19,7 @@ extension AuthController {
         }
     }
     
-    private func generateAccessTokenV1(_ req: Request) async throws -> String {
+    private func generateAccessTokenV1(_ req: Request) async throws -> AccessTokenResponse.V1 {
         guard let refreshToken = req.headers.bearerAuthorization?.token,
               let accessToken = req.headers.accessToken,
               let clientID = req.headers.clientID,
@@ -107,6 +107,6 @@ extension AuthController {
         await redis.addAccessToken(accessTokenID)
         await redis.updateRefreshTokenInactivity(rtID, rt)
 
-        return token.token
+        return .init(token: token.token)
     }
 }

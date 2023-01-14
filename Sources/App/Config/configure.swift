@@ -3,6 +3,7 @@ import Vapor
 import Fluent
 import VNVCECore
 import Leaf
+import Redis
 
 public func configure(_ app: Application) async throws {
     

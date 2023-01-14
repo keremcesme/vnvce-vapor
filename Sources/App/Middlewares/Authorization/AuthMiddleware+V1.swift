@@ -29,16 +29,7 @@ extension AuthMiddleware {
         guard decodedJWT.isVerified,
               let at = try await redis.getAccessTokenWithTTL(atID)
         else {
-            throw await verifyRTandAuth()
-        }
-        
-        func verifyRTandAuth() async -> Abort {
-            guard await redis.verifyRefreshToken(rtID: rtID),
-                  await redis.verifyAuth(authID: authID, rtID: rtID)
-            else {
-                return Abort(.forbidden)
-            }
-            return Abort(.unauthorized)
+            throw await verifyAuth()
         }
         
         guard at.payload.is_active else {

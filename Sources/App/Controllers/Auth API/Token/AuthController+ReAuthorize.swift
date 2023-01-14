@@ -41,7 +41,7 @@ extension AuthController {
         let pkce = req.authService.pkce
         
         guard let rtJWT = jwt.validate(refreshToken, as: JWT.RefreshToken.V1.self) else {
-            throw Abort(.forbidden)
+            throw Abort(.forbidden, reason: "[1]")
         }
         
         let rtID = rtJWT.payload.id()
@@ -50,18 +50,14 @@ extension AuthController {
               rtJWT.payload.userID == userID
         else {
             await redis.revokeRefreshToken(rtID)
-            throw Abort(.forbidden)
+            throw Abort(.forbidden, reason: "[2]")
         }
         
         if rtJWT.isVerified {
-            guard let rt = await redis.getRefreshTokenWithTTL(rtID),
-                      rt.payload.is_active else {
-                throw Abort(.forbidden)
-            }
-            
-            if rt.payload.inactivity_exp > Int(Date().timeIntervalSince1970) {
+            if let rt = await redis.getRefreshTokenWithTTL(rtID),
+               rt.payload.is_active,
+               rt.payload.inactivity_exp < Int(Date().timeIntervalSince1970) {
                 await redis.revokeRefreshToken(rtID)
-                throw Abort(.forbidden)
             }
         }
         
@@ -77,7 +73,7 @@ extension AuthController {
         else {
             await redis.deleteAuth(authID)
             try await Session.query(on: req.db).filter(\.$authID == authID).delete()
-            throw Abort(.forbidden)
+            throw Abort(.forbidden, reason: "[5]")
         }
         
         let newAuthToken = try jwt.generateAuthToken(userID, clientID, clientOS)

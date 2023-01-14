@@ -18,4 +18,3 @@ public struct VersionMiddleware: AsyncMiddleware {
         return try await next.respond(to: request)
     }
 }
- 
