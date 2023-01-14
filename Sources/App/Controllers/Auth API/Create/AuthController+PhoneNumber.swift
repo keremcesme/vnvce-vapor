@@ -21,7 +21,7 @@ extension AuthController {
     public func checkPhoneNumberV1(_ req: Request) async throws -> RequestResponse.V1 {
         let phoneNumber = try req.query.decode(CheckPhoneNumberParams.V1.self).phoneNumber
         let otp = req.authService.otp.v1
-        let availability =  try await otp.checkPhoneNumber(phoneNumber: phoneNumber, on: req)
+        let availability =  try await otp.checkPhoneNumber(phoneNumber: phoneNumber, reason: .create, on: req)
         
         if availability == .notUsed || availability == .otpExpectedBySameUser {
             return .init(error: false)

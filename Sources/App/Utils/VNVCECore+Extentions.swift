@@ -8,3 +8,4 @@ extension AuthorizeResponse.V1: Content {}
 extension AuthorizeAndOTPResponse.V1: Content {}
 extension CreateAccountResponse.V1: Content {}
 extension AccessTokenResponse.V1: Content {}
+extension LoginResponse.V1: Content {}

@@ -20,7 +20,7 @@ extension AuthController {
         }
     }
     
-    private func verifyOTPAndLoginV1(_ req: Request) async throws -> TokensResponse.V1 {
+    private func verifyOTPAndLoginV1(_ req: Request) async throws -> LoginResponse.V1 {
         guard let clientID = req.headers.clientID,
               let clientOS = req.headers.clientOS?.convertClientOS,
               let authID = req.headers.authID
@@ -83,6 +83,6 @@ extension AuthController {
         let refreshToken = tokens.refreshToken.token
         let accessToken = tokens.accessToken.token
         
-        return .init(accessToken, refreshToken)
+        return .init(userID: userIDValue.uuidString, tokens: .init(accessToken, refreshToken))
     }
 }

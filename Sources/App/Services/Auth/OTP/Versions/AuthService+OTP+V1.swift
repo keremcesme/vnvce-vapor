@@ -25,13 +25,15 @@ public extension AuthService.OTP.V1 {
     ///
     /// Params:
     ///  1 - Phone Number
-    func checkPhoneNumber(phoneNumber: String, on req: Request) async throws -> Availability {
+    func checkPhoneNumber(phoneNumber: String, reason: OTPType.V1,  on req: Request) async throws -> Availability {
         guard let clientID = req.headers.clientID else {
             throw Abort(.badRequest, reason: "The `X-Client-ID` header is missing.")
         }
         guard let clientOS = req.headers.clientOS else {
             throw Abort(.badRequest, reason: "The `X-Client-OS` header is missing.")
         }
+        
+        let otpID = req.headers.otpID
         
         var phone: String {
             let plus = "+"
@@ -41,26 +43,44 @@ public extension AuthService.OTP.V1 {
                 return plus + phoneNumber
             }
         }
-        
         let redis = req.authService.redis.v1
         
-        if try await phoneNumberQuery(phone, on: req.db) != nil {
-            return .exist
-        }
+        let userQuery = try await phoneNumberQuery(phone, on: req.db)
         
-        guard let otp = await redis.getOTPWithTTL(phone) else {
-            return .notUsed
+        switch reason {
+        case .login:
+            if userQuery != nil {
+                if let otp = await redis.getOTPWithTTL(phone) {
+                    if let otpID, otpID == otp.payload.otpID,
+                       otp.payload.clientID == clientID,
+                       otp.payload.clientOS == clientOS {
+                        return .otpExpectedBySameUser
+                    } else {
+                        return .otpExpected
+                    }
+                } else {
+                    return .exist
+                }
+            } else {
+                return .notUsed
+            }
+        case .create:
+            if userQuery == nil {
+                if let otp = await redis.getOTPWithTTL(phone) {
+                    if let otpID, otpID == otp.payload.otpID,
+                       otp.payload.clientID == clientID,
+                       otp.payload.clientOS == clientOS {
+                        return .otpExpectedBySameUser
+                    } else {
+                        return .otpExpected
+                    }
+                } else {
+                    return .notUsed
+                }
+            } else {
+                return .exist
+            }
         }
-        
-        let otpID = req.headers.otpID
-        guard let otpID, otpID == otp.payload.otpID,
-                  otp.payload.clientID == clientID,
-                  otp.payload.clientOS == clientOS
-        else {
-            return .otpExpected
-        }
-        
-        return .otpExpectedBySameUser
     }
     
     ///

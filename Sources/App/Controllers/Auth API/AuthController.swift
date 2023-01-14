@@ -35,5 +35,7 @@ public struct AuthController: RouteCollection {
         token.post("reauthorize", use: reAuthorizeHandler)
         token.post("generate-tokens", use: generateTokensHandler)
         token.post("generate-access-token", use: generateAccessTokenHandler)
+        
+        api.get("logout", use: logoutHandler)
     }
 }

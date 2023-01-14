@@ -30,7 +30,7 @@ extension AuthController {
             throw Abort(.notFound)
         }
         
-        let phoneAvailability = try await otpService.checkPhoneNumber(phoneNumber: p.phoneNumber, on: req)
+        let phoneAvailability = try await otpService.checkPhoneNumber(phoneNumber: p.phoneNumber, reason: .create, on: req)
         
         guard phoneAvailability == .notUsed || phoneAvailability == .otpExpectedBySameUser else {
             throw Abort(.notFound)
@@ -47,6 +47,7 @@ extension AuthController {
                     return plus + p.phoneNumber
                 }
             }
+            
             guard let otp = await req.authService.redis.v1.getOTPWithTTL(phone),
                   let otpToken = req.headers.otpToken,
                   let otpID = req.headers.otpID,
