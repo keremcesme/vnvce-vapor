@@ -21,6 +21,7 @@ public func configure(_ app: Application) async throws {
     
     app.logger.notice("[ INFO ] Total Configurations: 8")
     app.views.use(.leaf)
+    
     try await app.configureAWS()
     try await app.configureDatabase()
     try await app.configureRedis()
@@ -30,7 +31,6 @@ public func configure(_ app: Application) async throws {
     
     await app.configureMigrations()
     await app.configureViews()
-    
     
 //    try app.configureAppleDeviceCheck()
     

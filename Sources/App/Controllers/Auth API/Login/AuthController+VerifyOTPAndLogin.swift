@@ -70,9 +70,10 @@ extension AuthController {
             .filter(\.$clientID == clientID)
             .filter(\.$clientOS == clientOS)
             .field(\.$authID)
+            .field(\.$id)
             .first() {
             await redisService.deleteAuthWithRefreshTokens(session.authID)
-            try await session.delete(force: true, on: req.db)
+            try await session.delete(on: req.db)
         }
         
         let userIDValue = try user.requireID()
