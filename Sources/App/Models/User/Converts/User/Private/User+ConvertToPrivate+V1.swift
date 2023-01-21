@@ -25,3 +25,14 @@ extension User {
             createdAt: createdAt)
     }
 }
+
+extension Array where Element: User {
+    func convertToPrivateV1(on db: Database) async throws -> [User.V1.Private] {
+        var publicUsers = [User.V1.Private]()
+        for user in self {
+            let publicUser = try await user.convertToPrivateV1(on: db)
+            publicUsers.append(publicUser)
+        }
+        return publicUsers
+    }
+}
