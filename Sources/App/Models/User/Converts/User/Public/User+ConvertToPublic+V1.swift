@@ -13,8 +13,7 @@ extension User {
             id: userID,
             username: username,
             displayName: displayName,
-            profilePictureURL: profilePicture,
-            dateOfBirthYear: 2)
+            profilePictureURL: profilePicture)
     }
 }
 
