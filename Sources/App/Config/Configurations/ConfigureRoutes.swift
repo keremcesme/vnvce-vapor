@@ -26,7 +26,9 @@ extension Application {
         let resourceController = ResourceController()
         
         // MARK: APIs
+        let versionMiddleware = VersionMiddleware()
         let api = self.grouped("api")
+            .grouped(versionMiddleware)
         
         try api.register(collection: authController)
         try api.register(collection: resourceController)

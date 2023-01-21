@@ -12,8 +12,7 @@ public struct AuthController: RouteCollection {
     
     // MARK: Auth: vnvce.com/api/auth/
     public func boot(routes: RoutesBuilder) throws {
-        let versionMiddleware = VersionMiddleware()
-        let api = routes.grouped("auth").grouped(versionMiddleware)
+        let api = routes.grouped("auth")
         
         // Check
         let check = api.grouped("check")
