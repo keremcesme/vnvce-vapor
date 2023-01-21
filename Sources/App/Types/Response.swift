@@ -22,17 +22,17 @@ struct Response<T: Content>: Content {
     }
 }
 
-struct Pagination<T: Content>: Content {
-    var items: [T]
-    var metadata: PageMetadata
-    
-    init(items: [T],
-         metadata: PageMetadata = PageMetadata(page: 0, per: 0, total: 0)) {
-        self.items = items
-        self.metadata = metadata
-    }
-}
+//struct Pagination<T: Content>: Content {
+//    var items: [T]
+//    var metadata: PageMetadata
+//
+//    init(items: [T],
+//         metadata: PageMetadata = PageMetadata(page: 0, per: 0, total: 0)) {
+//        self.items = items
+//        self.metadata = metadata
+//    }
+//}
 
-typealias PaginationResponse<T: Content> = Response<Pagination<T>>
+//typealias PaginationResponse<T: Content> = Response<Pagination<T>>
 
 extension ResultResponse.V1: Content { }

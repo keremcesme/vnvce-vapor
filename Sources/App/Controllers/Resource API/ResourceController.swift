@@ -11,8 +11,10 @@ public struct ResourceController: RouteCollection {
             .grouped(User.guardMiddleware())
         
         let meController = MeController()
+        let searchController = SearchController()
         
         try api.register(collection: meController)
+        try api.register(collection: searchController)
         
     }
 }

@@ -147,19 +147,6 @@ extension Application {
             return signed
         }
         
-        
-        self.group("check_token") { check in
-            check.group(AccessToken.authenticator(), User.guardMiddleware()) {
-                route in
-                route.get("test") { req -> HTTPStatus in
-                    _ = try req.auth.require(User.self)
-                    return .ok
-                }
-            }
-        }
-        
-        
-        
     //    self.get { req async in
     //        "It works!"
     //    }

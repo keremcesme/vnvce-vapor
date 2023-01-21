@@ -35,16 +35,5 @@ final class ProfilePicture: Model, Content, Authenticatable {
         self.url = url
         self.name = name
     }
-    
-    struct Details: Content {
-        let url: String
-        let name: String
-    }
-    
 }
 
-extension ProfilePicture {
-    func convert() -> ProfilePicture.Details {
-        return ProfilePicture.Details(url: self.url, name: self.name)
-    }
-}

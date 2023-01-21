@@ -32,10 +32,29 @@ public func configure(_ app: Application) async throws {
     await app.configureMigrations()
     await app.configureViews()
     
+    do {
+        let test = try await User.query(on: app.db)
+            .with(\.$username)
+            .join(child: \.$username)
+            .group(.or) {
+                $0
+//                    .filter(.custom("display_name @@ to_tsquery('a')"))
+                    .filter(Username.self, \Username.$username, .custom("ilike"), "%a%")
+
+            }
+            .all()
+
+        print(test.first?.username?.username)
+    } catch {
+        print(error.localizedDescription)
+    }
+    
+    
+    
 //    try app.configureAppleDeviceCheck()
     
 //    try await app.autoRevert()
-//    try await app.autoMigrate()
+    try await app.autoMigrate()
     
     app.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
 }
