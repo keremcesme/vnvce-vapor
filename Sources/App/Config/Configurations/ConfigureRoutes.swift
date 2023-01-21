@@ -1,16 +1,5 @@
-import Vapor
-import APNS
-import APNSwift
-import Leaf
-import Redis
-import JWT
-import VNVCECore
 
-enum APIVersion {
-    static let v1 = PathComponent(stringLiteral: "v1")
-    static let v2 = PathComponent(stringLiteral: "v2")
-    static let v3 = PathComponent(stringLiteral: "v3")
-}
+import Vapor
 
 extension Application {
     public func configureRoutes() async throws {
@@ -33,7 +22,7 @@ extension Application {
         try api.register(collection: authController)
         try api.register(collection: resourceController)
         
-        // MARK: ONLY DEVELOPMENT
+        // MARK: ONLY FOR DEVELOPMENT
 //        try routesPlayground()
         
         self.logger.notice("✅ Routes Configured")

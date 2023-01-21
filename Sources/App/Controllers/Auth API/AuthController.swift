@@ -1,9 +1,5 @@
 
-import Fluent
 import Vapor
-import VNVCECore
-import JWT
-import Redis
 
 // MARK: AuthController - AUTH API
 // Here are all the routes for authorization.
