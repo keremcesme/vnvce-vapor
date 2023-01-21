@@ -13,7 +13,7 @@ import VNVCECore
 
 struct CreateMoment: AsyncMigration {
     func prepare(on database: Database) async throws {
-        let month = try await database.enum(Month.schema).read()
+//        let month = try await database.enum(Month.schema).read()
         let mediaType = try await database.enum(MediaType.schema).read()
         
 //        try await database.schema(MomentDay.schema)

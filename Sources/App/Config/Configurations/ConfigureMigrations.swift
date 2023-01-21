@@ -45,10 +45,10 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-//        self.migrations.add(types)
-//        self.migrations.add(users)
-//        self.migrations.add(phoneNumbers)
-//        self.migrations.add(relationships)
+        self.migrations.add(types)
+        self.migrations.add(users)
+        self.migrations.add(phoneNumbers)
+        self.migrations.add(relationships)
         self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")

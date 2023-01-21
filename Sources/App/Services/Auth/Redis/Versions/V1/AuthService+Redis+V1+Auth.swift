@@ -21,7 +21,7 @@ public extension AuthService.Redis.V1 {
     /// Adds a new `Refresh Token` to the auth's key `refrsh_token_ids` in the Redis database.
     func addRefreshTokenIDtoAuth(_ authID: String, _ refreshTokenID: String) async throws {
         let key = authRedisBucket(authID)
-        if var auth = try await getAuthWithTTL(authID) {
+        if var auth = await getAuthWithTTL(authID) {
             auth.payload.refresh_token_ids.append(refreshTokenID)
             try await self.app.redis.setex(key, toJSON: auth.payload, expirationInSeconds: auth.ttl)
         }
@@ -49,7 +49,7 @@ public extension AuthService.Redis.V1 {
     
     func setAuthVerified(_ authID: String) async throws {
         let key = authRedisBucket(authID)
-        if var auth = try await getAuthWithTTL(authID) {
+        if var auth = await getAuthWithTTL(authID) {
             auth.payload.is_verified = true
             try await self.app.redis.setex(key, toJSON: auth.payload, expirationInSeconds: auth.ttl)
         }
