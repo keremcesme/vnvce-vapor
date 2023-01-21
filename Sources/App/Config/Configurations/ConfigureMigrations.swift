@@ -10,7 +10,7 @@ import FluentPostGIS
 import Fluent
 
 extension Application {
-    func configureMigrations() async {
+    func configureMigrations() {
         self.logger.notice("[ 7/8 ] Configuring Migrations")
         
         let types: [Migration] = [

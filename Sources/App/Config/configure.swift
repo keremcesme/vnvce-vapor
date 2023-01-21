@@ -1,41 +1,34 @@
 
 import Vapor
-import Fluent
-import VNVCECore
-import Leaf
-import Redis
 
-public func configure(_ app: Application) async throws {
-    
-    app.http.server.configuration.supportPipelining = true
-    app.http.server.configuration.responseCompression = .enabled
-    app.http.server.configuration.requestDecompression = .enabled
-    app.http.server.configuration.tcpNoDelay = true
-    
-    switch app.environment {
-    case .production:
-        app.logger.notice("[ MODE ] Running in Production")
-    default:
-        app.logger.notice("[ MODE ] Running in Development")
+extension Application {
+    public func configure() async throws {
+        try await self.startConfigurations()
     }
-    
-    app.logger.notice("[ INFO ] Total Configurations: 8")
-    app.views.use(.leaf)
-    
-    try await app.configureAWS()
-    try await app.configureDatabase()
-    try await app.configureRedis()
-    try await app.configureJWT()
-    try await app.configureAppleAPN()
-    try await app.configureRoutes()
-    
-    await app.configureMigrations()
-    await app.configureViews()
-    
-//    try app.configureAppleDeviceCheck()
-    
-//    try await app.autoRevert()
-//    try await app.autoMigrate()
-    
-    app.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
+}
+
+extension Application {
+    private func startConfigurations() async throws {
+        self.configureServer()
+        
+        self.logger.notice("[ INFO ] Total Configurations: 8")
+        
+        try await self.configureAWS()
+        try await self.configureDatabase()
+        try await self.configureRedis()
+        try await self.configureJWT()
+        try await self.configureAppleAPN()
+        
+        try self.configureRoutes()
+        
+        self.configureMigrations()
+        self.configureViews()
+        
+//        try app.configureAppleDeviceCheck()
+//
+//        try await app.autoRevert()
+//        try await app.autoMigrate()
+        
+        self.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
+    }
 }

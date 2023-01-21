@@ -2,7 +2,7 @@
 import Vapor
 
 extension Application {
-    public func configureRoutes() async throws {
+    public func configureRoutes() throws {
         self.logger.notice("[ 6/8 ] Configuring Routes")
         
         // MARK: AWS Health Check
@@ -24,6 +24,10 @@ extension Application {
         
         // MARK: ONLY FOR DEVELOPMENT
 //        try routesPlayground()
+        
+        self.get {
+            $0.leaf.render("index")
+        }
         
         self.logger.notice("✅ Routes Configured")
     }

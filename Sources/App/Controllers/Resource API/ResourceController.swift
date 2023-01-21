@@ -6,6 +6,7 @@ import Vapor
 
 public struct ResourceController: RouteCollection {
     
+    // MARK: Resource: vnvce.com/api/resource/
     public func boot(routes: RoutesBuilder) throws {
         let authMiddleware = AuthMiddleware()
         let guardMiddleware = User.guardMiddleware()
@@ -21,6 +22,5 @@ public struct ResourceController: RouteCollection {
         
         try api.register(collection: meController)
         try api.register(collection: searchController)
-        
     }
 }
