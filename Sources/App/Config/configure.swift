@@ -25,9 +25,9 @@ extension Application {
         self.configureViews()
         
 //        try app.configureAppleDeviceCheck()
-//
-//        try await app.autoRevert()
-//        try await app.autoMigrate()
+
+//        try await self.autoRevert()
+//        try await self.autoMigrate()
         
         self.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
     }

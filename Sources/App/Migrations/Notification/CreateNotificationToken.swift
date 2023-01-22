@@ -18,6 +18,7 @@ struct CreateNotificationToken: AsyncMigration {
             .field("user_id", .uuid, .required, .references(User.schema, .id, onDelete: .cascade))
             .field("client_os", clientOS, .required)
             .field("token", .string, .required)
+            .unique(on: "user_id", name: "notification_tokens_user_id_ukey")
             .unique(on: "token", name: "notification_tokens_token_ukey")
             .create()
     }
