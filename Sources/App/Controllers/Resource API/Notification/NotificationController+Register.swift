@@ -31,7 +31,6 @@ extension NotificationController {
         
         switch clientOS {
         case .ios:
-            
             try await NotificationToken.query(on: req.db)
                 .filter(\.$user.$id == userID)
                 .delete()

@@ -33,6 +33,10 @@ extension AuthController {
             .filter(\.$authID == authID)
             .delete(force: true)
         
+        try await NotificationToken.query(on: req.db)
+            .filter(\.$user.$id == userID.convertUUID)
+            .delete(force: true)
+        
         await redisService.deleteAuthWithRefreshTokens(authID)
         
         return .ok

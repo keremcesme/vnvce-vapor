@@ -1,5 +1,7 @@
 
 import Vapor
+import APNS
+import APNSwift
 
 extension Application {
     public func configureRoutes() throws {
@@ -30,11 +32,85 @@ extension Application {
         }
         
         self.logger.notice("✅ Routes Configured")
+        
+        self.get("push") { req async throws -> String in
+            let alert = APNSwiftAlert(title: "Title", subtitle: "Subtitle", body: "Body")
+            
+            
+            let payload = APNSwiftPayload(
+                alert: alert,
+                badge: 1,
+                sound: .normal("default"),
+                hasContentAvailable: false,
+                hasMutableContent: true,
+                category: "post",
+                threadID: "post_id",
+                relevanceScore: 1
+            )
+            
+            let apn = APNTest(aps: payload, from: "asdfasf")
+            let data = try JSONEncoder().encode(apn)
+            let buffer = ByteBuffer(data: data)
+            
+            try await req.apns.send(
+                rawBytes: buffer,
+                pushType: .alert,
+                to:
+                    "9da866a95058bb8b80cb1de189ab421dc3142af4000534aafb6963cf47a51655",
+                expiration: nil,
+                priority: nil,
+                collapseIdentifier: nil,
+                topic: nil,
+                logger: nil
+            )
+            
+            return "Sended"
+        }
+    }
+}
+
+struct APNTest: APNSwiftNotification {
+    let aps: APNSwiftPayload
+    let from: String
+
+    init(aps: APNSwiftPayload, from: String) {
+        self.aps = aps
+        self.from = from
     }
 }
 
 
 
+//        self.get("push") { req async throws -> String in
+//
+//            let alert = APNSwiftAlert(title: "Title", subtitle: "Subtitle", body: "Body")
+//            let payload = APNSwiftPayload(
+//                alert: alert,
+//                badge: 1,
+//                sound: .normal("default"),
+//                hasContentAvailable: false,
+//                hasMutableContent: true,
+//                category: "post",
+//                threadID: "post_id",
+//                relevanceScore: 1
+//            )
+//            let apn = PostAPNTest(aps: payload, from: "asdfasf")
+//            let data = try JSONEncoder().encode(apn)
+//            let buffer = ByteBuffer(data: data)
+//
+//            try await req.apns.send(
+//                rawBytes: buffer,
+//                pushType: .alert,
+//                to: "4dfd11dfb3fc85e85b8afae45ef1d975380dbbee9824a40458c521803dcf613d",
+//                expiration: nil,
+//                priority: nil,
+//                collapseIdentifier: nil,
+//                topic: nil,
+//                logger: nil
+//            )
+//
+//            return "sended"
+//        }
 
 
 
