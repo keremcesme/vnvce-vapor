@@ -1,29 +1,9 @@
 
 import Vapor
-import Fluent
 
 extension Application {
     public func configure() async throws {
         try await self.startConfigurations()
-        
-        
-        
-        
-//        let result = try? await User.query(on: self.db)
-//            .with(\.$username)
-//            .with(\.$profilePicture)
-//            .join(child: \.$username)
-//            .group(.or) { query in
-//                query
-//                    .filter(.custom("display_name @@ to_tsquery('ker')"))
-//                    .filter(Username.self, \Username.$username, .custom("ilike"), "%ker%")
-//            }
-//            .all()
-//
-//        let publicUsers = try? await result?.convertToPrivateV1(on: self.db)
-//
-//        print(publicUsers)
-        
     }
 }
 

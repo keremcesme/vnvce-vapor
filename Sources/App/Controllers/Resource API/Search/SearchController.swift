@@ -9,6 +9,7 @@ struct SearchController: RouteCollection {
         let api = routes.grouped("search")
         
         api.post("user", use: searchUserHandler)
+        api.post("from-contacts", use: searchFromContactsHandler)
     }
     
     func searchUserHandler(_ req: Request) async throws -> AnyAsyncResponse {
