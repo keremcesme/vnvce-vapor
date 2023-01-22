@@ -10,6 +10,7 @@ extension User {
         let profilePicture = try await getPrivateProfilePictureV1(on: db)
         let phoneNumber = try await getPrivatePhoneNumberV1(on: db)
         let dateOfBirthYear = try await getPrivateDateOfBirthYear(on: db)
+        let notificationToken = try await getPrivateNotificationTokenV1(on: db)
         
         guard let createdAt = self.createdAt?.timeIntervalSince1970 else {
             throw Abort(.badRequest)
@@ -22,6 +23,7 @@ extension User {
             displayName: displayName,
             profilePicture: profilePicture,
             dateOfBirthYear: dateOfBirthYear,
+            notificationToken: notificationToken,
             createdAt: createdAt)
     }
 }
