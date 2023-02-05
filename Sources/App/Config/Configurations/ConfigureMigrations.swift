@@ -24,7 +24,7 @@ extension Application {
             CreateUsername(),
             CreateDateOfBirth(),
             CreateSession(),
-            CreateProfilePicture(),
+//            CreateProfilePicture(),
             CreateNotificationToken()
         ]
         
