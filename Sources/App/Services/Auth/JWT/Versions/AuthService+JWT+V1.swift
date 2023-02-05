@@ -1,7 +1,7 @@
 
 import Vapor
 import JWT
-import JWTDecode
+//import JWTDecode
 import VNVCECore
 
 extension AuthService.JWT {
