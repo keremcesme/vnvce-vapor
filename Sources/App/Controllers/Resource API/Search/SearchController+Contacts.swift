@@ -27,7 +27,7 @@ extension SearchController {
         
         let users = try await User.query(on: req.db)
             .with(\.$username)
-            .with(\.$profilePicture)
+//            .with(\.$profilePicture)
             .join(child: \.$phoneNumber)
             .filter(PhoneNumber.self, \PhoneNumber.$phoneNumber ~~ phoneNumbers)
             .all()

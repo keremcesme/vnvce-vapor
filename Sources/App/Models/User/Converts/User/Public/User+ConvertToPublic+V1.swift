@@ -7,13 +7,13 @@ extension User {
     func convertToPublicV1(on db: Database) async throws -> User.V1.Public {
         let userID = try self.requireID()
         let username = try await getPublicUsernameV1(on: db)
-        let profilePicture = try await getPublicProfilePictureV1(on: db)
+//        let profilePicture = try await getPublicProfilePictureV1(on: db)
         
         return .init(
             id: userID,
             username: username,
             displayName: displayName,
-            profilePictureURL: profilePicture)
+            profilePictureURL: profilePictureURL)
     }
 }
 

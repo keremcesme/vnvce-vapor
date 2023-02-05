@@ -7,7 +7,7 @@ extension User {
     func convertToPrivateV1(on db: Database) async throws -> User.V1.Private {
         let userID = try self.requireID()
         let username = try await getPrivateUsernameV1(on: db)
-        let profilePicture = try await getPrivateProfilePictureV1(on: db)
+//        let profilePicture = try await getPrivateProfilePictureV1(on: db)
         let phoneNumber = try await getPrivatePhoneNumberV1(on: db)
         let dateOfBirthYear = try await getPrivateDateOfBirthYear(on: db)
         let notificationToken = try await getPrivateNotificationTokenV1(on: db)
@@ -21,7 +21,7 @@ extension User {
             username: username,
             phoneNumber: phoneNumber,
             displayName: displayName,
-            profilePicture: profilePicture,
+            profilePictureURL: profilePictureURL,
             dateOfBirthYear: dateOfBirthYear,
             notificationToken: notificationToken,
             createdAt: createdAt)

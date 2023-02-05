@@ -15,6 +15,9 @@ final class User: Model, Content, Authenticatable {
     @OptionalField(key: "biography")
     var biography: String?
     
+    @OptionalField(key: "profile_picture_url")
+    var profilePictureURL: String?
+    
     @OptionalChild(for: \.$user)
     var username: Username?
     
@@ -24,8 +27,8 @@ final class User: Model, Content, Authenticatable {
     @OptionalChild(for: \.$user)
     var dateOfBirth: DateOfBirth?
     
-    @OptionalChild(for: \.$user)
-    var profilePicture: ProfilePicture?
+//    @OptionalChild(for: \.$user)
+//    var profilePicture: ProfilePicture?
     
     @OptionalChild(for: \.$user)
     var notificationToken: NotificationToken?
@@ -41,9 +44,10 @@ final class User: Model, Content, Authenticatable {
     
     init() {}
     
-    init(displayName: String? = nil, biography: String? = nil) {
+    init(displayName: String? = nil, biography: String? = nil, profilePictureURL: String? = nil) {
         self.displayName = displayName
         self.biography = biography
+        self.profilePictureURL = profilePictureURL
     }
 }
 

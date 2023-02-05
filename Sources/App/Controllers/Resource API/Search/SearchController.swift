@@ -35,7 +35,7 @@ struct SearchController: RouteCollection {
         
         let result = try await User.query(on: req.db)
             .with(\.$username)
-            .with(\.$profilePicture)
+//            .with(\.$profilePicture)
             .join(child: \.$username)
             .group(.or) { query in
                 query
