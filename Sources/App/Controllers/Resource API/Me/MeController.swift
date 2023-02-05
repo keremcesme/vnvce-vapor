@@ -12,6 +12,7 @@ struct MeController: RouteCollection {
         let edit = api.grouped("edit")
         edit.patch("display-name", use: editDisplayNameHandler)
         edit.patch("biography", use: editBiographyHandler)
+        edit.patch("profile-picture", use: editProfilePictureHandler)
         
     }
 }

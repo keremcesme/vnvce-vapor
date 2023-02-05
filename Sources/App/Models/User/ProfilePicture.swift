@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 21.08.2022.
-//
 
 import Fluent
 import Vapor
@@ -16,7 +10,6 @@ final class ProfilePicture: Model, Content, Authenticatable {
     
     @Parent(key: "user_id")
     var user: User
-    
     
     @Field(key: "url")
     var url: String
