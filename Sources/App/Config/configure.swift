@@ -1,5 +1,6 @@
 
 import Vapor
+import Fluent
 
 extension Application {
     public func configure() async throws {
@@ -28,6 +29,15 @@ extension Application {
 
 //        try await self.autoRevert()
 //        try await self.autoMigrate()
+        
+//        let id = UUID()
+//        print(id)
+//        let userID = UUID(uuidString: "7292217d-90b5-4912-a850-1d90dca9f1f4")!
+//        let moment = Moment(id: id, ownerID: userID)
+//        try await moment.create(on: self.db)
+//        let momentID = try moment.requireID()
+//        let media = MomentMediaDetail(momentID: momentID, mediaType: .image, url: "url-")
+//        try await media.create(on: self.db)
         
         self.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
     }

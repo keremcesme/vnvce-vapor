@@ -20,9 +20,11 @@ public struct ResourceController: RouteCollection {
         let meController = MeController()
         let searchController = SearchController()
         let notificationController = NotificationController()
+        let momentController = MomentController()
         
         try api.register(collection: meController)
         try api.register(collection: searchController)
         try api.register(collection: notificationController)
+        try api.register(collection: momentController)
     }
 }

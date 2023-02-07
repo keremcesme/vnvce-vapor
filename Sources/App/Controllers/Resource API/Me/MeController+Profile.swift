@@ -5,9 +5,8 @@ import VNVCECore
 
 extension MeController {
     public func profileHandler(_ req: Request) async throws -> AnyAsyncResponse {
-        guard
-            let headerVersion = req.headers.acceptVersion,
-            let version = VNVCECore.APIVersion(rawValue: headerVersion) else {
+        guard let headerVersion = req.headers.acceptVersion,
+              let version = VNVCECore.APIVersion(rawValue: headerVersion) else {
             throw Abort(.notFound)
         }
         

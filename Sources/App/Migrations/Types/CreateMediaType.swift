@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 13.09.2022.
-//
 
 import Fluent
 import VNVCECore

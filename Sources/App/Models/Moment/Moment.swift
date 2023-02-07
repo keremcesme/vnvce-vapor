@@ -19,23 +19,11 @@ final class Moment: Model, Content {
     @Parent(key: "owner_id")
     var owner: User
     
-    @Enum(key: "media_type")
-    var mediaType: MediaType
+    @OptionalChild(for: \.$moment)
+    var media: MomentMediaDetail?
     
-    @Field(key: "name")
-    var name: String
-    
-    @Field(key: "url")
-    var url: String
-    
-    @Field(key: "thumbnail_url")
-    var thumbnailURL: String?
-    
-    @Field(key: "sensitive_content")
-    var sensitiveContent: Bool
-    
-    @OptionalField(key: "location")
-    var location: GeometricPoint2D?
+//    @OptionalField(key: "location")
+//    var location: GeometricPoint2D?
     
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
@@ -43,83 +31,63 @@ final class Moment: Model, Content {
     init(){}
     
     init(
-        ownerID: User.IDValue,
-        mediaType: MediaType,
-        name: String,
-        url: String,
-        thumbnailURL: String? = nil,
-        sensitiveContent: Bool = false,
-        location: GeometricPoint2D? = nil
+        id: UUID,
+        ownerID: User.IDValue
+//        location: GeometricPoint2D? = nil
     ){
+        self.id = id
         self.$owner.id = ownerID
-        self.mediaType = mediaType
-        self.name = name
-        self.url = url
-        self.thumbnailURL = thumbnailURL
-        self.sensitiveContent = sensitiveContent
-        self.location = location
+//        self.location = location
     }
     
-    struct V1: Content {
-        let id: UUID
-        let ownerID: UUID
-        let name: String
-        let url: String
-        let sensitiveContent: Bool
-        let createdAt: TimeInterval
-    }
-}
-
-extension Moment {
-    func convertMoment() throws -> Moment.V1 {
-        guard let createdAt = self.createdAt else {
-            throw NSError(domain: "", code: 1)
-        }
-        
-        let timeInterval = createdAt.timeIntervalSince1970
-        let momentID = try self.requireID()
-        
-        let moment = Moment.V1(
-            id: momentID,
-            ownerID: self.$owner.id,
-            name: self.name,
-            url: self.url,
-            sensitiveContent: self.sensitiveContent,
-            createdAt: timeInterval)
-        return moment
-    }
-//    func testConvert() -> Moment.V1 {
-//        let date = self.createdAt!
-//        let calendar = Calendar.current.dateComponents([.hour, .minute], from: date)
-//        let hour = calendar.hour!
-//        let minute = calendar.minute!
-//
-//        return Moment.V1(id: try! self.requireID(), hour: hour, minute: minute)
+//    struct V1: Content {
+//        let id: UUID
+//        let ownerID: UUID
+//        let name: String
+//        let url: String
+//        let sensitiveContent: Bool
+//        let createdAt: TimeInterval
 //    }
 }
 
-extension Array where Element: Moment {
-    
-    func convertMoments() throws -> [Moment.V1] {
-        var moments = [Moment.V1]()
-        for m in self {
-            let moment = try m.convertMoment()
-            moments.append(moment)
-        }
-        return moments
-    }
-    
-//    func testConverts() -> [Moment.V1] {
+//extension Moment {
+//    func convertMoment() throws -> Moment.V1 {
+//        guard let createdAt = self.createdAt else {
+//            throw NSError(domain: "", code: 1)
+//        }
+//
+//        let timeInterval = createdAt.timeIntervalSince1970
+//        let momentID = try self.requireID()
+//
+//        let moment = Moment.V1(
+//            id: momentID,
+//            ownerID: self.$owner.id,
+//            name: self.name,
+//            url: self.url,
+//            sensitiveContent: self.sensitiveContent,
+//            createdAt: timeInterval)
+//        return moment
+//    }
+//}
+//
+//extension Array where Element: Moment {
+//
+//    func convertMoments() throws -> [Moment.V1] {
 //        var moments = [Moment.V1]()
-//        for moment in self {
-//            let result = moment.testConvert()
-//            moments.append(result)
+//        for m in self {
+//            let moment = try m.convertMoment()
+//            moments.append(moment)
 //        }
 //        return moments
 //    }
-}
+//}
 
-extension Array where Element == Moment.V1 {
+
+
+
+
+
+//extension Array where Element == Moment.V1 {
 //    func sortAndGroup() -> [[Moment.V1]] {
 //
 //        let result: [[Moment.V1]] = Dictionary(grouping: self, by: { $0.day })
@@ -128,7 +96,7 @@ extension Array where Element == Moment.V1 {
 //
 //        return result
 //    }
-}
+//}
 
 //extension Moment {
 //    func convertMoment(owner: User.Public, _ db: Database) async throws -> Moment.V1 {

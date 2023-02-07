@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
       "state" : {
-        "revision" : "be7912ee4991bcc8a5390fac0424d1d08221dcc6",
-        "version" : "1.36.1"
+        "revision" : "d03b0ff5605bd2cfad7ecddabde1947dbaaa3b47",
+        "version" : "1.37.0"
       }
     },
     {
@@ -311,8 +311,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "b408ca74bf24d13310da685bc340f149567c4ae2",
-        "version" : "1.24.0"
+        "revision" : "22757ac305f3d44d2b99ba541193ff1d64e77d00",
+        "version" : "1.24.1"
       }
     },
     {
@@ -357,7 +357,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "ac2d0e2be7d23a23ad70c8589d4d694f0a85b208"
+        "revision" : "2747b3392c7a6501d3b913ddb26d0447801aa98d"
       }
     },
     {

@@ -39,17 +39,22 @@ extension Application {
             CreateBlock()
         ]
         
+        let moments: [Migration] = [
+            CreateMoment(),
+        ]
+        
         let extensions: [Migration] = [
             EnablePostGISMigration(),
             CreatePG_TRGMExtension(),
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-        self.migrations.add(types)
-        self.migrations.add(users)
-        self.migrations.add(phoneNumbers)
-        self.migrations.add(relationships)
-        self.migrations.add(extensions)
+//        self.migrations.add(types)
+//        self.migrations.add(users)
+//        self.migrations.add(phoneNumbers)
+//        self.migrations.add(relationships)
+        self.migrations.add(moments)
+//        self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")
     }

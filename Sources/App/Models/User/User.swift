@@ -27,9 +27,6 @@ final class User: Model, Content, Authenticatable {
     @OptionalChild(for: \.$user)
     var dateOfBirth: DateOfBirth?
     
-//    @OptionalChild(for: \.$user)
-//    var profilePicture: ProfilePicture?
-    
     @OptionalChild(for: \.$user)
     var notificationToken: NotificationToken?
     
