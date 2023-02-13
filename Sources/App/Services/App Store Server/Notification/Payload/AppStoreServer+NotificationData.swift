@@ -1,7 +1,7 @@
 
 import Foundation
 
-extension AppStoreServerController {
+extension AppStoreNotificationPayload {
     public struct NotificationData: Codable {
         // App Store'daki bir uygulamanın benzersiz tanımlayıcısı.
         let appAppleId: Int?
@@ -16,9 +16,11 @@ extension AppStoreServerController {
         // App Store tarafından JWS biçiminde imzalanmış işlem bilgileri.
         let signedTransactionInfo: String?
     }
-    
+
     public enum Environment: String, Codable {
         case sandbox = "Sandbox"
         case production = "Production"
     }
+
 }
+

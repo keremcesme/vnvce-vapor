@@ -3,8 +3,7 @@ import Foundation
 
 
 // MARK: Uygulama içi satın alma olayının ayrıntıları. (varsa)
-
-extension AppStoreServerController {
+extension AppStoreNotificationPayload {
     public enum NotificationSubtype: String, Codable {
         
         /// `INITIAL_BUY`
@@ -108,3 +107,5 @@ extension AppStoreServerController {
         case pending = "PENDING"
     }
 }
+
+

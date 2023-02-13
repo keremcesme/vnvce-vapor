@@ -1,14 +1,13 @@
 
 import Foundation
 import JWT
-import JWTKit
 
-extension AppStoreServerController {
-    public struct NotificationRenewalInfo: JWTPayload {
+extension AppStoreNotificationPayload.NotificationData {
+    public struct RenewalInfo: JWTPayload {
         let productId: String
         let autoRenewProductId: String
         let autoRenewStatus: Int
-        let environment: Environment
+//        let environment: AppStoreEnvironment
         let signedDate: UnixTimestamp
         let recentSubscriptionStartDate: UnixTimestamp
         
@@ -24,3 +23,5 @@ extension AppStoreServerController {
         
     }
 }
+    
+

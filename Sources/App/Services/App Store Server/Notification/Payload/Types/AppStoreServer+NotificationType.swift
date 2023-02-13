@@ -3,8 +3,7 @@ import Foundation
 
 
 // MARK: Uygulama içi satın alma olayları.
-
-extension AppStoreServerController {
+extension AppStoreNotificationPayload {
     public enum NotificationType: String, Codable {
         
         /// `CONSUMPTION_REQUEST`
@@ -18,7 +17,7 @@ extension AppStoreServerController {
         case consumptionRequest = "CONSUMPTION_REQUEST"
         
         /// `DID_CHANGE_RENEWAL_PREF`
-        /// 
+        ///
         /// Subtype ile birlikte kullanıcının abonelik planında bir değişiklik yaptığını gösteren
         /// bir bildirim türü. Subtype `UPGRADE` ise, kullanıcı aboneliğini yükseltmiştir.
         /// Yükseltme, yeni bir fatura dönemi başlatarak hemen yürürlüğe girer ve kullanıcı,
@@ -224,3 +223,5 @@ extension AppStoreServerController {
         case test = "TEST"
     }
 }
+
+
