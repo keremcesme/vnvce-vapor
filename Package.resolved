@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent.git",
       "state" : {
-        "revision" : "2da106f46b093885f77fa03e3c719ab5bb8cfab4",
-        "version" : "4.6.0"
+        "revision" : "4db22cc7797b3a687de65e32e11108cf92fb32da",
+        "version" : "4.7.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
       "state" : {
-        "revision" : "d03b0ff5605bd2cfad7ecddabde1947dbaaa3b47",
-        "version" : "1.37.0"
+        "revision" : "10f32130a0f7e29de8def48edf69564c36cf3b74",
+        "version" : "1.38.0"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/jwt-kit.git",
       "state" : {
-        "revision" : "dcd78f07e092ac9138327e2bfbb0687a55a80850",
-        "version" : "4.8.0"
+        "branch" : "jws-spike",
+        "revision" : "24a3c7d2c7f71dd278b69f2279c8ba5f76d2b44a"
       }
     },
     {
@@ -357,7 +357,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "2747b3392c7a6501d3b913ddb26d0447801aa98d"
+        "revision" : "918988b4aeb47228ccf9cc7afaa0e0515f442f56"
       }
     },
     {

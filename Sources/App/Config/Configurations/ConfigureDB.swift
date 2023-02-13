@@ -39,7 +39,7 @@ extension Application {
     }
     
     public func configureDatabase() async throws {
-        self.logger.notice("[ 2/8 ] Configuring Database (PSQL)")
+        self.logger.notice("[ 2/9 ] Configuring Database (PSQL)")
         
         let credentials = try await self.aws.secrets.getSecret(DBCredentialsModel.schema, to: DBCredentialsModel.self)
         

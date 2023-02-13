@@ -3,7 +3,7 @@ import Vapor
 
 extension Application {
     public func configureAWS() async throws {
-        self.logger.notice("[ 1/8 ] Configuring AWS")
+        self.logger.notice("[ 1/9 ] Configuring AWS")
         
         guard
             let keyID = Environment.get("AWS_KEY_ID"),

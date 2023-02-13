@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 21.11.2022.
-//
 
 import Vapor
 import JWT
@@ -29,7 +23,7 @@ extension Application {
     }
     
     public func configureJWT() async throws {
-        self.logger.notice("[ 4/8 ] Configuring JWT")
+        self.logger.notice("[ 4/9 ] Configuring JWT")
         
         let keys = try await self.aws.secrets.getSecret(RSAKeysModel.schema, to: RSAKeysModel.self)
         

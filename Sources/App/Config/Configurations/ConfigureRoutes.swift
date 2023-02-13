@@ -5,7 +5,7 @@ import APNSwift
 
 extension Application {
     public func configureRoutes() throws {
-        self.logger.notice("[ 6/8 ] Configuring Routes")
+        self.logger.notice("[ 7/9 ] Configuring Routes")
         
         // MARK: AWS Health Check
         self.get("health") { _ in
@@ -15,6 +15,7 @@ extension Application {
         // MARK: Controllers
         let authController = AuthController()
         let resourceController = ResourceController()
+        let appStoreServerController = AppStoreServerController()
         
         // MARK: APIs
         let versionMiddleware = VersionMiddleware()
@@ -23,6 +24,14 @@ extension Application {
         
         try api.register(collection: authController)
         try api.register(collection: resourceController)
+        
+        try self.register(collection: appStoreServerController)
+        
+        
+        
+        
+        
+        
         
         // MARK: ONLY FOR DEVELOPMENT
 //        try routesPlayground()

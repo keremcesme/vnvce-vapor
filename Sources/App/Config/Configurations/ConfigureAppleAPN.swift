@@ -31,7 +31,7 @@ extension Application {
     }
     
     func configureAppleAPN() async throws {
-        self.logger.notice("[ 5/8 ] Configuring Apple APNs")
+        self.logger.notice("[ 5/9 ] Configuring Apple APNs")
         
         let credentials = try await self.aws.secrets.getSecret(AppleAPNSCredentialsModel.schema, to: AppleAPNSCredentialsModel.self)
         

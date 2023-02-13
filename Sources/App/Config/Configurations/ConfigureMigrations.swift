@@ -11,22 +11,26 @@ import Fluent
 
 extension Application {
     func configureMigrations() {
-        self.logger.notice("[ 7/8 ] Configuring Migrations")
+        self.logger.notice("[ 8/9 ] Configuring Migrations")
         
         let types: [Migration] = [
-            CreateMediaType(),
-            CreateClientOS(),
-            CreateMonth()
+//            CreateMediaType(),
+//            CreateClientOS(),
+//            CreateMonth(),
+            CreateAppStoreTypes(),
+            CreateMembershipStatus()
         ]
         
         let users: [Migration] = [
-            CreateUser(),
-            CreateUsername(),
-            CreateDateOfBirth(),
-            CreateSession(),
-//            CreateProfilePicture(),
-            CreateNotificationToken()
+//            CreateUser(),
+//            CreateUsername(),
+//            CreateDateOfBirth(),
+//            CreateSession(),
+//            CreateNotificationToken(),
+            CreateMembership(),
+            CreateAppStoreTransaction()
         ]
+        
         
         let phoneNumbers: [Migration] = [
             CreateCountries(),
@@ -50,10 +54,10 @@ extension Application {
         ]
         
 //        self.migrations.add(types)
-//        self.migrations.add(users)
+        self.migrations.add(users)
 //        self.migrations.add(phoneNumbers)
 //        self.migrations.add(relationships)
-        self.migrations.add(moments)
+//        self.migrations.add(moments)
 //        self.migrations.add(extensions)
         
         self.logger.notice("✅ Migrations Configured")

@@ -12,7 +12,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.4.0"),
         .package(url: "https://github.com/vapor/apns.git", from: "3.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.2.1"),
-//        .package(url: "https://github.com/auth0/JWTDecode.swift.git", from: "3.0.1"),
+        .package(url: "https://github.com/vapor/jwt-kit.git", branch: "jws-spike"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.2.2"),
         .package(url: "https://github.com/vapor/leaf-kit", from: "1.8.0"),
         .package(url: "https://github.com/vapor/redis.git", from: "4.6.0"),

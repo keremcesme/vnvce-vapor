@@ -10,7 +10,7 @@ import Leaf
 
 extension Application {
     public func configureViews() {
-        self.logger.notice("[ 8/8 ] Configuring Views")
+        self.logger.notice("[ 9/9 ] Configuring Views")
         
         self.routes.defaultMaxBodySize = "10mb"
         self.middleware.use(FileMiddleware(publicDirectory: self.directory.publicDirectory))

@@ -25,7 +25,7 @@ extension Application {
     }
     
     func configureRedis() async throws {
-        self.logger.notice("[ 3/8 ] Configuring Redis")
+        self.logger.notice("[ 3/9 ] Configuring Redis")
         
         switch self.environment {
         case .production:
