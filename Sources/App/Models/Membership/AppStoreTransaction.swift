@@ -54,8 +54,8 @@ final class AppStoreTransaction: Model, Content {
     @OptionalField(key: "offer_id")
     var offerID: String?
     
-    @OptionalEnum(key: "offer_type")
-    var offerType: AppStoreOfferType?
+    @Enum(key: "offer_type")
+    var offerType: AppStoreOfferType
     
     @OptionalField(key: "revocation_date")
     var revocationDate: Date?
@@ -83,7 +83,7 @@ final class AppStoreTransaction: Model, Content {
         ownershipType: AppStoreProductOwnershipType = .purchased,
         purchasedQuantity: Int = 1,
         offerID: String? = nil,
-        offerType: AppStoreOfferType? = .none,
+        offerType: AppStoreOfferType = .none,
         revocationDate: Date? = nil,
         revocationReason: AppStoreRevocationReason? = nil
     ) {

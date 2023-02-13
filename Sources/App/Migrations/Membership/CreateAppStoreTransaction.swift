@@ -28,7 +28,7 @@ struct CreateAppStoreTransaction: AsyncMigration {
             .field("ownership_type", ownershipType, .required)
             .field("purchased_quantity", .int, .required)
             .field("offer_id", .string)
-            .field("offer_type", offerType)
+            .field("offer_type", offerType, .required)
             .field("revocation_date", .datetime)
             .field("revocation_reason", revocationReason)
             .create()

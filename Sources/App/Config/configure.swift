@@ -38,8 +38,8 @@ extension Application {
         
 
 //        do {
-////            try await self.autoRevert()
-////            try await self.autoMigrate()
+//            try await self.autoRevert()
+            try await self.autoMigrate()
 ////
 //            let date = Date()
 //            let userID = UUID(uuidString: "7292217d-90b5-4912-a850-1d90dca9f1f4")!

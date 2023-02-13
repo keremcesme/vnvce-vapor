@@ -53,7 +53,7 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-//        self.migrations.add(types)
+        self.migrations.add(types)
         self.migrations.add(users)
 //        self.migrations.add(phoneNumbers)
 //        self.migrations.add(relationships)

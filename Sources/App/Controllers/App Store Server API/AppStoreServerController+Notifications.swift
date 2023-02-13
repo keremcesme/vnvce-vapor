@@ -44,7 +44,7 @@ extension AppStoreServerController {
                 rootCert: rootCert)
             print("Transaction ID: \(transactionInfo.transactionId)")
             print("Time: \(transactionInfo.purchaseDate.date)")
-            print("Expire or Renew: \(transactionInfo.expiresDate.date)")
+//            print("Expire or Renew: \(transactionInfo.expiresDate.date)")
 //            print("Ownership: \(transactionInfo.inAppOwnershipType.rawValue)")
 //            print("Product ID: \(transactionInfo.productId)")
 //            print("Group Identifier: \(transactionInfo.subscriptionGroupIdentifier)")

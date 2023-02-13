@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
       "state" : {
-        "revision" : "7f05a8da46cc2a4ab43218722298b81ac7a08031",
-        "version" : "1.13.2"
+        "revision" : "1d24271feee99403c80e5387a1775299c84f902f",
+        "version" : "1.14.0"
       }
     },
     {
@@ -357,7 +357,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "918988b4aeb47228ccf9cc7afaa0e0515f442f56"
+        "revision" : "e88b8dc4bca31897e1a10d019448f692374e682b"
       }
     },
     {
