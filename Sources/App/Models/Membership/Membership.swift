@@ -29,7 +29,7 @@ final class Membership: Model, Content {
     
     init(){}
     
-    init(userID: User.IDValue, status: MembershipStatus, platform: ClientOS, latestTransactionID: String?) {
+    init(userID: User.IDValue, status: MembershipStatus = .none, platform: ClientOS, latestTransactionID: String?) {
         self.$user.id = userID
         self.status = status
         self.isActive = status.isActive
