@@ -177,6 +177,7 @@ extension AppStoreNotificationPayload {
         case refundDeclined = "REFUND_DECLINED"
         
         /// `RENEWAL_EXTENDED`
+        /// `RENEWAL_EXTENSION`
         ///
         /// App Store'un belirli bir abonelik için abonelik yenileme tarihini uzattığını belirten bir bildirim türü.
         ///     1 - Abonelik Yenileme Tarihini Uzat:
@@ -185,6 +186,7 @@ extension AppStoreNotificationPayload {
         ///         https://developer.apple.com/documentation/appstoreserverapi/extend_subscription_renewal_dates_for_all_active_subscribers
         ///
         case renewalExtended = "RENEWAL_EXTENDED"
+        case renewalExtension = "RENEWAL_EXTENSION"
         
         /// `REVOKE`
         ///

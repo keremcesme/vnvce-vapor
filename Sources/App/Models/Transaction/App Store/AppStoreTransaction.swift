@@ -33,11 +33,11 @@ final class AppStoreTransaction: Model, Content {
     @Field(key: "is_upgraded")
     var isUpgraded: Bool
     
-    @Field(key: "currency_code")
-    var currencyCode: String
+//    @OptionalField(key: "currency_code")
+//    var currencyCode: String?
     
-    @Field(key: "price")
-    var price: Double
+//    @OptionalField(key: "price")
+//    var price: Double?
     
     @Field(key: "purchase_date")
     var purchaseDate: Date
@@ -63,7 +63,6 @@ final class AppStoreTransaction: Model, Content {
     @OptionalEnum(key: "revocation_reason")
     var revocationReason: AppStoreRevocationReason?
     
-    
     init() {}
     
     init(
@@ -76,8 +75,8 @@ final class AppStoreTransaction: Model, Content {
         productType: AppStoreProductType = .autoRenewable,
         subscriptionGroupID: String? = nil,
         isUpgraded: Bool = false,
-        currencyCode: String,
-        price: Double,
+//        currencyCode: String? = nil,
+//        price: Double? = nil,
         purchaseDate: Date,
         expirationDate: Date? = nil,
         ownershipType: AppStoreProductOwnershipType = .purchased,
@@ -96,8 +95,8 @@ final class AppStoreTransaction: Model, Content {
         self.productType = productType
         self.subscriptionGroupID = subscriptionGroupID
         self.isUpgraded = isUpgraded
-        self.currencyCode = currencyCode
-        self.price = price
+//        self.currencyCode = currencyCode
+//        self.price = price
         self.purchaseDate = purchaseDate
         self.expirationDate = expirationDate
         self.ownershipType = ownershipType

@@ -105,6 +105,11 @@ extension AppStoreNotificationPayload {
         ///  kullanıcının bunu kabul etmediğini gösterir.
         ///
         case pending = "PENDING"
+        
+        /// `SUMMARY`
+        ///
+        /// `RENEWAL_EXTENDED` veya `RENEWAL_EXTENSION` Bildirim Türü için geçerlidir. Bu subtype'a sahip bir bildirim, yükte summary nesnesinin olduğunu söyler.
+        case summary = "SUMMARY"
     }
 }
 

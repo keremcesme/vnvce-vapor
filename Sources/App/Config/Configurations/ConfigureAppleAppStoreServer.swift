@@ -19,7 +19,7 @@ extension Application {
         
         let signer = try JWTSigner.es256(key: .private(pem: credentials.key.convertToKey))
         
-        self.jwt.signers.use(signer, kid: .iapPrivate, isDefault: false)
+        self.jwt.signers.use(signer, kid: .appStore, isDefault: false)
         
         self.appStoreServer.configuration = .init(key: credentials.key)
         

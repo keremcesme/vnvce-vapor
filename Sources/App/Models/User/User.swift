@@ -30,6 +30,9 @@ final class User: Model, Content, Authenticatable {
     @OptionalChild(for: \.$user)
     var notificationToken: NotificationToken?
     
+    @OptionalChild(for: \.$user)
+    var membership: Membership?
+    
     @Children(for: \.$user)
     var sessions: [Session]
 

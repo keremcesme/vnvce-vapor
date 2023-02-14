@@ -10,13 +10,13 @@ import FluentPostGIS
 import Fluent
 
 extension Application {
-    func configureMigrations() {
+    func configureMigrations() async throws {
         self.logger.notice("[ 8/9 ] Configuring Migrations")
         
         let types: [Migration] = [
-//            CreateMediaType(),
-//            CreateClientOS(),
-//            CreateMonth(),
+            CreateMediaType(),
+            CreateClientOS(),
+            CreateMonth(),
             CreateAppStoreTypes(),
             CreateMembershipStatus()
         ]
@@ -28,6 +28,10 @@ extension Application {
 //            CreateSession(),
 //            CreateNotificationToken(),
             CreateMembership(),
+            
+        ]
+        
+        let transactions: [Migration] = [
             CreateAppStoreTransaction()
         ]
         
@@ -53,12 +57,17 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-        self.migrations.add(types)
-        self.migrations.add(users)
+//        self.migrations.add(types)
+//        self.migrations.add(users)
+//        self.migrations.add(transactions)
 //        self.migrations.add(phoneNumbers)
 //        self.migrations.add(relationships)
 //        self.migrations.add(moments)
 //        self.migrations.add(extensions)
+        
+        
+//        try await self.autoRevert()
+//        try await self.autoMigrate()
         
         self.logger.notice("✅ Migrations Configured")
     }

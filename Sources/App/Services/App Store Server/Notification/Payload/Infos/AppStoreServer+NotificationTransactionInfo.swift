@@ -17,7 +17,7 @@ extension AppStoreNotificationPayload.NotificationData {
         let webOrderLineItemId: String?
         
         let appAccountToken: UUID?
-        let isUpgraded: Bool
+        let isUpgraded: Bool?
         
         let offerIdentifier: String?
         let offerType: Int?

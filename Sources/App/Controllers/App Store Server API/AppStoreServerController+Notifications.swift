@@ -4,60 +4,69 @@ import Fluent
 import JWT
 import JWTKit
 
-extension AppStoreServerController {
+extension AppStoreServerController: AppStoreServerNotification {
     private struct SignedPayload: Decodable {
         let signedPayload: String
     }
     
     public func notificationsHandler(_ req: Request) async throws -> HTTPStatus {
-        
-        let signedPayload = try req.content.decode(SignedPayload.self).signedPayload
-        
+        let signedNotification = try req.content.decode(SignedPayload.self).signedPayload
         let appStore = req.application.appStoreServer.notification
         
-        let paylaod = try appStore.verify(signed: signedPayload, req)
+        let payload = try appStore.verifyAll(signedNotification, on: req)
         
-//        let payload = try req.application.jwt.signers.verifyJWSWithX5C(
-//            notification.signedPayload,
-//            as: NotificationPayload.self,
-//            rootCert: rootCert)
+        switch payload.payload.notificationType {
+            
+        case .consumptionRequest:
+            print(payload.payload.notificationType.rawValue)
+        case .didChangeRenewalPref:
+            print(payload.payload.notificationType.rawValue)
+        case .didChangeRenewalStatus:
+            print(payload.payload.notificationType.rawValue)
+        case .didfailToRenew:
+            print(payload.payload.notificationType.rawValue)
+        case .didRenew:
+            print(payload.payload.notificationType.rawValue)
+        case .expired:
+            print(payload.payload.notificationType.rawValue)
+        case .gradePeriodExpired:
+            print(payload.payload.notificationType.rawValue)
+        case .offeredRedeemed:
+            print(payload.payload.notificationType.rawValue)
+        case .priceIncrease:
+            print(payload.payload.notificationType.rawValue)
+        case .refund:
+            print(payload.payload.notificationType.rawValue)
+        case .refundDeclined:
+            print(payload.payload.notificationType.rawValue)
+        case .renewalExtended, .renewalExtension:
+            print(payload.payload.notificationType.rawValue)
+        case .revoke:
+            print(payload.payload.notificationType.rawValue)
+        case .subscribed:
+            print(payload.payload.notificationType.rawValue)
+        case .test:
+            print(payload.payload.notificationType.rawValue)
+        }
         
-//        print("Notification ID: \(payload.notificationUUID)")
-//        print("Notification Type: \(payload.notificationType.rawValue)")
-//        print("Notification Sub Type: \(payload.subtype?.rawValue ?? "NULL")")
-////        print("App Apple ID: \(String(describing: payload.data.appAppleId))")
-////        print("Bundle ID: \(payload.data.bundleId)")
-////        print("Bundle Version: \(payload.data.bundleVersion)")
-////        print("Environment: \(payload.data.environment.rawValue)")
+//        print(
+//            """
+//            NOTIFICATION
 //
-//        if let signedRenewalInfo = payload.data.signedRenewalInfo {
-//            let renewalInfo = try req.application.jwt.signers.verifyJWSWithX5C(
-//                signedRenewalInfo,
-//                as: NotificationRenewalInfo.self,
-//                rootCert: rootCert)
-////            print("Renewal Info:")
-////            print("Product ID: \(renewalInfo.productId)")
-////            print("Auto Renew Product ID: \(renewalInfo.autoRenewProductId)")
-//            print("Original Transaction ID: \(renewalInfo.originalTransactionId ?? "NULL")")
-//        }
+//                   [TYPE] \(payload.payload.notificationType.rawValue)
+//                [SUBTYPE] \(payload.payload.subtype?.rawValue ?? "-")
+//              [BUNDLE ID] \(payload.payload.data.bundleId)
 //
-//        if let signedTransactionInfo = payload.data.signedTransactionInfo {
-//            let transactionInfo = try req.application.jwt.signers.verifyJWSWithX5C(
-//                signedTransactionInfo,
-//                as: NotificationTransactionInfo.self,
-//                rootCert: rootCert)
-//            print("Transaction ID: \(transactionInfo.transactionId)")
-//            print("Time: \(transactionInfo.purchaseDate.date)")
-////            print("Expire or Renew: \(transactionInfo.expiresDate.date)")
-////            print("Ownership: \(transactionInfo.inAppOwnershipType.rawValue)")
-////            print("Product ID: \(transactionInfo.productId)")
-////            print("Group Identifier: \(transactionInfo.subscriptionGroupIdentifier)")
-////            print("Type: \(transactionInfo.type.rawValue)")
-////            print("User ID: \(String(describing: transactionInfo.appAccountToken))")
-////            print("Is Upgraded: \(String(describing: transactionInfo.isUpgraded))")
-//        }
+//            [TRANSACTION]
+//                             [ID] \(payload.transactionInfo?.transactionId ?? "-")
+//                  [PURCHASE DATE] \(String(describing: payload.transactionInfo?.purchaseDate.date))
+//                [EXPIRATION DATE] \(String(describing: payload.transactionInfo?.expiresDate?.date))
+//                       [GROUP ID] \(payload.transactionInfo?.subscriptionGroupIdentifier ?? "-")
+//                           [TYPE] \(String(describing: payload.transactionInfo?.type.rawValue))
+//                        [USER ID] \(String(describing: payload.transactionInfo?.appAccountToken))
 //
-//        print("------------------------------------------------------------------------------------")
+//            """
+//        )
         
         return .ok
     }
