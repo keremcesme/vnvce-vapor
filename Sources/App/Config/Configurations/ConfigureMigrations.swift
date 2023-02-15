@@ -14,10 +14,11 @@ extension Application {
         self.logger.notice("[ 8/9 ] Configuring Migrations")
         
         let types: [Migration] = [
-            CreateMediaType(),
-            CreateClientOS(),
-            CreateMonth(),
-            CreateAppStoreTypes(),
+//            CreateMediaType(),
+//            CreateClientOS(),
+//            CreateMonth(),
+//            CreatePaymentProvider(),
+//            CreateAppStoreTypes(),
             CreateMembershipStatus()
         ]
         
@@ -58,8 +59,8 @@ extension Application {
         ]
         
 //        self.migrations.add(types)
-//        self.migrations.add(users)
-//        self.migrations.add(transactions)
+        self.migrations.add(users)
+        self.migrations.add(transactions)
 //        self.migrations.add(phoneNumbers)
 //        self.migrations.add(relationships)
 //        self.migrations.add(moments)

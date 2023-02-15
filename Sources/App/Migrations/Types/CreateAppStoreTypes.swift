@@ -17,7 +17,6 @@ struct CreateAppStoreTypes: AsyncMigration {
             .case("introductory")
             .case("promotional")
             .case("code")
-            .case("none")
             .create()
         
         _ = try await database

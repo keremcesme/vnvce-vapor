@@ -1,5 +1,6 @@
 
 import Foundation
+import VNVCECore
 
 
 // MARK: Uygulama içi satın alma olayının ayrıntıları. (varsa)
@@ -91,6 +92,9 @@ extension AppStoreNotificationPayload {
         ///
         case priceIncrease = "PRICE_INCREASE"
         
+        /// `PRODUCT_NOT_FOR_SALE`
+        case productNotForSale = "PRODUCT_NOT_FOR_SALE"
+        
         /// `ACCEPTED`
         ///
         /// `PRICE_INCREASE` bildirim türü için geçerlidir. Bu subtype'a sahip bir bildirim,
@@ -112,5 +116,3 @@ extension AppStoreNotificationPayload {
         case summary = "SUMMARY"
     }
 }
-
-

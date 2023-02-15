@@ -1,6 +1,6 @@
 
 import Foundation
-
+import VNVCECore
 
 // MARK: Uygulama içi satın alma olayları.
 extension AppStoreNotificationPayload {
@@ -94,8 +94,8 @@ extension AppStoreNotificationPayload {
         ///
         /// Subtype olmayan bir bildirim, aboneliğin başka bir nedenle sona erdiğini gösterir.
         ///
-        /// Subtype'lar:
-        /// `VOLUNTARY`, `BILLING_RETRY`, `PRICE_INCREASE`
+        /// Olasi Subtype'lar:
+        /// `VOLUNTARY`, `BILLING_RETRY`, `PRICE_INCREASE`. `PRODUCT_NOT_FOR_SALE`
         ///
         case expired = "EXPIRED"
         
@@ -226,4 +226,117 @@ extension AppStoreNotificationPayload {
     }
 }
 
-
+extension AppStoreNotificationPayload.NotificationType {
+    typealias NotificationSubtype = AppStoreNotificationPayload.NotificationSubtype
+    
+    func convertMembershipStatus(_ subtype: NotificationSubtype?) -> MembershipStatus? {
+        switch self {
+        case .consumptionRequest:
+            return .consumptionRequested
+        case .didChangeRenewalPref:
+            switch subtype {
+            case .upgrade:
+                return .renewalPrefUpgraded
+            case .downgrade:
+                return .renewalPrefDowngraded
+            default:
+                return nil
+            }
+        case .didChangeRenewalStatus:
+            switch subtype {
+            case .autoRenewEnabled:
+                return .autoRenewEnabled
+            case .autoRenewDisabled:
+                return .autoRenewDisabled
+            default:
+                return nil
+            }
+        case .didfailToRenew:
+            guard let subtype else {
+                return .billingIssue
+            }
+            if case .gracePeriod = subtype {
+                return .gracePeriod
+            } else {
+                return nil
+            }
+        case .didRenew:
+            guard let subtype else {
+                return .didRenew
+            }
+            if case .billingRecovery = subtype {
+                return .didRenewWithBillingRecovery
+            } else {
+                return nil
+            }
+        case .expired:
+            guard let subtype else {
+                return .expiredOther
+            }
+            switch subtype {
+            case .voluntary:
+                return .voluntary
+            case .billingRetry:
+                return .billingRetryFailed
+            case .priceIncrease:
+                return .priceIncreaseDenied
+            case .productNotForSale:
+                return .productNotForSale
+            default:
+                return nil
+            }
+        case .gradePeriodExpired:
+            return .gracePeriodExpired
+        case .offeredRedeemed:
+            guard let subtype else {
+                return .offerRedeemedForCurrent
+            }
+            switch subtype {
+            case .initialBuy:
+                return .offerRedeemedForInitialBuy
+            case .resubscribe:
+                return .offerRedeemedForResubscribe
+            case .upgrade:
+                return .offerRedeemedForUpgrade
+            case .downgrade:
+                return .offerRedeemedForDowngrade
+            default:
+                return nil
+            }
+        case .priceIncrease:
+            guard let subtype else {
+                return nil
+            }
+            switch subtype {
+            case .accepted:
+                return .priceIncreaseAccepted
+            case .pending:
+                return .priceIncreasePending
+            default:
+                return nil
+            }
+        case .refund:
+            return .refunded
+        case .refundDeclined:
+            return .refundDeclined
+        case .renewalExtended, .renewalExtension:
+            return .renewalExtended
+        case .revoke:
+            return .revoked
+        case .subscribed:
+            guard let subtype else {
+                return nil
+            }
+            switch subtype {
+            case .initialBuy:
+                return .initialBuy
+            case .resubscribe:
+                return .resubscribe
+            default:
+                return nil
+            }
+        case .test:
+            return nil
+        }
+    }
+}

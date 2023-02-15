@@ -29,59 +29,23 @@ extension MembershipController {
         
         switch clientOS {
         case .ios:
-            let payload = try req.content.decode(VNVCECore.AppStoreTransaction.V1.self)
+            let transaction = try req.content.decode(VNVCECore.AppStoreTransaction.V1.self)
+            let userID = transaction.appAccountToken
             
-            guard let userID = payload.appAccountToken,
-                  let membership = try await Membership.query(on: req.db).filter(\.$user.$id == userID).first() else {
+            guard let membership = try await Membership.query(on: req.db).filter(\.$user.$id == userID).first() else {
                 throw Abort(.notFound)
             }
             
-            let membershipID = try membership.requireID()
-            let transactionID = String(payload.id)
-            
-            let transaction: AppStoreTransaction = try await {
-                if let oldTransaction = try await membership.$transactions
-                    .query(on: req.db)
-                    .filter(\.$id == transactionID)
-                    .first() {
-                    let transaction = try await req.db.transaction {
-                        let newTransaction = payload.convert(membershipID, userID: userID)
-                        
-                        try await oldTransaction.delete(force: true, on: $0)
-                        try await membership.$transactions.create(newTransaction, on: $0)
-                        
-                        return newTransaction
-                    }
-                    return transaction
-                } else {
-                    let transaction = payload.convert(membershipID, userID: userID)
-                    try await membership.$transactions.create(transaction, on: req.db)
-                    return transaction
-                }
-            }()
+            if let currentTransaction = try await AppStoreTransaction.find(transaction.id, on: req.db) {
+                try await transaction.update(currentTransaction, on: req.db)
+            } else {
+                try await transaction.create(membership, on: req.db)
+            }
             
             membership.isActive = true
-            
-            if transaction.offerType == .none {
-                if payload.id == payload.originalID {
-                    membership.status = .initialBuy
-                } else {
-                    membership.status = .resubscribe
-                }
-            } else {
-                if payload.id == payload.originalID {
-                    membership.status = .offerRedeemedForInitialBuy
-                } else {
-                    membership.status = .offerRedeemedForResubscribe
-                }
-            }
-            
-            if membership.platform == nil || membership.platform != .ios {
-                membership.platform = .ios
-            }
+            membership.provider = .appleAppStore
             
             try await membership.update(on: req.db)
-            
             
             return .ok
         case .android:

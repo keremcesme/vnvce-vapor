@@ -26,4 +26,5 @@ struct CreateUser: AsyncMigration {
             .schema(User.schema)
             .delete()
     }
+    
 }
