@@ -24,13 +24,7 @@ extension Application {
         
         try api.register(collection: authController)
         try api.register(collection: resourceController)
-        
         try self.register(collection: appStoreServerController)
-        
-        
-        
-        
-        
         
         
         // MARK: ONLY FOR DEVELOPMENT

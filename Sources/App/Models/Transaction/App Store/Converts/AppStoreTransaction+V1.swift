@@ -17,15 +17,13 @@ extension VNVCECore.AppStoreTransaction.V1 {
         
         var originalPurchaseDate: Date? {
             if self.purchaseDate != self.originalPurchaseDate {
-                return self.originalPurchaseDate
+                return self.originalPurchaseDate.date
             } else {
                 return nil
             }
         }
         
-        db.logger.notice("HERE 5")
         let membershipID = try membership.requireID()
-        db.logger.notice("HERE 6")
         let transaction = AppStoreTransaction(
             id: self.id,
             originalID: originalID,
@@ -41,15 +39,13 @@ extension VNVCECore.AppStoreTransaction.V1 {
             offerID: self.offerID,
             offerType: self.offerType,
             revocationReason: self.revocationReason,
-            purchaseDate: self.purchaseDate,
+            purchaseDate: self.purchaseDate.date,
             originalPurchaseDate: originalPurchaseDate,
-            expirationDate: self.expirationDate,
-            revocationDate: self.revocationDate,
-            signedDate: self.signedDate)
-        db.logger.notice("HERE 7")
+            expirationDate: self.expirationDate?.date,
+            revocationDate: self.revocationDate?.date,
+            signedDate: self.signedDate.date)
         
         try await membership.$transactions.create(transaction, on: db)
-        db.logger.notice("HERE 8")
     }
     
     func update(_ transaction: AppStoreTransaction, on db: Database) async throws {
@@ -63,7 +59,7 @@ extension VNVCECore.AppStoreTransaction.V1 {
         
         var originalPurchaseDate: Date? {
             if self.purchaseDate != self.originalPurchaseDate {
-                return self.originalPurchaseDate
+                return self.originalPurchaseDate.date
             } else {
                 return nil
             }
@@ -80,11 +76,11 @@ extension VNVCECore.AppStoreTransaction.V1 {
         transaction.offerID = self.offerID
         transaction.offerType = self.offerType
         transaction.revocationReason = self.revocationReason
-        transaction.purchaseDate = self.purchaseDate
+        transaction.purchaseDate = self.purchaseDate.date
         transaction.originalPurchaseDate = originalPurchaseDate
-        transaction.expirationDate = self.expirationDate
-        transaction.revocationDate = self.revocationDate
-        transaction.signedDate = self.signedDate
+        transaction.expirationDate = self.expirationDate?.date
+        transaction.revocationDate = self.revocationDate?.date
+        transaction.signedDate = self.signedDate.date
         
         try await transaction.update(on: db)
     }
