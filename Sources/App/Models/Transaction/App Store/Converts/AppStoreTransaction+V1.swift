@@ -23,8 +23,9 @@ extension VNVCECore.AppStoreTransaction.V1 {
             }
         }
         
+        db.logger.notice("HERE 5")
         let membershipID = try membership.requireID()
-        
+        db.logger.notice("HERE 6")
         let transaction = AppStoreTransaction(
             id: self.id,
             originalID: originalID,
@@ -45,8 +46,10 @@ extension VNVCECore.AppStoreTransaction.V1 {
             expirationDate: self.expirationDate,
             revocationDate: self.revocationDate,
             signedDate: self.signedDate)
+        db.logger.notice("HERE 7")
         
         try await membership.$transactions.create(transaction, on: db)
+        db.logger.notice("HERE 8")
     }
     
     func update(_ transaction: AppStoreTransaction, on db: Database) async throws {
