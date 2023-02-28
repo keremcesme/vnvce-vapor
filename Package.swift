@@ -37,9 +37,12 @@ let package = Package(
                 .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
                 .product(name: "FluentPostGIS", package: "fluent-postgis"),
                 .product(name: "VNVCECore", package: "vnvce-core"),
+                
+                // AWS
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "SotoSNS", package: "soto"),
                 .product(name: "SotoSecretsManager", package: "soto"),
+                .product(name: "SotoElastiCache", package: "soto")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

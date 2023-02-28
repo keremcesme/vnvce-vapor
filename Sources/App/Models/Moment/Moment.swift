@@ -33,11 +33,9 @@ final class Moment: Model, Content {
     init(
         id: UUID,
         ownerID: User.IDValue
-//        location: GeometricPoint2D? = nil
     ){
         self.id = id
         self.$owner.id = ownerID
-//        self.location = location
     }
     
 //    struct V1: Content {

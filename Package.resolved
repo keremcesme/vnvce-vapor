@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
       "state" : {
-        "revision" : "10f32130a0f7e29de8def48edf69564c36cf3b74",
-        "version" : "1.38.0"
+        "revision" : "636a59eb1c852ae7eb3ee0e1f8aa23c104772416",
+        "version" : "1.39.1"
       }
     },
     {
@@ -302,8 +302,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-extras.git",
       "state" : {
-        "revision" : "98378d1fe56527761c180f70b2d66a7b2307fc39",
-        "version" : "1.16.0"
+        "revision" : "d75ed708d00353acf173ca23018b6bd46f949464",
+        "version" : "1.17.0"
       }
     },
     {
@@ -311,8 +311,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "8dcda6828844022028025241e4e7d52cbbe250de",
-        "version" : "1.25.0"
+        "revision" : "860622124b01cc1863b4e65dc449b6b457ca5704",
+        "version" : "1.25.1"
       }
     },
     {
@@ -347,8 +347,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/vapor.git",
       "state" : {
-        "revision" : "7b76fe01a8eb02aa7f61d9ca10624f98b25a5735",
-        "version" : "4.69.2"
+        "revision" : "08397d41d7c7c726dc6667af6b9db13d408201ff",
+        "version" : "4.70.0"
       }
     },
     {
@@ -357,7 +357,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "7fa7c9c9c1537e5562e92a593a19486ad3456af1"
+        "revision" : "29c069862498d0d3a8b5454e6bf0a1109e66ea9a"
       }
     },
     {

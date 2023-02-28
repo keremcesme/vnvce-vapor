@@ -3,7 +3,6 @@ import Vapor
 
 // MARK: ResourceController - RESROUCE API
 // Here are all the routes for access resources.
-
 public struct ResourceController: RouteCollection {
     
     // MARK: Resource: vnvce.com/api/resource/
@@ -22,11 +21,13 @@ public struct ResourceController: RouteCollection {
         let notificationController = NotificationController()
         let momentController = MomentController()
         let membershipController = MembershipController()
+        let relationshipController = RelationshipController()
         
         try api.register(collection: meController)
         try api.register(collection: searchController)
         try api.register(collection: notificationController)
         try api.register(collection: momentController)
         try api.register(collection: membershipController)
+        try api.register(collection: relationshipController)
     }
 }

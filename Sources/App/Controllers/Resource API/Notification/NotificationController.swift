@@ -10,6 +10,4 @@ struct NotificationController: RouteCollection {
         
         
     }
-    
-    
 }

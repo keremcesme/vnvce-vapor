@@ -1,9 +1,4 @@
-////
-////  File.swift
-////  
-////
-////  Created by Kerem Cesme on 24.09.2022.
-////
+
 //
 //import Fluent
 //import Vapor

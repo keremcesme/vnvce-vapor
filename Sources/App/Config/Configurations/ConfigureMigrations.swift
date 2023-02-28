@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 10.08.2022.
-//
 
 import Vapor
 import FluentPostGIS
@@ -14,20 +8,20 @@ extension Application {
         self.logger.notice("[ 8/9 ] Configuring Migrations")
         
         let types: [Migration] = [
-//            CreateMediaType(),
-//            CreateClientOS(),
-//            CreateMonth(),
-//            CreatePaymentProvider(),
-//            CreateAppStoreTypes(),
+            CreateMediaType(),
+            CreateClientOS(),
+            CreateMonth(),
+            CreatePaymentProvider(),
+            CreateAppStoreTypes(),
             CreateMembershipStatus()
         ]
         
         let users: [Migration] = [
-//            CreateUser(),
-//            CreateUsername(),
-//            CreateDateOfBirth(),
-//            CreateSession(),
-//            CreateNotificationToken(),
+            CreateUser(),
+            CreateUsername(),
+            CreateDateOfBirth(),
+            CreateSession(),
+            CreateNotificationToken(),
             CreateMembership(),
             
         ]
@@ -35,7 +29,6 @@ extension Application {
         let transactions: [Migration] = [
             CreateAppStoreTransaction()
         ]
-        
         
         let phoneNumbers: [Migration] = [
             CreateCountries(),
@@ -58,15 +51,15 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-//        self.migrations.add(types)
+        self.migrations.add(types)
         self.migrations.add(users)
         self.migrations.add(transactions)
-//        self.migrations.add(phoneNumbers)
-//        self.migrations.add(relationships)
-//        self.migrations.add(moments)
-//        self.migrations.add(extensions)
+        self.migrations.add(phoneNumbers)
+        self.migrations.add(relationships)
+        self.migrations.add(moments)
+        self.migrations.add(extensions)
         
-        
+//      MARK: - NEVER USE ON PRODUCTION -
 //        try await self.autoRevert()
 //        try await self.autoMigrate()
         

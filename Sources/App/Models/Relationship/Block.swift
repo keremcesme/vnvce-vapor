@@ -1,12 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by Kerem Cesme on 24.09.2022.
-//
 
 import Fluent
 import Vapor
+import VNVCECore
 
 final class Block: Model, Content {
     static let schema = "blocks"
@@ -32,7 +27,7 @@ final class Block: Model, Content {
 }
 
 extension Block {
-    func convertRelationship(_ userID: User.IDValue) throws -> Relationship.V1 {
+    func convertRelationship(_ userID: User.IDValue) throws -> VNVCECore.Relationship.V1 {
         if userID == self.$user.$id.value! {
             let id = try self.requireID()
             return .blocked(blockID: id)

@@ -41,10 +41,7 @@ extension Application {
             let configuration = try RedisConfiguration(hostname: "localhost")
             self.redis.configuration = configuration
             
-//            self.queues.use(.redis(configuration))
-//
-//            try self.queues.startInProcessJobs()
-//            try self.queues.startScheduledJobs()
+//            try await self.aws.elastiCache.reboot()
             
             self.logger.notice("✅ Redis Configured")
         }

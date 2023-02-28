@@ -39,7 +39,7 @@
 //            req.db)
 //        
 //        let friendRequest = FriendRequest(user: userID, submittedUser: targetUserID)
-//        
+//
 //        try await friendRequest.create(on: req.db)
 //        
 //        let requestID = try friendRequest.requireID()
