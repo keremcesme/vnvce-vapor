@@ -21,14 +21,21 @@ extension SearchController {
     }
     
     public func searchFromContactsV1(_ req: Request) async throws -> [User.V1.Public] {
-        let userID = try req.auth.require(User.self).requireID()
+        let user = try req.auth.require(User.self)
+        let userID = try user.requireID()
         
-        let phoneNumbers = try req.content.decode(SearchFromContactsPayload.V1.self).phoneNumbers
+//        let userPhoneNumber = try await user.$phoneNumber.get(on: req.db)?.phoneNumber
+        
+        var phoneNumbers = try req.content.decode(SearchFromContactsPayload.V1.self).phoneNumbers
+        
+//        if let index = phoneNumbers.firstIndex(where: { $0 == userPhoneNumber}) {
+//            phoneNumbers.remove(at: index)
+//        }
         
         let users = try await User.query(on: req.db)
             .with(\.$username)
-//            .with(\.$profilePicture)
             .join(child: \.$phoneNumber)
+            .filter(\.$id != userID)
             .filter(PhoneNumber.self, \PhoneNumber.$phoneNumber ~~ phoneNumbers)
             .all()
         
