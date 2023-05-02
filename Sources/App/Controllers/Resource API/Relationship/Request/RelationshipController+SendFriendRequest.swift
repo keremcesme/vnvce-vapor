@@ -35,6 +35,8 @@ extension RelationshipController {
         
         try await friendRequest.create(on: req.db)
         
+        // Send Push Notification is here:
+        
         let requestID = try friendRequest.requireID()
         
         return .friendRequestSubmitted(requestID: requestID)

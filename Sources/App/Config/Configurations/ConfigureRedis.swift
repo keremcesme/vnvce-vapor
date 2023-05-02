@@ -38,6 +38,8 @@ extension Application {
             self.logger.notice("✅ Redis Configured")
             
         default:
+            let credentials = try await self.aws.secrets.getSecret(RedisCredentialsModel.schema, to: RedisCredentialsModel.self)
+            
             let configuration = try RedisConfiguration(hostname: "localhost")
             self.redis.configuration = configuration
             

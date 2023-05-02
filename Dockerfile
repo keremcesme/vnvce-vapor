@@ -2,7 +2,7 @@
 # Build image
 # ================================
 
-FROM swift:5.7.1-focal as build
+FROM swift:5.8-focal as build
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
@@ -34,7 +34,7 @@ RUN [ -d /build/Resources ] && { mv /build/Resources ./Resources && chmod -R a-w
 # Run image
 # ================================
 
-FROM swift:5.7.1-focal-slim
+FROM swift:5.8-focal-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
     apt-get -q update && apt-get -q dist-upgrade -y && apt-get -q install -y ca-certificates tzdata && apt-get install libssl-dev -y &&  \
