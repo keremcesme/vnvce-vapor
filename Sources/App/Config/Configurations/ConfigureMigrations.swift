@@ -13,7 +13,8 @@ extension Application {
             CreateMonth(),
             CreatePaymentProvider(),
             CreateAppStoreTypes(),
-            CreateMembershipStatus()
+            CreateMembershipStatus(),
+            CreateMomentAudience()
         ]
         
         let users: [Migration] = [
@@ -51,13 +52,13 @@ extension Application {
             CreateUserDisplayNameAndUsernameIndex()
         ]
         
-        self.migrations.add(types)
-        self.migrations.add(users)
-        self.migrations.add(transactions)
-        self.migrations.add(phoneNumbers)
-        self.migrations.add(relationships)
-        self.migrations.add(moments)
-        self.migrations.add(extensions)
+//        self.migrations.add(types)
+//        self.migrations.add(users)
+//        self.migrations.add(transactions)
+//        self.migrations.add(phoneNumbers)
+//        self.migrations.add(relationships)
+//        self.migrations.add(moments)
+//        self.migrations.add(extensions)
         
 //      MARK: - NEVER USE ON PRODUCTION -
 //        try await self.autoRevert()

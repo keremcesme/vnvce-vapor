@@ -24,12 +24,13 @@ extension MomentController {
         let userID = try req.auth.require(User.self).requireID()
         let payload = try req.content.decode(UploadMomentPayload.V1.self)
         
-        let moment = Moment(id: payload.id, ownerID: userID)
+        let moment = Moment(id: payload.id, ownerID: userID, audience: payload.audience, location: payload.location?.convert)
         
         try await req.db.transaction {
             try await moment.create(on: $0)
             let momentID = try moment.requireID()
-            let mediaDetails = MomentMediaDetail(momentID: momentID, mediaType: payload.mediaType, url: payload.url, thumbnailURL: payload.thumbnailURL)
+            let media = payload.media
+            let mediaDetails = MomentMediaDetail(momentID: momentID, mediaType: media.mediaType, url: media.url, thumbnailURL: media.thumbnailURL)
             try await mediaDetails.create(on: $0)
         }
         

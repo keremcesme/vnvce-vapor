@@ -22,8 +22,11 @@ final class Moment: Model, Content {
     @OptionalChild(for: \.$moment)
     var media: MomentMediaDetail?
     
-//    @OptionalField(key: "location")
-//    var location: GeometricPoint2D?
+    @Enum(key: "audience")
+    var audience: MomentAudience
+    
+    @OptionalField(key: "location")
+    var location: GeometricPoint2D?
     
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
@@ -32,20 +35,19 @@ final class Moment: Model, Content {
     
     init(
         id: UUID,
-        ownerID: User.IDValue
+        ownerID: User.IDValue,
+        audience: MomentAudience,
+        location: GeometricPoint2D? = nil
     ){
         self.id = id
         self.$owner.id = ownerID
     }
-    
-//    struct V1: Content {
-//        let id: UUID
-//        let ownerID: UUID
-//        let name: String
-//        let url: String
-//        let sensitiveContent: Bool
-//        let createdAt: TimeInterval
-//    }
+}
+
+extension MomentLocation {
+    var convert: GeometricPoint2D {
+        return .init(x: self.latitude, y: self.longitude)
+    }
 }
 
 //extension Moment {

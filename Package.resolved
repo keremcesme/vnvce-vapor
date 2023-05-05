@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
       "state" : {
-        "revision" : "864c8d9e0ead5de7ba70b61c8982f89126710863",
-        "version" : "1.15.0"
+        "revision" : "333e60cc90f52973f7ee29cd8e3a7f6adfe79f4e",
+        "version" : "1.17.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/async-kit.git",
       "state" : {
-        "revision" : "9acea4c92f51a5885c149904f0d11db4712dda80",
-        "version" : "1.16.0"
+        "revision" : "a61da00d404ec91d12766f1b9aac7d90777b484d",
+        "version" : "1.17.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
       "state" : {
-        "revision" : "636a59eb1c852ae7eb3ee0e1f8aa23c104772416",
-        "version" : "1.39.1"
+        "revision" : "e53acf986e32c54fe522b2c12f737baa01828c1c",
+        "version" : "1.42.2"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-postgres-driver.git",
       "state" : {
-        "revision" : "afc07463fc5589f5bf95f98ae2719d13ad9fbbcf",
-        "version" : "2.6.0"
+        "revision" : "c7cd0203c9d570888e5c6a22595a374ddaa3751d",
+        "version" : "2.6.1"
       }
     },
     {
@@ -131,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/multipart-kit.git",
       "state" : {
-        "revision" : "0d55c35e788451ee27222783c7d363cb88092fab",
-        "version" : "4.5.2"
+        "revision" : "1adfd69df2da08f7931d4281b257475e32c96734",
+        "version" : "4.5.4"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/postgres-kit.git",
       "state" : {
-        "revision" : "1174d9bc57798aba7a99451e5380c0eb0fb796d8",
-        "version" : "2.9.0"
+        "revision" : "3a4e63e49534589fe682e934e898211debd7d10e",
+        "version" : "2.10.1"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/postgres-nio.git",
       "state" : {
-        "revision" : "7daf026e145de2c07d6e37f4171b1acb4b5f22b1",
-        "version" : "1.12.1"
+        "revision" : "2df54bc94607f44584ae6ffa74e3cd754fffafc7",
+        "version" : "1.14.2"
       }
     },
     {
@@ -158,8 +158,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/queues.git",
       "state" : {
-        "revision" : "0f5891fdacd3bed7c11ae4acbb01186a493b3d44",
-        "version" : "1.12.0"
+        "revision" : "f1adaf4c925eb7074a4acf363172c1fa6ec888c8",
+        "version" : "1.12.1"
       }
     },
     {
@@ -194,8 +194,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/routing-kit.git",
       "state" : {
-        "revision" : "ffac7b3a127ce1e85fb232f1a6271164628809ad",
-        "version" : "4.6.0"
+        "revision" : "611bc45c5dfb1f54b84d99b89d1f72191fb6b71b",
+        "version" : "4.7.2"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/sql-kit.git",
       "state" : {
-        "revision" : "fcc29f543b3de7b661cbe7540805974234cb9740",
-        "version" : "3.24.0"
+        "revision" : "d547122756534d8224d4599739da0e82e4695623",
+        "version" : "3.25.0"
       }
     },
     {
@@ -266,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "75ec60b8b4cc0f085c3ac414f3dca5625fa3588e",
-        "version" : "2.2.4"
+        "revision" : "33a20e650c33f6d72d822d558333f2085effa3dc",
+        "version" : "2.5.0"
       }
     },
     {
@@ -293,8 +293,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "45167b8006448c79dda4b7bd604e07a034c15c49",
-        "version" : "2.48.0"
+        "revision" : "546eaa261ec5028b9cc5c7fa883fba9dd5881a3b",
+        "version" : "2.52.0"
       }
     },
     {
@@ -302,8 +302,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-extras.git",
       "state" : {
-        "revision" : "d75ed708d00353acf173ca23018b6bd46f949464",
-        "version" : "1.17.0"
+        "revision" : "0e0d0aab665ff1a0659ce75ac003081f2b1c8997",
+        "version" : "1.19.0"
       }
     },
     {
@@ -311,8 +311,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "860622124b01cc1863b4e65dc449b6b457ca5704",
-        "version" : "1.25.1"
+        "revision" : "6d021a48483dbb273a9be43f65234bdc9185b364",
+        "version" : "1.26.0"
       }
     },
     {
@@ -320,8 +320,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-ssl.git",
       "state" : {
-        "revision" : "4fb7ead803e38949eb1d6fabb849206a72c580f3",
-        "version" : "2.23.0"
+        "revision" : "e866a626e105042a6a72a870c88b4c531ba05f83",
+        "version" : "2.24.0"
       }
     },
     {
@@ -329,8 +329,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-transport-services.git",
       "state" : {
-        "revision" : "c0d9a144cfaec8d3d596aadde3039286a266c15c",
-        "version" : "1.15.0"
+        "revision" : "41f4098903878418537020075a4d8a6e20a0b182",
+        "version" : "1.17.0"
       }
     },
     {
@@ -357,7 +357,7 @@
       "location" : "https://github.com/socialayf/vnvce-core.git",
       "state" : {
         "branch" : "main",
-        "revision" : "b0c0adf9af48f8f9b0a547c7c88cf193a7111325"
+        "revision" : "3f14fd89f051eebccc702b6387117cdf0a7a593f"
       }
     },
     {
@@ -365,8 +365,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/websocket-kit.git",
       "state" : {
-        "revision" : "2d9d2188a08eef4a869d368daab21b3c08510991",
-        "version" : "2.6.1"
+        "revision" : "2166cbe932b29b6419f9cd751e8b27c647e1238e",
+        "version" : "2.8.0"
       }
     },
     {
