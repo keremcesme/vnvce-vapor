@@ -20,7 +20,7 @@ extension MomentController {
         }
     }
     
-    public func uploadV1(_ req: Request) async throws -> HTTPStatus {
+    public func uploadV1(_ req: Request) async throws -> VNVCECore.Moment.V1 {
         let userID = try req.auth.require(User.self).requireID()
         let payload = try req.content.decode(UploadMomentPayload.V1.self)
         
@@ -34,7 +34,14 @@ extension MomentController {
             try await mediaDetails.create(on: $0)
         }
         
-        return .ok
+        guard let m = try await Moment.find(payload.id, on: req.db),
+              let media = try await m.$media.get(on: req.db),
+              let createdAt = m.createdAt?.timeIntervalSince1970
+        else {
+            throw Abort(.notFound)
+        }
+        
+        return .init(id: payload.id, media: .init(mediaType: media.mediaType, url: media.url, thumbnailURL: media.thumbnailURL, sensitiveContent: media.sensitiveContent), createdAt: createdAt)
     }
     
 }
