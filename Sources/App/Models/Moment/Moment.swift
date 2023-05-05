@@ -41,6 +41,8 @@ final class Moment: Model, Content {
     ){
         self.id = id
         self.$owner.id = ownerID
+        self.audience = audience
+        self.location = location
     }
 }
 
