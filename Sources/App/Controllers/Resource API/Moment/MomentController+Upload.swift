@@ -20,11 +20,11 @@ extension MomentController {
         }
     }
     
-    public func uploadV1(_ req: Request) async throws -> VNVCECore.Moment.V1 {
+    public func uploadV1(_ req: Request) async throws -> Moment.V1.Private {
         let userID = try req.auth.require(User.self).requireID()
         let payload = try req.content.decode(UploadMomentPayload.V1.self)
         
-        let moment = Moment(id: payload.id, ownerID: userID, audience: payload.audience, location: payload.location?.convert)
+        let moment = Moment(id: payload.id, ownerID: userID, message: payload.message, audience: payload.audience, location: payload.location?.convert)
         
         try await req.db.transaction {
             try await moment.create(on: $0)
@@ -34,14 +34,11 @@ extension MomentController {
             try await mediaDetails.create(on: $0)
         }
         
-        guard let m = try await Moment.find(payload.id, on: req.db),
-              let media = try await m.$media.get(on: req.db),
-              let createdAt = m.createdAt?.timeIntervalSince1970
-        else {
+        guard let convertedMoment = try await Moment.find(payload.id, on: req.db)?.convertToPrivateV1(on: req.db) else {
             throw Abort(.notFound)
         }
         
-        return .init(id: payload.id, media: .init(mediaType: media.mediaType, url: media.url, thumbnailURL: media.thumbnailURL, sensitiveContent: media.sensitiveContent), createdAt: createdAt)
+        return convertedMoment
     }
     
 }

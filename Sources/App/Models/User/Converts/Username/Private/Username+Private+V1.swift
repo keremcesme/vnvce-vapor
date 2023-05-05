@@ -9,6 +9,7 @@ extension User {
               let modifiedAt = result.modifiedAt?.timeIntervalSince1970 else {
             throw Abort(.notFound)
         }
+        
         return .init(username: result.username, modifiedAt: modifiedAt)
     }
 }

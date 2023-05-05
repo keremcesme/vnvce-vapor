@@ -12,6 +12,7 @@ struct CreateMoment: AsyncMigration {
         try await database.schema(Moment.schema)
             .id()
             .field("owner_id", .uuid, .required, .references(User.schema, .id, onDelete: .cascade))
+            .field("message", .string)
             .field("audience", audience, .required)
             .field("location", .geometricPoint2D)
             .field("created_at", .datetime, .required)
