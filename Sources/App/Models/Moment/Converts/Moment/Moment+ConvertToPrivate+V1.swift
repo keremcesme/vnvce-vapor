@@ -7,17 +7,9 @@ extension Moment {
     func convertToPrivateV1(on db: Database) async throws -> Moment.V1.Private {
         let id = try self.requireID()
         
-        let media: MomentMediaDetail = try await {
-            if let media = self.media {
-                return media
-            } else {
-                try await self.$media.load(on: db)
-                guard let media = self.media else {
-                    throw Abort(.notFound)
-                }
-                return media
-            }
-        }()
+        guard let media = try await self.$media.get(on: db) else {
+            throw Abort(.notFound)
+        }
         
         guard let createdAt = self.createdAt?.timeIntervalSince1970 else {
             throw Abort(.notFound)
