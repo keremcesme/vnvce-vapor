@@ -26,28 +26,53 @@ extension Application {
         
         try await self.configureMigrations()
         self.configureViews()
+
+        
+        
         
 //        try app.configureAppleDeviceCheck()
+        
+        // MARK: Create Test
+//        try await self.createTestUsers()
+//        try await self.createTestMoments()
+        
+//        let userID = User.IDValue(uuidString: "bb70681b-f55f-456b-adce-d5ca70e30f8c")!
+//
+//        let friends: [User.V1.Public] = try await {
+//            let friendships = try await Friendship.query(on: self.db)
+//                .group(.or) { query in
+//                    query
+//                        .filter(\.$user1.$id == userID)
+//                        .filter(\.$user2.$id == userID)
+//                }
+//                .all()
+//
+//            let friendIDs: [User.IDValue] = {
+//                friendships.map { value in
+//                    if value.$user1.id == userID {
+//                        return value.$user2.id
+//                    } else {
+//                        return value.$user1.id
+//                    }
+//                }
+//            }()
+//
+//            return try await User.query(on: self.db)
+//                .with(\.$username)
+//                .filter(\.$id ~~ friendIDs)
+//                .all()
+//                .convertToPublicV1(on: self.db)
+//        }()
+//
+//        let names: [String] = {
+//            friends.map { user in
+//                return user.username
+//            }
+//        }()
+//        print("Count: \(friends.count)")
+//        print("Friends: \(names)")
         
         self.logger.notice("[ RESULT ] 🎉 All Configurations Success 🎉")
     }
 }
 
-//struct TestPayload: JWTPayload {
-//    let iss: IssuerClaim
-//    let iat: IssuedAtClaim
-//    let exp: ExpirationClaim
-//    let aud: AudienceClaim
-//    let bid: String
-//
-//    init() {
-//        self.iss = .init(value: "8ded864a-aa80-4682-b31a-8f592e59e683")
-//        self.iat = .init(value: Date())
-//        self.exp = .init(value: Date().addingTimeInterval(60 * 5))
-//        self.aud = .init(stringLiteral: "appstoreconnect-v1")
-//        self.bid = "com.socialayf.vnvce"
-//
-//    }
-//
-//    func verify(using signer: JWTKit.JWTSigner) throws {}
-//}
