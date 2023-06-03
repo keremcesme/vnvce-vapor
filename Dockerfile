@@ -10,7 +10,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get install libssl-dev -y \
     && rm -rf /var/lib/apt/lists/*
     
-RUN git config --global url."https://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:@github.com/".insteadOf "https://github.com/"
+RUN git config --global url."https://${ACCESS_TOKEN}:@github.com/".insteadOf "https://github.com/"
 
 WORKDIR /build
 
